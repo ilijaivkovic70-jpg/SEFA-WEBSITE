@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
+import { ProjectGallery } from "@/components/project-gallery";
 import { PROJEKTI, getProjekatBySlug } from "@/data/projekti";
 
 export function generateStaticParams() {
@@ -101,6 +102,11 @@ export default async function ProjekatPage({
               </ul>
             </div>
           ))}
+
+          <ProjectGallery
+            images={projekat.galerija ?? []}
+            alt={projekat.naziv}
+          />
 
           <Button
             variant="outline"

@@ -11,6 +11,7 @@ export type Projekat = {
   opis: string[];
   lokacije?: string[];
   sekcije?: ProjekatSekcija[];
+  galerija?: string[];
 };
 
 export const PROJEKTI: Projekat[] = [
