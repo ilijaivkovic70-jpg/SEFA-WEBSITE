@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetContent,
@@ -24,9 +26,42 @@ const NAV_LINKS = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const [pastIntro, setPastIntro] = useState(!isHome);
+
+  useEffect(() => {
+    if (!isHome) {
+      setPastIntro(true);
+      return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setPastIntro(true);
+      return;
+    }
+
+    setPastIntro(false);
+
+    const onScroll = () => {
+      setPastIntro(window.scrollY > window.innerHeight * 3.4);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [isHome]);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
+    <header
+      className={cn(
+        "sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur transition-all duration-500",
+        isHome &&
+          (pastIntro
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-2 opacity-0")
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <Image
