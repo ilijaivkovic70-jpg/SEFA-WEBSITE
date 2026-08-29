@@ -90,7 +90,12 @@ export function Header() {
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger
               render={
-                <Button variant="ghost" size="icon" aria-label="Otvori meni" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-11"
+                  aria-label="Otvori meni"
+                />
               }
             >
               <Menu className="size-5" />
@@ -99,13 +104,13 @@ export function Header() {
               <SheetHeader>
                 <SheetTitle>SEFA</SheetTitle>
               </SheetHeader>
-              <nav className="flex flex-col gap-4 px-4">
+              <nav className="flex flex-col px-2">
                 {NAV_LINKS.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setOpen(false)}
-                    className="text-base font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    className="flex items-center rounded-md px-2 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     {link.label}
                   </Link>
