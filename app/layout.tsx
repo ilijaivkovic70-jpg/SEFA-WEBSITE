@@ -20,9 +20,32 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin", "latin-ext"],
 });
 
+const siteUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "SEFA",
-  description: "Studentska ekonomska fakultetska asocijacija",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "SEFA",
+    template: "%s | SEFA",
+  },
+  description:
+    "Studentska ekonomska fakultetska asocijacija (SEFA) okuplja studente Ekonomskog fakulteta i razvija projekte iz oblasti ekonomije, preduzetništva i ličnog razvoja.",
+  openGraph: {
+    title: "SEFA",
+    description:
+      "Studentska ekonomska fakultetska asocijacija (SEFA) okuplja studente Ekonomskog fakulteta i razvija projekte iz oblasti ekonomije, preduzetništva i ličnog razvoja.",
+    siteName: "SEFA",
+    locale: "sr_RS",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SEFA",
+    description:
+      "Studentska ekonomska fakultetska asocijacija (SEFA) okuplja studente Ekonomskog fakulteta i razvija projekte iz oblasti ekonomije, preduzetništva i ličnog razvoja.",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
