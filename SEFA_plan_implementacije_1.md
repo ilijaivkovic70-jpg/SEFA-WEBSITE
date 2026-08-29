@@ -1,4 +1,4 @@
-# Plan implementacije: SEFA sajt
+ da # Plan implementacije: SEFA sajt
 
 **Stack:** Next.js (React) + Tailwind CSS + shadcn/ui, bez baze podataka, hosting na Vercel.
 
