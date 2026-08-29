@@ -33,7 +33,7 @@ export default function ProjektiPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {PROJEKTI.map((projekat) => (
               <Link key={projekat.slug} href={`/projekti/${projekat.slug}`}>
-                <Card className="ring-border h-full transition-colors hover:bg-card/70">
+                <Card className="ring-border h-full hover:-translate-y-1 hover:bg-card/70 hover:shadow-lg">
                   <div className="mx-4 aspect-video rounded-lg bg-gradient-to-br from-accent/40 to-primary/20 ring-1 ring-border" />
                   <CardHeader>
                     <CardTitle className="text-lg">{projekat.naziv}</CardTitle>

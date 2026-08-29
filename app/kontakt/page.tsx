@@ -101,7 +101,7 @@ export default function KontaktPage() {
             rel="noopener noreferrer"
             className="block"
           >
-            <Card className="ring-border transition-colors hover:bg-card/70">
+            <Card className="ring-border hover:-translate-y-1 hover:bg-card/70 hover:shadow-lg">
               <CardHeader className="flex-row items-center gap-4 space-y-0">
                 <Mic2 className="size-8 shrink-0 text-primary" />
                 <div>
