@@ -1,0 +1,89 @@
+# CLAUDE.md
+
+Ovaj fajl daje kontekst o projektu za rad u Claude Code. Pročitaj ga pre nego što počneš bilo koji zadatak na ovom projektu.
+
+## O projektu
+
+Sajt za SEFA (Studenti Ekonomskog fakulteta), studentsku organizaciju sa Ekonomskog fakulteta Univerziteta u Beogradu. Sajt je informativnog karaktera: predstavlja organizaciju, njene projekte i alumni mrežu, kako bi se budući kandidati za članstvo lako informisali.
+
+Nema baze podataka, nema login-a, nema slanja mejlova (za sada). Sav sadržaj je statičan i drži se direktno u kodu. Prijava za članstvo ide preko eksternog Google Forms linka, koji se dodaje kasnije kad prijave budu otvorene.
+
+Vlasnik projekta sam održava sajt i nije programer, pa kod treba da bude jednostavan za čitanje i lako proširiv.
+
+## Stack
+
+- **Framework:** Next.js (App Router), TypeScript
+- **Stilizovanje:** Tailwind CSS
+- **UI komponente:** shadcn/ui
+- **Baza podataka:** nema, sadržaj se drži u `data/` folderu
+- **Hosting:** Vercel (deploy preko GitHub-a)
+- **Slike:** Next.js `Image` komponenta
+
+## Dizajn sistem
+
+**Boje (Tailwind custom vrednosti ili CSS promenljive):**
+- `mint`: `#66C6B3` (primarna, akcenat)
+- `mint-deep`: `#2F6F63` (hover stanja, dublji akcenat)
+- `canvas`: `#07100F` (glavna pozadina, najtamnija)
+- `canvas-2`: `#0B1615` (pozadina sekcija, blago svetlija)
+- `ink`: `#EAF2F0` (glavni tekst)
+- `muted`: `rgba(234,242,240,.64)` (prigušen tekst, opisi)
+- `hair`: `rgba(234,242,240,.13)` (linije, razdelnici)
+
+**Fontovi (Google Fonts):**
+- Naslovi: `Bricolage Grotesque`, težina 700-800, negativan letter-spacing
+- Tekst: `Archivo`, regularna težina
+- Sitni detalji (labele, brojevi, hint tekst): `JetBrains Mono`, uppercase, razmaknuta slova
+
+**Stil komponenti:**
+- Dugmad potpuno zaobljena (`rounded-full`)
+- Primarno dugme: puna mint pozadina, taman tekst
+- Sekundarno dugme: providna pozadina, mint ivica
+- Kartice: minimalne senke, oslanjaju se na kontrast pozadine i tanke linije, ne na senku
+
+**Animacije:**
+- Uvodna animacija na početnoj strani: naslov „SEFA” se sastavlja slovo po slovo praćenjem scroll pozicije, zatim se pojavljuje moto reč po reč
+- Meni je nevidljiv preko uvoda i pojavljuje se tek kad korisnik prođe tu sekciju
+- Sekcije ispod uvoda imaju blagi „reveal” efekat (fade + pomeranje) pri ulasku u vidno polje
+- Obavezno poštovati `prefers-reduced-motion` medijski upit; kad je uključen, sav sadržaj se prikazuje odmah bez animacije
+- Testirati performanse animacije na slabijim telefonima
+
+**Referentni fajlovi za dizajn:** originalni HTML prototip sa punom implementacijom uvodne animacije je dat kao referenca za vizuelni identitet. Strukturna inspiracija (kartice sa sektorima, brojke) je sa ekonomska-klinika.hr.
+
+## Struktura stranica i ruta
+
+| Ruta | Stranica |
+|---|---|
+| `/` | Početna (uvodna animacija, pregled, brojke) |
+| `/o-nama` | O nama (misija, sektori, brojke, alumni klub) |
+| `/projekti` | Pregled svih projekata |
+| `/projekti/[slug]` | Detalji pojedinačnog projekta |
+| `/kontakt` | Kontakt informacije |
+| `/alumni` | Alumni stranica |
+| `/postani-clan` | Postani član (placeholder dok se ne otvore prijave) |
+
+Sajt nema API rute jer nema bazu podataka niti slanje mejlova.
+
+## Konvencije za sadržaj
+
+- Podaci o projektima se drže u `data/projekti.ts`, svaki projekat ima `slug`, naziv, kratak opis, sliku i pun tekst.
+- Ne menjati direktno tekst unutar komponenti stranica; kad god je moguće, sadržaj izdvojiti u poseban podatkovni fajl da bi bio lak za izmenu.
+- Sve slike prolaze kroz Next.js `Image` komponentu radi optimizacije.
+- Svaka nova stranica mora da radi na mobilnom prikazu pre nego što se smatra završenom.
+
+## Faze razvoja
+
+Projekat se radi po fazama definisanim u `SEFA_plan_implementacije.md` (nalazi se u istom projektu):
+
+- **Faza 0, Postavka:** skelet projekta, dizajn sistem, prvi deploy
+- **Faza 1, MVP:** sve stranice sa realnim sadržajem, uključujući uvodnu animaciju
+- **Faza 2, Proširenja i poliranje:** alumni stranica, „Postani član”, galerije, analitika, sopstveni domen
+
+Pre početka rada na bilo kom koraku, proveriti taj plan radi tačnog opisa zadatka, definicije gotovog i tipičnih zamki za taj korak.
+
+## Poznate zamke
+
+- Next.js `Image` komponenta zahteva da se slike unapred smanje ako su preko 2-3 MB.
+- `.gitignore` mora da postoji pre prvog `git push`-a kako `node_modules` ne bi završio na GitHub-u.
+- DNS izmene pri povezivanju sopstvenog domena mogu potrajati do 24h.
+- Animacija vođena skrolom mora imati fallback za `prefers-reduced-motion`.
