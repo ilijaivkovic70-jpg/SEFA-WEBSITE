@@ -8,7 +8,7 @@ import { Footer } from "@/components/footer";
 const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin", "latin-ext"],
-  weight: ["700", "800"],
+  weight: ["600", "700", "800"],
 });
 
 const archivo = Archivo({

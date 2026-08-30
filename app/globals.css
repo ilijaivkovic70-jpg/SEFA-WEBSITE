@@ -94,3 +94,2584 @@
     @apply font-sans;
   }
 }
+/* ============================================================
+   NASLOVNA STRANA
+   Uvod se sam animira čim je stranica prikazana — nema
+   skrolovanja koje ga pokreće. Čisto CSS tempiranje (keyframes
+   + animation-delay), pa kreće i pre nego što se React hidrira.
+   Tri ručke za podešavanje su --intro-size, --intro-line i
+   kašnjenja u @keyframes ispod.
+   ============================================================ */
+
+/* ---------- ambijent: jedan fiksni sloj iza svega ---------- */
+.env {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.env__glow {
+  position: absolute;
+  inset: -25%;
+  background:
+    radial-gradient(38% 34% at 22% 28%, rgba(102, 198, 179, 0.13), transparent 62%),
+    radial-gradient(42% 38% at 80% 72%, rgba(47, 111, 99, 0.16), transparent 65%);
+  animation: env-drift 96s cubic-bezier(0.22, 0.61, 0.36, 1) infinite alternate;
+}
+@keyframes env-drift {
+  0% { transform: translate3d(-2%, -1%, 0) scale(1); }
+  50% { transform: translate3d(3%, 2%, 0) scale(1.07); }
+  100% { transform: translate3d(-1%, 3%, 0) scale(1.02); }
+}
+.env__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.32;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+/* ---------- uvod ---------- */
+.intro {
+  --intro-size: clamp(3.6rem, 31vw, 30rem);
+  --intro-line: clamp(1.15rem, 3.6vw, 2.6rem);
+  --intro-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --intro-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  height: 100svh;
+  /* sticky zaglavlje zauzima prostor iznad, uvod se povlači pod njega
+     da bi prvi kadar bio pun ekran, kao u referenci */
+  margin-top: -4rem;
+}
+.intro__stage {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.intro__inner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding-inline: 4vw;
+}
+
+/* natpis */
+.intro__word {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: var(--intro-size);
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  color: var(--foreground);
+  margin: 0;
+}
+.intro__letter {
+  position: relative;
+  display: block;
+  opacity: 0;
+  transform: translate3d(0, -82vh, 0) rotate(var(--r-from, 0deg));
+  filter: blur(16px);
+  animation: intro-letter-fall 900ms var(--intro-bounce) forwards;
+  animation-delay: calc(250ms + var(--i, 0) * 150ms);
+}
+@keyframes intro-letter-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -82vh, 0) rotate(var(--r-from, 0deg));
+    filter: blur(16px);
+  }
+  55% { opacity: 1; }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    filter: blur(0px);
+  }
+}
+
+/* akademska kapa, potpisni element, crta se pošto slovo S sleti */
+.intro__cap {
+  position: absolute;
+  left: -0.09em;
+  top: -0.44em;
+  width: 0.8em;
+  height: 0.8em;
+  transform: rotate(-11deg);
+  pointer-events: none;
+  opacity: 0;
+  animation: intro-cap-show 1ms linear 1450ms forwards;
+}
+.intro__cap svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+.intro__cap path {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  /* path ima pathLength="100", pa je crtež nezavisan od stvarne veličine */
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: intro-cap-draw 650ms var(--intro-ease) 1550ms forwards;
+}
+@keyframes intro-cap-show {
+  to { opacity: 1; }
+}
+@keyframes intro-cap-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* rečenica, stoji ispod loga, u normalnom toku (ne preklapa slova) */
+.intro__line {
+  width: min(90vw, 26ch);
+  text-align: center;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 600;
+  font-size: var(--intro-line);
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.32em;
+  margin: clamp(1.4rem, 4vh, 2.6rem) 0 0;
+  pointer-events: none;
+}
+.intro__line span {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 38px, 0);
+  filter: blur(10px);
+  animation: intro-word-in 600ms var(--intro-ease) forwards;
+  animation-delay: calc(2150ms + var(--i, 0) * 90ms);
+}
+@keyframes intro-word-in {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0px);
+  }
+}
+
+/* ---------- smanjeno kretanje ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .env__glow { animation: none; }
+
+  .intro__letter,
+  .intro__line span {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .intro__cap { display: none; }
+}
+
+/* ---------- klon slova S koji "pada" iz uvoda u naslov tima ---------- */
+.logo-drop-clone {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+  pointer-events: none;
+  z-index: 40;
+  opacity: 0;
+  will-change: transform, font-size, color;
+  transform-origin: top left;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.5),
+    0 2px 0 rgba(0, 0, 0, 0.42),
+    0 3px 0 rgba(0, 0, 0, 0.34),
+    0 4px 6px rgba(0, 0, 0, 0.45),
+    0 14px 36px rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- paralaksa: slika "dublje" u sajtu, iza sadržaja ---------- */
+.parallax-image__wrap {
+  position: absolute;
+  inset: -14% 0;
+  will-change: transform;
+}
+.parallax-image__img {
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+/* ---------- tim: fotografija sa natpisom preko ---------- */
+.team-hero__title {
+  /* naslaganih par oštrih senki daje utisak reljefa (3D dubine), a
+     poslednja meka i velika senka "podiže" slova sa fotografije */
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.5),
+    0 2px 0 rgba(0, 0, 0, 0.42),
+    0 3px 0 rgba(0, 0, 0, 0.34),
+    0 4px 6px rgba(0, 0, 0, 0.45),
+    0 14px 36px rgba(0, 0, 0, 0.6);
+}
+.team__scrim {
+  background:
+    radial-gradient(60% 55% at 50% 46%, rgba(4, 10, 9, 0.62), transparent 72%),
+    linear-gradient(
+      180deg,
+      rgba(7, 16, 15, 0.8) 0%,
+      rgba(7, 16, 15, 0.42) 30%,
+      rgba(7, 16, 15, 0.5) 66%,
+      /* blago maslinasto-zeleno, kao trava u sumrak — nastavlja se
+         u istoj boji na vrhu žive pozadine ispod, bez šava */
+      rgba(14, 27, 15, 0.95) 100%
+    );
+}
+
+/* ---------- SEFA u brojevima ---------- */
+/* Živa animirana pozadina, deljena između "O organizaciji" i statistike —
+   jedan sloj razvučen iza obe sekcije, bez šava između njih. */
+.living-bg-wrap {
+  position: relative;
+  isolation: isolate;
+}
+.living-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: #07100f;
+  pointer-events: none;
+}
+.living-bg__blob {
+  position: absolute;
+  inset: -25%;
+}
+.living-bg__blob--a {
+  background:
+    radial-gradient(42% 38% at 22% 26%, rgba(47, 157, 122, 0.38), transparent 65%),
+    radial-gradient(48% 44% at 78% 68%, rgba(20, 90, 70, 0.42), transparent 68%),
+    radial-gradient(32% 32% at 58% 12%, rgba(102, 198, 179, 0.2), transparent 60%);
+  filter: blur(60px);
+  animation: living-drift-a 24s ease-in-out infinite alternate;
+}
+.living-bg__blob--b {
+  background:
+    radial-gradient(38% 42% at 76% 30%, rgba(30, 110, 88, 0.32), transparent 62%),
+    radial-gradient(52% 48% at 24% 78%, rgba(10, 40, 32, 0.55), transparent 70%);
+  filter: blur(70px);
+  mix-blend-mode: screen;
+  animation: living-drift-b 30s ease-in-out infinite alternate;
+}
+.living-bg__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+/* šav sa fotografijom tima: isti maslinasti ton kao dno slike, koji
+   se stapa u živu pozadinu, kao da se trava nastavlja dole */
+.living-bg__seam {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: clamp(10rem, 30vh, 22rem);
+  background: linear-gradient(180deg, rgba(14, 27, 15, 0.95) 0%, rgba(14, 27, 15, 0) 100%);
+}
+@keyframes living-drift-a {
+  0% { transform: translate3d(-4%, -2%, 0) scale(1) rotate(0deg); }
+  50% { transform: translate3d(3%, 4%, 0) scale(1.14) rotate(8deg); }
+  100% { transform: translate3d(-2%, -4%, 0) scale(1.06) rotate(-6deg); }
+}
+@keyframes living-drift-b {
+  0% { transform: translate3d(3%, 3%, 0) scale(1.08) rotate(0deg); }
+  50% { transform: translate3d(-4%, -3%, 0) scale(1) rotate(-10deg); }
+  100% { transform: translate3d(2%, 5%, 0) scale(1.12) rotate(6deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .living-bg__blob--a,
+  .living-bg__blob--b {
+    animation: none;
+  }
+}
+
+/* ---------- marker koji sam boji tekst reč po reč ---------- */
+.hl-word {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--primary) 38%, transparent) 0%,
+    color-mix(in srgb, var(--primary) 38%, transparent) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  background-position: 0 0;
+  transition: background-size 0.55s ease-out;
+}
+.hl-marked .hl-word {
+  background-size: 100% 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hl-word {
+    transition: none;
+    background-size: 100% 100%;
+  }
+}
+
+.stats-section {
+  position: relative;
+  z-index: 2;
+  color: var(--foreground);
+}
+.stats-section__inner {
+  width: min(1180px, 92vw);
+  margin-inline: auto;
+  min-height: clamp(52vh, 64vh, 70vh);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: clamp(3rem, 8vh, 5rem);
+}
+
+.stats-section__kicker {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin: 0 0 clamp(2.75rem, 7vh, 4.5rem);
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.stats-section__kicker.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stats-section__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: clamp(2.5rem, 6vh, 3.5rem);
+}
+@media (min-width: 640px) {
+  .stats-section__grid {
+    grid-template-columns: 1fr auto 1fr auto 1fr;
+    align-items: stretch;
+    column-gap: clamp(2rem, 4vw, 4rem);
+  }
+}
+
+.stats-section__col {
+  text-align: left;
+}
+
+.stats-section__divider {
+  background: rgba(234, 242, 240, 0.18);
+  height: 1px;
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.stats-section__divider.is-in {
+  transform: scaleX(1);
+}
+@media (min-width: 640px) {
+  .stats-section__divider {
+    width: 1px;
+    height: auto;
+    align-self: stretch;
+    transform-origin: top center;
+    transform: scaleY(0);
+  }
+  .stats-section__divider.is-in {
+    transform: scaleY(1);
+  }
+}
+
+.stats-section__number {
+  display: flex;
+  align-items: baseline;
+  gap: 0.15em;
+  margin: 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(5rem, 11vw, 10rem);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+.stats-section__suffix {
+  color: var(--primary);
+}
+
+.stats-section__label {
+  margin: clamp(0.6rem, 1.6vh, 1rem) 0 0;
+  font-size: 0.95rem;
+  color: var(--muted-foreground);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.stats-section__label.is-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stats-section__kicker,
+  .stats-section__label {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .stats-section__divider {
+    transition: none;
+    transform: scaleX(1);
+  }
+  @media (min-width: 640px) {
+    .stats-section__divider {
+      transform: scaleY(1);
+    }
+  }
+}
+
+/* ============================================================
+   SEKTORI — „Tri sektora. Jedna organizacija.”
+   Sekcija je visoka 300vh, a unutar nje jedan sticky kadar od
+   100vh. JS upisuje napredak (--p, --lp) i etapu (data-stage),
+   a sve ostalo radi CSS ispod.
+
+   Tri sloja pravila, tim redom:
+     1) osnovni raspored — mobilni, bez JS-a i uz „smanjeno
+        kretanje”: tri poglavlja jedno ispod drugog, sve vidljivo;
+     2) [data-anim="on"] — početna (skrivena) stanja i prelazi;
+     3) @media (min-width: 1024px) + [data-mode="scroll"] —
+        sticky kadar i smenjivanje poglavlja.
+
+   Ručke za podešavanje: --sc-pad (bočna margina), --sc-e (krivа
+   kretanja), granice etapa su u components/sectors-scroll.tsx.
+   ============================================================ */
+
+.sc {
+  --sc-e: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --sc-pad: clamp(1.25rem, 5vw, 5.5rem);
+  --sc-ink: rgba(234, 242, 240, 0.62);
+  --p: 0;
+  --lp: 0.5;
+  position: relative;
+  isolation: isolate;
+  background: var(--background);
+  /* minimalni preklop sa sekcijom iznad — uklanja tanku liniju
+     koja zna da se pojavi na pola piksela */
+  margin-top: -2px;
+}
+
+/* ---------- nastavak pozadine iz prethodne sekcije ---------- */
+/* Fotografija izranja iz tamnog dna "žive" pozadine iznad (isti
+   gotovo-crni ton) i tone se nazad u ravnu pozadinu ka dnu panela —
+   spoj između sekcija ostaje bez vidljive linije ili reza. */
+.sc__cont {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: min(62vh, 64vw);
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  background: var(--background);
+}
+.sc__cont-move {
+  position: absolute;
+  inset: -12% 0;
+  transform: translate3d(0, calc(var(--p) * 3%), 0);
+  will-change: transform;
+}
+.sc__cont-img {
+  object-fit: cover;
+  object-position: center 55%;
+}
+/* blagi tamnozeleni ton spaja fotografiju sa paletom sajta */
+.sc__cont-tint {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 16, 15, 0.22);
+  mix-blend-mode: multiply;
+}
+.sc__cont-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--background) 0%,
+    rgba(7, 16, 15, 0.4) 10%,
+    transparent 22%,
+    transparent 68%,
+    var(--background) 96%
+  );
+}
+
+/* ---------- osnovni raspored ---------- */
+.sc__stage {
+  position: relative;
+  z-index: 1;
+  padding: clamp(5rem, 14vh, 9rem) var(--sc-pad) clamp(4rem, 10vh, 7rem);
+}
+
+.sc__head {
+  position: relative;
+}
+/* vrlo blag tamnozeleni veo, samo iza teksta */
+.sc__head::before {
+  content: "";
+  position: absolute;
+  inset: -4rem -2rem -2rem -3rem;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    76% 106% at 16% 42%,
+    rgba(8, 24, 19, 0.7),
+    rgba(8, 24, 19, 0) 76%
+  );
+  transition: opacity 0.6s var(--sc-e);
+}
+.sc__kicker,
+.sc__title,
+.sc__lead {
+  /* meka senka drži tekst čitljivim i tamo gde je trava svetla */
+  text-shadow: 0 2px 18px rgba(4, 10, 8, 0.72);
+}
+.sc__kicker {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.sc__title {
+  margin: clamp(1rem, 2.4vh, 1.6rem) 0 0;
+  /* mera reda; duge reči se prelamaju umesto da se seku u .sc__line */
+  max-width: 17ch;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 7.6vw, 4.6rem);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  color: #fff;
+}
+.sc__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+.sc__line > span {
+  display: block;
+}
+.sc__lead {
+  margin: clamp(1rem, 2.4vh, 1.5rem) 0 0;
+  max-width: 38ch;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.sc__chapters {
+  list-style: none;
+  margin: clamp(3.5rem, 9vh, 6rem) 0 0;
+  padding: 0;
+}
+.sc__chapter {
+  position: relative;
+  padding-block: clamp(2.75rem, 8vh, 4.5rem);
+  border-top: 1px solid rgba(234, 242, 240, 0.14);
+}
+.sc__chapter:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.sc__num-wrap {
+  display: none;
+}
+.sc__index {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.24em;
+  color: var(--primary);
+}
+.sc__name {
+  margin: 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.1rem, 9vw, 3.4rem);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  color: var(--foreground);
+}
+.sc__desc {
+  margin: clamp(0.9rem, 2vh, 1.35rem) 0 0;
+  max-width: 46ch;
+  color: var(--muted-foreground);
+}
+.sc__keys {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.4rem 0.7rem;
+  list-style: none;
+  margin: clamp(1.1rem, 2.6vh, 1.6rem) 0 0;
+  padding: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 240, 0.58);
+}
+.sc__keys li + li::before {
+  content: "/";
+  margin-right: 0.7rem;
+  color: var(--primary);
+}
+.sc__illo {
+  margin-top: clamp(1.75rem, 5vh, 2.75rem);
+  width: min(100%, 19rem);
+}
+.sc-illo {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.sc-illo__ink,
+.sc-illo__accent,
+.sc-illo__frag {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.sc-illo__ink {
+  stroke: var(--sc-ink);
+}
+.sc-illo__accent,
+.sc-illo__frag {
+  stroke: var(--primary);
+}
+.sc-illo__link {
+  stroke-width: 2.1;
+}
+.sc-illo__ink-fill {
+  fill: var(--sc-ink);
+  stroke: none;
+}
+.sc-illo__accent-fill {
+  fill: var(--primary);
+  stroke: none;
+}
+
+.sc__finale,
+.sc__meter {
+  display: none;
+}
+
+/* ---------- 2) animirana stanja ---------- */
+.sc[data-anim="on"] .sc__line > span {
+  transform: translate3d(0, 108%, 0);
+  transition: transform 0.95s var(--sc-e);
+}
+.sc[data-anim="on"] .sc__line:nth-child(2) > span {
+  transition-delay: 0.11s;
+}
+.sc[data-anim="on"][data-head="in"] .sc__line > span {
+  transform: translate3d(0, 0, 0);
+}
+.sc[data-anim="on"] .sc__kicker,
+.sc[data-anim="on"] .sc__lead {
+  opacity: 0;
+  transform: translate3d(0, 12px, 0);
+  transition:
+    opacity 0.7s var(--sc-e),
+    transform 0.7s var(--sc-e);
+}
+.sc[data-anim="on"] .sc__lead {
+  transition-delay: 0.34s;
+}
+.sc[data-anim="on"][data-head="in"] .sc__kicker,
+.sc[data-anim="on"][data-head="in"] .sc__lead {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* sadržaj poglavlja ulazi odozdo, jedan element za drugim */
+.sc[data-anim="on"] .sc__index,
+.sc[data-anim="on"] .sc__name,
+.sc[data-anim="on"] .sc__desc,
+.sc[data-anim="on"] .sc__keys li {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition:
+    opacity 0.6s var(--sc-e),
+    transform 0.75s var(--sc-e);
+}
+.sc[data-anim="on"] .sc__chapter[data-active] .sc__index,
+.sc[data-anim="on"] .sc__chapter[data-active] .sc__name,
+.sc[data-anim="on"] .sc__chapter[data-active] .sc__desc,
+.sc[data-anim="on"] .sc__chapter[data-active] .sc__keys li {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.sc[data-anim="on"] .sc__chapter[data-active] .sc__name {
+  transition-delay: 0.08s;
+}
+.sc[data-anim="on"] .sc__chapter[data-active] .sc__desc {
+  transition-delay: 0.24s;
+}
+.sc[data-anim="on"] .sc__chapter[data-active] .sc__keys li {
+  transition-delay: calc(0.4s + var(--k) * 0.09s);
+}
+
+/* linije ilustracije se iscrtavaju (pathLength="1") */
+.sc[data-anim="on"] .sc-illo__draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.05s var(--sc-e) var(--d, 0ms);
+}
+.sc[data-anim="on"] .sc__chapter[data-active] .sc-illo__draw {
+  stroke-dashoffset: 0;
+}
+.sc[data-anim="on"] .sc-illo__node {
+  opacity: 0;
+  transform: scale(0.35);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.45s var(--sc-e) var(--d, 0ms),
+    transform 0.6s var(--sc-e) var(--d, 0ms);
+}
+.sc[data-anim="on"] .sc__chapter[data-active] .sc-illo__node {
+  opacity: 1;
+  transform: scale(1);
+}
+.sc[data-anim="on"] .sc-illo__frag {
+  opacity: 0;
+  transform: translateX(-14px);
+  transition:
+    opacity 0.5s var(--sc-e) var(--d, 0ms),
+    transform 0.7s var(--sc-e) var(--d, 0ms);
+}
+.sc[data-anim="on"] .sc__chapter[data-active] .sc-illo__frag {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ---------- 3) desktop: sticky kadar ---------- */
+@media (min-width: 1024px) {
+  .sc[data-mode="scroll"] {
+    min-height: 300vh;
+  }
+  .sc[data-mode="scroll"] .sc__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    padding: clamp(4.5rem, 10vh, 7rem) var(--sc-pad) clamp(2.5rem, 6vh, 4rem);
+  }
+
+  /* uvod: naslov stoji u sredini, pa se skupi u zaglavlje gore levo */
+  .sc[data-mode="scroll"] .sc__head {
+    position: absolute;
+    left: var(--sc-pad);
+    right: var(--sc-pad);
+    top: clamp(4.5rem, 10vh, 7rem);
+    max-width: none;
+    z-index: 3;
+    transform: translate3d(0, 21vh, 0);
+    transition: transform 1s var(--sc-e);
+  }
+  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__head {
+    transform: translate3d(0, 0, 0);
+  }
+  .sc[data-mode="scroll"] .sc__title {
+    max-width: none;
+    font-size: clamp(3.4rem, 6.6vw, 7.4rem);
+    transform-origin: left top;
+    transition: transform 1s var(--sc-e);
+  }
+  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__title {
+    transform: scale(0.3);
+  }
+  .sc[data-mode="scroll"] .sc__lead {
+    font-size: 1.05rem;
+  }
+  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__lead,
+  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__head::before {
+    opacity: 0;
+    transform: translate3d(0, -14px, 0);
+  }
+
+  /* poglavlja se smenjuju u istom kadru */
+  .sc[data-mode="scroll"] .sc__chapters {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+  }
+  .sc[data-mode="scroll"] .sc__chapter {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    align-items: center;
+    column-gap: clamp(2rem, 5vw, 5rem);
+    padding: clamp(9rem, 22vh, 13rem) var(--sc-pad) clamp(4rem, 10vh, 6rem);
+    border-top: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.55s var(--sc-e);
+  }
+  .sc[data-mode="scroll"] .sc__chapter[data-active] {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* veliki broj kao pozadinski tipografski element, klizi suprotno tekstu */
+  .sc[data-mode="scroll"] .sc__num-wrap {
+    display: block;
+    position: absolute;
+    left: -0.18em;
+    top: 43%;
+    z-index: 0;
+    pointer-events: none;
+    font-size: clamp(15rem, 30vw, 32rem);
+    transform: translate3d(0, calc(-50% + (var(--lp) - 0.5) * 3.25rem), 0);
+  }
+  /* samo kontura — pun broj bi iza opisa pravio tamnu ploču */
+  .sc[data-mode="scroll"] .sc__num {
+    display: block;
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: 1em;
+    line-height: 0.74;
+    letter-spacing: -0.06em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(234, 242, 240, 0.16);
+  }
+
+  .sc[data-mode="scroll"] .sc__index {
+    display: none;
+  }
+  .sc[data-mode="scroll"] .sc__body {
+    position: relative;
+    z-index: 1;
+    transform: translate3d(0, calc((var(--lp) - 0.5) * -1.5rem), 0);
+  }
+  .sc[data-mode="scroll"] .sc__name {
+    font-size: clamp(3.4rem, 6.6vw, 7.4rem);
+    line-height: 0.92;
+    color: #fff;
+  }
+  .sc[data-mode="scroll"] .sc__desc {
+    font-size: 1.05rem;
+    max-width: 34ch;
+  }
+  .sc[data-mode="scroll"] .sc__illo {
+    position: relative;
+    z-index: 1;
+    justify-self: end;
+    margin: 0;
+    width: 100%;
+    max-width: clamp(20rem, 30vw, 31rem);
+    transform: translate3d(0, calc((var(--lp) - 0.5) * 1rem), 0);
+  }
+
+  /* zaključak: sva tri naziva zajedno */
+  .sc[data-mode="scroll"] .sc__finale {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.75rem, 2.2vh, 1.6rem);
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    padding: clamp(9rem, 22vh, 13rem) var(--sc-pad) clamp(4rem, 10vh, 6rem);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s var(--sc-e);
+  }
+  .sc[data-mode="scroll"][data-stage="4"] .sc__finale {
+    opacity: 1;
+  }
+  .sc__finale-row {
+    display: flex;
+    align-items: baseline;
+    gap: clamp(1rem, 3vw, 2.5rem);
+    margin: 0;
+    padding-bottom: clamp(0.5rem, 1.4vh, 1rem);
+    border-bottom: 1px solid rgba(234, 242, 240, 0.16);
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition:
+      opacity 0.6s var(--sc-e),
+      transform 0.7s var(--sc-e);
+  }
+  .sc[data-stage="4"] .sc__finale-row {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    transition-delay: calc(var(--k) * 0.11s);
+  }
+  .sc__finale-num {
+    font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    color: var(--primary);
+  }
+  .sc__finale-name {
+    font-family: var(--font-bricolage), system-ui, sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.2rem, 5vw, 4.4rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    color: #fff;
+  }
+
+  /* indikator napretka */
+  .sc[data-mode="scroll"] .sc__meter {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    position: absolute;
+    top: clamp(4.5rem, 10vh, 7rem);
+    right: var(--sc-pad);
+    z-index: 4;
+    font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: rgba(234, 242, 240, 0.6);
+    opacity: 0;
+    transition: opacity 0.5s var(--sc-e);
+  }
+  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__meter {
+    opacity: 1;
+  }
+  .sc__meter-now {
+    color: var(--primary);
+  }
+  .sc__meter-sep {
+    margin: 0 0.3em;
+    opacity: 0.45;
+  }
+  .sc__meter-rail {
+    display: flex;
+    gap: 0.35rem;
+  }
+  .sc__meter-rail i {
+    position: relative;
+    display: block;
+    width: 1.6rem;
+    height: 1px;
+    background: rgba(234, 242, 240, 0.22);
+  }
+  .sc__meter-rail i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--primary);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.6s var(--sc-e);
+  }
+  .sc__meter-rail i[data-on]::after {
+    transform: scaleX(1);
+  }
+}
+
+/* dno „SEFA u brojevima” se smiruje u čistu pozadinu, da spoj sa
+   travom ispod nema vidljiv prelaz u tonu */
+.living-bg::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: clamp(8rem, 24vh, 18rem);
+  background: linear-gradient(180deg, rgba(7, 16, 15, 0) 0%, var(--background) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sc,
+  .sc * {
+    transition: none !important;
+  }
+  .sc__cont-move {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   NAŠ PUT — istorija SEFA-e od 2015. do danas
+   Sadržaj je u lib/history-milestones.ts, kretanje u
+   components/history-road.tsx, izgled ovde.
+
+   Tri sloja pravila, tim redom:
+     1) osnovni raspored — mobilni, SSR, bez JS-a i uz „smanjeno
+        kretanje”: vijugava linija levo, stanice jedna ispod druge,
+        sve odmah čitljivo;
+     2) [data-anim="on"] — početna stanja i prelazi po fazama
+        (data-phase: before → in → after);
+     3) @media (min-width: 1024px) + [data-mode="cinema"] — sticky
+        kadar od 100vh u kome kamera putuje putanjom.
+
+   JS upisuje: --rot (nagib kadra), --travel (koliko je puta pređeno),
+   --intro / --outro (uvod i završetak), --road-stops (broj stanica).
+   Ručke za podešavanje: --road-pad (bočna margina) i visina stanice
+   u `min-height` ispod; tempo je u history-road.tsx.
+   ============================================================ */
+
+.road {
+  --road-e: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --road-pad: clamp(1.1rem, 5vw, 5.5rem);
+  /* širina trake sa vijugavom linijom na mobilnom; iz nje se izvode i
+     razmak do teksta i položaj tačke stanice */
+  --road-trail: 2.6rem;
+  --road-stops: 5;
+  --rot: 0;
+  --travel: 0;
+  --intro: 1;
+  --outro: 0;
+  position: relative;
+  isolation: isolate;
+  background: var(--background);
+}
+
+/* ---------- 1) osnovni raspored ---------- */
+
+.road__stage {
+  position: relative;
+  z-index: 1;
+  padding: clamp(4rem, 12vh, 8rem) var(--road-pad) clamp(3.5rem, 10vh, 7rem);
+}
+
+/* desktop kadar sa putem stoji samo u „cinema” režimu */
+.road__world,
+.road__walker,
+.road__backdrop {
+  display: none;
+}
+
+.road__eyebrow {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* naslovni kicker sekcije — veći i upadljiviji, stoji iznad glavnog naslova */
+.road__eyebrow--hero {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  letter-spacing: 0.05em;
+}
+
+.road__title {
+  margin: clamp(0.9rem, 2.4vh, 1.5rem) 0 0;
+  max-width: 14ch;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 9vw, 5.4rem);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  color: var(--foreground);
+}
+
+.road__lead {
+  margin: clamp(0.9rem, 2.2vh, 1.4rem) 0 0;
+  max-width: 34ch;
+  color: var(--muted-foreground);
+}
+
+.road__hint {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: clamp(1.6rem, 4vh, 2.6rem) 0 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 240, 0.5);
+}
+/* tanka linija umesto dugmeta — tirkizni potez klizi naniže */
+.road__hint-line {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 2.6rem;
+  overflow: hidden;
+  background: rgba(234, 242, 240, 0.16);
+}
+.road__hint-line::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  background: linear-gradient(180deg, transparent, var(--primary));
+  animation: road-hint 2.1s var(--road-e) infinite;
+}
+@keyframes road-hint {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(240%);
+    opacity: 0;
+  }
+}
+
+.road__stops-wrap {
+  position: relative;
+  margin-top: clamp(2.5rem, 7vh, 4rem);
+}
+
+/* vijugava linija iza liste; rasteže se preko cele visine */
+.road__trail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--road-trail);
+  pointer-events: none;
+}
+.road__trail-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.road__trail-bed,
+.road__trail-ink {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.road__trail-bed {
+  stroke: rgba(234, 242, 240, 0.12);
+  stroke-width: 14;
+}
+.road__trail-ink {
+  stroke: var(--primary);
+  stroke-width: 1.6;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--travel));
+  opacity: 0.9;
+}
+
+.road__stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.road__stop {
+  position: relative;
+  padding-left: calc(var(--road-trail) + 1.3rem);
+  padding-block: clamp(2.25rem, 7vh, 3.75rem);
+}
+/* naizmenično blago pomeranje sadržaja, da niz ne deluje šablonski */
+.road__stop[data-align="right"] {
+  padding-left: calc(var(--road-trail) + 2rem);
+}
+
+/* tačka stanice — sedi na krivini linije.
+   --bead je broj 0–100: udeo širine trake, isti onaj koji koristi putanja */
+.road__bead {
+  position: absolute;
+  left: calc(var(--bead, 50) * var(--road-trail) / 100);
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 5px var(--background);
+}
+
+.road__stop-eyebrow {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 240, 0.52);
+}
+
+.road__year {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(3.4rem, 17vw, 6rem);
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.road__stop-title {
+  margin: clamp(0.8rem, 2vh, 1.2rem) 0 0;
+  max-width: 18ch;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.35rem, 5.4vw, 1.9rem);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+}
+.road__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.road__line > span {
+  display: block;
+}
+
+.road__desc {
+  margin: clamp(0.7rem, 1.8vh, 1.1rem) 0 0;
+  /* mera reda: opis ostaje lak za čitanje (~460px) */
+  max-width: 29rem;
+  color: var(--muted-foreground);
+}
+
+.road__figure {
+  margin: clamp(1.4rem, 4vh, 2.2rem) 0 0;
+  width: min(100%, 30rem);
+}
+.road__frame {
+  position: relative;
+  /* odnos stranica je unapred zadat — nema poskakivanja rasporeda */
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #0b1615;
+}
+.road__photo {
+  object-fit: cover;
+}
+/* neutralan okvir dok prava fotografija ne postoji */
+.road__placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 240, 0.42);
+  background-color: #0e1a18;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(234, 242, 240, 0.045) 0 1px,
+    transparent 1px 11px
+  );
+  box-shadow: inset 0 0 0 1px rgba(234, 242, 240, 0.1);
+}
+.road__caption {
+  margin: 0.7rem 0 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 240, 0.38);
+}
+
+.road__outro {
+  margin-top: clamp(2.5rem, 8vh, 4.5rem);
+  padding-left: calc(var(--road-trail) + 1.3rem);
+}
+
+/* na vrlo uskim ekranima traka se skuplja da opis ostane čitljiv */
+@media (max-width: 26rem) {
+  .road {
+    --road-trail: 2.1rem;
+  }
+}
+.road__outro-title {
+  margin: clamp(0.9rem, 2.4vh, 1.5rem) 0 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 8vw, 3.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--foreground);
+}
+
+.road__meter {
+  display: none;
+}
+
+.road__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- 2) animirana stanja ---------- */
+
+.road[data-anim="on"] .road__stop-eyebrow,
+.road[data-anim="on"] .road__year,
+.road[data-anim="on"] .road__desc {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.6s var(--road-e),
+    transform 0.8s var(--road-e);
+}
+.road[data-anim="on"] .road__line > span {
+  transform: translate3d(0, 110%, 0);
+  transition: transform 0.85s var(--road-e);
+}
+.road[data-anim="on"] .road__figure {
+  opacity: 0;
+  transition:
+    opacity 0.6s var(--road-e),
+    transform 0.9s var(--road-e);
+}
+/* fotografija se otkriva iz jednog pravca — od puta ka spolja */
+.road[data-anim="on"] .road__frame {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1s var(--road-e);
+}
+.road[data-anim="on"] .road__stop[data-align="right"] .road__frame {
+  clip-path: inset(0 0 0 100%);
+}
+.road[data-anim="on"] .road__bead {
+  transform: scale(0.3);
+  opacity: 0;
+  transition:
+    transform 0.6s var(--road-e),
+    opacity 0.4s var(--road-e);
+}
+
+/* redosled pojavljivanja: oznaka → godina → naslov → fotografija → tekst */
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__stop-eyebrow {
+  transition-delay: 0.05s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__year {
+  transition-delay: 0.14s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__line > span {
+  transition-delay: 0.28s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__frame {
+  transition-delay: 0.42s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__figure {
+  transition-delay: 0.42s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__desc {
+  transition-delay: 0.62s;
+}
+
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__stop-eyebrow,
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__year,
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__desc,
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__figure,
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__bead {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__bead {
+  transform: scale(1);
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__line > span {
+  transform: translate3d(0, 0, 0);
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__frame {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ---------- 3) desktop: sticky kadar sa kamerom ---------- */
+
+@media (min-width: 1024px) {
+  .road[data-mode="cinema"] {
+    /* uvod + stanice + završetak; tempo je u history-road.tsx */
+    min-height: calc((186 + var(--road-stops) * 118) * 1vh);
+  }
+  .road[data-mode="cinema"] .road__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* pozadinska tekstura iza puta — utapa se preko --intro/--outro, koje JS
+     već računa za tekst uvoda i završetka, pa nema posebne animacije ovde:
+     ista kriva, isti trenutak, bez šava na ulazu i izlazu iz sekcije */
+  .road[data-mode="cinema"] .road__backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: calc(1 - var(--intro) - var(--outro));
+    pointer-events: none;
+  }
+  .road__backdrop-img {
+    object-fit: cover;
+    object-position: center;
+    /* vivid žuto-zelena tekstura ublažena ka tamnoj, prigušenoj paleti sajta */
+    filter: saturate(0.5) brightness(0.6) contrast(1.08);
+  }
+  .road__backdrop-tint {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(7, 16, 15, 0.55) 0%,
+      rgba(7, 16, 15, 0.3) 40%,
+      rgba(7, 16, 15, 0.3) 60%,
+      rgba(7, 16, 15, 0.65) 100%
+    );
+  }
+
+  /* svet sa putem; kadar se blago naginje u smeru krivine */
+  .road[data-mode="cinema"] .road__world {
+    display: block;
+    position: absolute;
+    /* prepust, da nagib kadra ne otkrije prazne uglove */
+    inset: -10%;
+    z-index: 0;
+    pointer-events: none;
+    transform: rotate(calc(var(--rot) * 1deg));
+    will-change: transform;
+  }
+  .road__map {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .road__bed,
+  .road__spine {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* deo koji tek predstoji — jedva vidljiv */
+  .road__bed {
+    stroke: rgba(234, 242, 240, 0.07);
+    stroke-width: 26;
+  }
+  /* pređeni deo — jasniji */
+  .road__bed--lit {
+    stroke: rgba(234, 242, 240, 0.2);
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: calc(1 - var(--travel));
+  }
+  .road__spine {
+    stroke: var(--primary);
+    stroke-width: 2.4;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: calc(1 - var(--travel));
+    opacity: 0.9;
+  }
+  /* isto zrno kao na ostatku sajta */
+  .road__grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  }
+
+  .road__pin-ring {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 1.6;
+    opacity: 0;
+    transform: scale(0.35);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 0.5s var(--road-e),
+      transform 0.75s var(--road-e);
+  }
+  .road__pin-dot {
+    fill: var(--primary);
+    opacity: 0.22;
+    transition: opacity 0.5s var(--road-e);
+  }
+  .road__pin[data-phase="in"] .road__pin-ring {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  .road__pin[data-phase="after"] .road__pin-ring {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+  .road__pin[data-phase="in"] .road__pin-dot,
+  .road__pin[data-phase="after"] .road__pin-dot {
+    opacity: 1;
+  }
+
+  /* mobilna linija i tačke ne postoje u ovom režimu */
+  .road[data-mode="cinema"] .road__trail,
+  .road[data-mode="cinema"] .road__bead {
+    display: none;
+  }
+
+  /* uvod i završetak su preklopi u kadru */
+  .road[data-mode="cinema"] .road__intro,
+  .road[data-mode="cinema"] .road__outro {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 var(--road-pad);
+    text-align: center;
+    pointer-events: none;
+  }
+  .road[data-mode="cinema"] .road__intro {
+    opacity: var(--intro);
+    transform: translate3d(0, calc((1 - var(--intro)) * -7vh), 0);
+  }
+  .road[data-mode="cinema"] .road__outro {
+    opacity: var(--outro);
+    transform: translate3d(0, calc((1 - var(--outro)) * 7vh), 0);
+  }
+  .road[data-mode="cinema"] .road__title {
+    max-width: none;
+    font-size: clamp(3.2rem, 7vw, 6.4rem);
+  }
+  .road[data-mode="cinema"] .road__lead,
+  .road[data-mode="cinema"] .road__outro-title {
+    max-width: 44ch;
+    margin-inline: auto;
+  }
+  .road[data-mode="cinema"] .road__outro-title {
+    font-size: clamp(2.6rem, 5.6vw, 4.8rem);
+  }
+
+  /* stanice se smenjuju u istom kadru; put prolazi kroz srednju kolonu */
+  .road[data-mode="cinema"] .road__stops-wrap,
+  .road[data-mode="cinema"] .road__stops {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+  }
+  .road[data-mode="cinema"] .road__stop {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1fr)
+      clamp(7rem, 15vw, 15rem)
+      minmax(0, 1fr);
+    align-items: center;
+    padding: clamp(4rem, 11vh, 7.5rem) var(--road-pad);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s var(--road-e);
+    /* fotografija stoji kao pažljivo položen list iz arhive */
+    --road-tilt: -1.4deg;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] {
+    --road-tilt: 1.2deg;
+  }
+  .road[data-mode="cinema"] .road__stop[data-phase="in"] {
+    opacity: 1;
+  }
+
+  .road[data-mode="cinema"] .road__body {
+    position: relative;
+    max-width: 34rem;
+    /* bez svog konteksta slaganja veo ispod (z-index: -1) propao bi čak iza
+       puta, pa ne bi štitio ništa */
+    isolation: isolate;
+  }
+  /* jedva primetan veo drži tekst čitljivim i kada put prođe iza njega */
+  .road[data-mode="cinema"] .road__body::before {
+    content: "";
+    position: absolute;
+    inset: -3rem -2.5rem;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      72% 104% at 50% 50%,
+      rgba(7, 16, 15, 0.82),
+      rgba(7, 16, 15, 0) 74%
+    );
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="left"] .road__body {
+    grid-column: 1;
+    justify-self: end;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="left"] .road__figure {
+    grid-column: 3;
+    justify-self: start;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__body {
+    grid-column: 3;
+    justify-self: start;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__figure {
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .road[data-mode="cinema"] .road__year {
+    /* godina sme da bude velika i da delimično izađe iz kadra */
+    font-size: clamp(5rem, 14vw, 14rem);
+    margin: 0.6rem 0 0;
+    line-height: 0.78;
+  }
+  .road[data-mode="cinema"] .road__stop-title {
+    max-width: 16ch;
+    font-size: clamp(1.7rem, 2.6vw, 2.6rem);
+  }
+  .road[data-mode="cinema"] .road__figure {
+    margin: 0;
+    transform: rotate(var(--road-tilt));
+  }
+  .road[data-mode="cinema"] .road__desc {
+    font-size: 1.02rem;
+  }
+
+  /* svaka stanica je novo poglavlje: odnos godine, slike i teksta se menja */
+  .road[data-mode="cinema"] .road__stop[data-shape="0"] .road__figure {
+    width: min(100%, 31rem);
+  }
+  .road[data-mode="cinema"] .road__stop[data-shape="1"] .road__figure {
+    width: min(100%, 25rem);
+    margin-top: clamp(2rem, 7vh, 4.5rem);
+  }
+  .road[data-mode="cinema"] .road__stop[data-shape="1"] .road__year {
+    font-size: clamp(4.2rem, 11vw, 11rem);
+  }
+  .road[data-mode="cinema"] .road__stop[data-shape="2"] .road__figure {
+    width: min(100%, 34rem);
+    margin-bottom: clamp(1.5rem, 5vh, 3.5rem);
+  }
+  .road[data-mode="cinema"] .road__stop[data-shape="2"] .road__body {
+    max-width: 30rem;
+  }
+
+  /* ulaz i izlaz: tekst i fotografija se razdvajaju i izlaze iz kadra */
+  .road[data-anim="on"][data-mode="cinema"] .road__body,
+  .road[data-anim="on"][data-mode="cinema"] .road__figure {
+    transition:
+      opacity 0.55s var(--road-e),
+      transform 0.95s var(--road-e);
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="before"]
+    .road__body {
+    transform: translate3d(0, 36px, 0);
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="before"]
+    .road__figure {
+    transform: translate3d(0, 48px, 0) rotate(var(--road-tilt));
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="in"]
+    .road__figure {
+    transform: translate3d(0, 0, 0) rotate(var(--road-tilt));
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="after"]
+    .road__body {
+    transform: translate3d(0, -52px, 0);
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="after"]
+    .road__figure {
+    transform: translate3d(0, 58px, 0) rotate(var(--road-tilt));
+  }
+
+  /* hodač koji prati kameru na putu — noge/ruke se ljuljaju srazmerno hodu */
+  .road[data-mode="cinema"] .road__walker {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    z-index: 2;
+    width: 26px;
+    height: 48px;
+    margin: -38px 0 0 -13px;
+    opacity: calc(1 - var(--intro) - var(--outro));
+    pointer-events: none;
+    transform-origin: 50% 84%;
+    transform: translateY(calc(var(--bob, 0) * -1px))
+      rotate(calc(var(--walk-rot, 0) * 1deg));
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+  }
+  .road__walker-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .road__walker-svg line {
+    stroke: var(--primary);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+  }
+  .road__walker-head {
+    fill: var(--primary);
+  }
+  .road__walker-leg--l {
+    transform-origin: 0px -2px;
+    transform: rotate(calc(var(--leg1, 0) * 1deg));
+  }
+  .road__walker-leg--r {
+    transform-origin: 0px -2px;
+    transform: rotate(calc(var(--leg2, 0) * 1deg));
+  }
+  .road__walker-arm--l {
+    transform-origin: 0px -16px;
+    transform: rotate(calc(var(--arm1, 0) * 1deg));
+  }
+  .road__walker-arm--r {
+    transform-origin: 0px -16px;
+    transform: rotate(calc(var(--arm2, 0) * 1deg));
+  }
+
+  /* indikator napretka */
+  .road[data-mode="cinema"] .road__meter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.85rem;
+    position: absolute;
+    right: var(--road-pad);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4;
+    font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    opacity: calc(1 - var(--intro) - var(--outro));
+    pointer-events: none;
+  }
+  .road__meter-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .road__meter-rail i {
+    position: relative;
+    display: block;
+    width: 1px;
+    height: 1.5rem;
+    background: rgba(234, 242, 240, 0.2);
+  }
+  .road__meter-rail i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--primary);
+    transform: scaleY(0);
+    transform-origin: top center;
+    transition: transform 0.6s var(--road-e);
+  }
+  .road__meter-rail i[data-on]::after {
+    transform: scaleY(1);
+  }
+}
+
+/* ---------- smanjeno kretanje: obična statična vremenska linija ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .road,
+  .road * {
+    transition: none !important;
+    animation: none !important;
+  }
+  .road {
+    --travel: 1;
+  }
+  .road__world,
+  .road__walker,
+  .road__meter,
+  .road__backdrop {
+    display: none !important;
+  }
+  .road__stop,
+  .road__body,
+  .road__figure,
+  .road__stop-eyebrow,
+  .road__year,
+  .road__desc,
+  .road__bead {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .road__line > span {
+    transform: none !important;
+  }
+  .road__frame {
+    clip-path: none !important;
+  }
+}
+
+/* ============================================================
+   BRIGA O ČLANOVIMA — „Članski kompas”
+
+   Informativna mapa: u sredini član, iz njega tri organske linije
+   ka onome što članstvo donosi. Ništa nije link ni dugme.
+
+   Tri sloja pravila, tim redom:
+     1) osnovni raspored — vertikalna putanja uz tanku liniju
+        levo; ovo je i završno stanje animacije, pa sadržaj stoji
+        bez JS-a i uz „smanjeno kretanje”;
+     2) [data-anim="on"] — početna stanja, a [data-in] ih pušta;
+     3) @media (min-width: 1024px) — asimetrična kompozicija.
+
+   Pozornica na desktopu ima fiksan odnos stranica 10 : 7, pa se
+   procentualni položaji blokova poklapaju sa SVG putanjama koje
+   dele isti koordinatni sistem (viewBox 1000 × 700).
+   Tempo animacije je u --c-d-* promenljivama ispod.
+   ============================================================ */
+
+.compass {
+  --c-e: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --c-pad: clamp(1.1rem, 5vw, 4rem);
+  --c-node: clamp(6.5rem, 22vw, 9rem);
+  /* osa vertikalne putanje (mobilni i tablet): tačno kroz sredinu čvora */
+  --c-lane: calc(var(--c-node) / 2);
+  /* razmak od linije do teksta */
+  --c-rail: 1.5rem;
+
+  /* tempo otkrivanja — ukupno ≈1,75s */
+  --c-d-eyebrow: 0s;
+  --c-d-title: 0.1s;
+  --c-d-lead: 0.26s;
+  --c-d-node: 0.38s;
+  --c-d-line: 0.62s;
+  --c-d-block: 0.92s;
+  --c-d-spark: 1.2s;
+  /* razmak između pravaca 01 → 02 → 03 */
+  --c-step: 0.12s;
+
+  position: relative;
+  cursor: default;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card) 40%, transparent);
+}
+
+.compass__inner {
+  margin-inline: auto;
+  max-width: 74rem;
+  padding: clamp(4rem, 11vh, 7rem) var(--c-pad) clamp(4.5rem, 12vh, 8rem);
+}
+
+/* ---------- 1) zaglavlje ---------- */
+
+.compass__eyebrow {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.compass__title {
+  margin: 0.85rem 0 0;
+  max-width: 18ch;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 5.2vw, 3rem);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--foreground);
+}
+/* maska za otkrivanje odozdo nagore */
+.compass__title-mask {
+  display: block;
+  overflow: hidden;
+  /* rep slova (j, p) ne sme da se odseče dok stoji */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.compass__title-mask > span {
+  display: block;
+}
+
+.compass__lead {
+  margin: 1.1rem 0 0;
+  max-width: 52ch;
+  color: var(--muted-foreground);
+}
+
+/* ---------- 2) pozornica: vertikalna putanja ---------- */
+
+.compass__stage {
+  position: relative;
+  margin-top: clamp(2.75rem, 7vh, 4.25rem);
+}
+
+/* desktop mreža linija ne postoji u ovom rasporedu */
+.compass__web {
+  display: none;
+}
+
+/* tanka linija koja povezuje čvor i sve blokove */
+.compass__rail {
+  position: absolute;
+  /* kreće tik ispod čvora i spušta se kroz sve tačke */
+  top: calc(var(--c-node) + 0.4rem);
+  bottom: 0.75rem;
+  left: var(--c-lane);
+  width: 1px;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary) 55%, transparent),
+    var(--border) 22%,
+    var(--border) 84%,
+    transparent
+  );
+  transform-origin: 50% 0;
+}
+/* tirkizni potez koji jednom prođe kroz liniju */
+.compass__rail-spark {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 14%;
+  opacity: 0;
+  background: linear-gradient(180deg, transparent, var(--primary), transparent);
+}
+
+/* centralni čvor */
+.compass__node {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--c-node);
+  aspect-ratio: 1;
+  /* čvor stoji na vrhu putanje; linija ispod izlazi iz njegove sredine */
+  margin: 0;
+}
+.compass__dial {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.compass__ring {
+  fill: none;
+  stroke: color-mix(in srgb, var(--primary) 62%, transparent);
+  stroke-width: 1.4;
+}
+.compass__ticks line {
+  stroke: var(--border);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.compass__ticks line[data-long] {
+  stroke: color-mix(in srgb, var(--primary) 48%, transparent);
+}
+.compass__needle line {
+  stroke: color-mix(in srgb, var(--primary) 70%, transparent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+.compass__needle circle {
+  fill: var(--primary);
+}
+.compass__node-text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  display: grid;
+  gap: 0.2rem;
+  justify-items: center;
+  text-align: center;
+  text-transform: uppercase;
+}
+.compass__node-small {
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  /* razmak slova gura tekst udesno — vrati ga u osu */
+  text-indent: 0.3em;
+  color: var(--muted-foreground);
+}
+.compass__node-name {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(0.95rem, 3.4vw, 1.15rem);
+  letter-spacing: -0.01em;
+  color: var(--foreground);
+}
+
+/* jedan pravac */
+.compass__dir {
+  position: relative;
+  margin-top: clamp(2.25rem, 5.5vh, 3rem);
+  /* tekst stoji desno od linije */
+  padding-left: calc(var(--c-lane) + var(--c-rail));
+  max-width: 52ch;
+}
+/* tačka na liniji, u visini oznake 01/02/03 */
+.compass__dir::before {
+  content: "";
+  position: absolute;
+  top: 0.42rem;
+  left: calc(var(--c-lane) - 2.5px);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.compass__meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.compass__n {
+  color: color-mix(in srgb, var(--primary) 85%, transparent);
+}
+.compass__kicker {
+  color: rgba(234, 242, 240, 0.42);
+}
+
+.compass__mark {
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-top: 1.1rem;
+  overflow: visible;
+}
+.compass__mark circle,
+.compass__mark path {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.compass__mark-a,
+.compass__mark-c1,
+.compass__mark-c2,
+.compass__mark-c3 {
+  stroke: color-mix(in srgb, var(--primary) 72%, transparent);
+}
+.compass__mark-link,
+.compass__mark-steps {
+  stroke: rgba(234, 242, 240, 0.4);
+}
+.compass__mark-b,
+.compass__mark-core {
+  fill: var(--primary);
+  stroke: none;
+}
+
+.compass__dir-title {
+  margin: 0.85rem 0 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: -0.015em;
+  color: var(--foreground);
+}
+.compass__desc {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+/* ---------- 3) početna stanja i otkrivanje ---------- */
+
+.compass[data-anim="on"] .compass__eyebrow,
+.compass[data-anim="on"] .compass__lead,
+.compass[data-anim="on"] .compass__dir {
+  opacity: 0;
+}
+.compass[data-anim="on"] .compass__lead {
+  transform: translate3d(0, 6px, 0);
+}
+.compass[data-anim="on"] .compass__dir {
+  transform: translate3d(0, 10px, 0);
+}
+.compass[data-anim="on"] .compass__title-mask > span {
+  transform: translate3d(0, 105%, 0);
+}
+.compass[data-anim="on"] .compass__node {
+  opacity: 0;
+  transform: scale(0.94);
+}
+.compass[data-anim="on"] .compass__ring {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.compass[data-anim="on"] .compass__ticks,
+.compass[data-anim="on"] .compass__needle {
+  opacity: 0;
+}
+.compass[data-anim="on"] .compass__line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+.compass[data-anim="on"] .compass__pin {
+  opacity: 0;
+  transform: scale(0.4);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.compass[data-anim="on"] .compass__rail {
+  transform: scaleY(0);
+}
+
+/* prelazi */
+.compass[data-anim="on"] .compass__eyebrow,
+.compass[data-anim="on"] .compass__lead,
+.compass[data-anim="on"] .compass__dir,
+.compass[data-anim="on"] .compass__node,
+.compass[data-anim="on"] .compass__ticks,
+.compass[data-anim="on"] .compass__needle,
+.compass[data-anim="on"] .compass__pin {
+  transition:
+    opacity 0.55s var(--c-e),
+    transform 0.65s var(--c-e);
+}
+.compass[data-anim="on"] .compass__title-mask > span {
+  transition: transform 0.7s var(--c-e);
+}
+.compass[data-anim="on"] .compass__ring,
+.compass[data-anim="on"] .compass__line {
+  transition: stroke-dashoffset 0.6s var(--c-e);
+}
+.compass[data-anim="on"] .compass__rail {
+  transition: transform 0.75s var(--c-e);
+}
+
+/* kašnjenja */
+.compass[data-anim="on"] .compass__eyebrow {
+  transition-delay: var(--c-d-eyebrow);
+}
+.compass[data-anim="on"] .compass__title-mask > span {
+  transition-delay: var(--c-d-title);
+}
+.compass[data-anim="on"] .compass__lead {
+  transition-delay: var(--c-d-lead);
+}
+.compass[data-anim="on"] .compass__node,
+.compass[data-anim="on"] .compass__ring,
+.compass[data-anim="on"] .compass__rail {
+  transition-delay: var(--c-d-node);
+}
+.compass[data-anim="on"] .compass__ticks {
+  transition-delay: calc(var(--c-d-node) + 0.22s);
+}
+.compass[data-anim="on"] .compass__needle {
+  transition-delay: calc(var(--c-d-node) + 0.3s);
+}
+.compass[data-anim="on"] .compass__thread[data-i="1"] .compass__line,
+.compass[data-anim="on"] .compass__thread[data-i="1"] .compass__pin {
+  transition-delay: var(--c-d-line);
+}
+.compass[data-anim="on"] .compass__thread[data-i="2"] .compass__line,
+.compass[data-anim="on"] .compass__thread[data-i="2"] .compass__pin {
+  transition-delay: calc(var(--c-d-line) + var(--c-step));
+}
+.compass[data-anim="on"] .compass__thread[data-i="3"] .compass__line,
+.compass[data-anim="on"] .compass__thread[data-i="3"] .compass__pin {
+  transition-delay: calc(var(--c-d-line) + var(--c-step) * 2);
+}
+/* tačka na kraju linije stiže tek pošto se linija iscrta */
+.compass[data-anim="on"] .compass__pin {
+  transition-delay: calc(var(--c-d-line) + 0.34s);
+}
+.compass[data-anim="on"] .compass__thread[data-i="2"] .compass__pin {
+  transition-delay: calc(var(--c-d-line) + var(--c-step) + 0.34s);
+}
+.compass[data-anim="on"] .compass__thread[data-i="3"] .compass__pin {
+  transition-delay: calc(var(--c-d-line) + var(--c-step) * 2 + 0.34s);
+}
+.compass[data-anim="on"] .compass__dir[data-i="1"] {
+  transition-delay: var(--c-d-block);
+}
+.compass[data-anim="on"] .compass__dir[data-i="2"] {
+  transition-delay: calc(var(--c-d-block) + var(--c-step));
+}
+.compass[data-anim="on"] .compass__dir[data-i="3"] {
+  transition-delay: calc(var(--c-d-block) + var(--c-step) * 2);
+}
+
+/* završna stanja */
+.compass[data-anim="on"][data-in="true"] .compass__eyebrow,
+.compass[data-anim="on"][data-in="true"] .compass__lead,
+.compass[data-anim="on"][data-in="true"] .compass__dir,
+.compass[data-anim="on"][data-in="true"] .compass__node,
+.compass[data-anim="on"][data-in="true"] .compass__ticks,
+.compass[data-anim="on"][data-in="true"] .compass__needle,
+.compass[data-anim="on"][data-in="true"] .compass__pin {
+  opacity: 1;
+}
+.compass[data-anim="on"][data-in="true"] .compass__lead,
+.compass[data-anim="on"][data-in="true"] .compass__dir,
+.compass[data-anim="on"][data-in="true"] .compass__title-mask > span {
+  transform: translate3d(0, 0, 0);
+}
+.compass[data-anim="on"][data-in="true"] .compass__node {
+  transform: scale(1);
+}
+.compass[data-anim="on"][data-in="true"] .compass__pin {
+  transform: scale(1);
+}
+.compass[data-anim="on"][data-in="true"] .compass__ring,
+.compass[data-anim="on"][data-in="true"] .compass__line {
+  stroke-dashoffset: 0;
+}
+.compass[data-anim="on"][data-in="true"] .compass__rail {
+  transform: scaleY(1);
+}
+
+/* veoma suptilno pulsiranje prstena, tek pošto se sve slegne */
+.compass[data-anim="on"][data-in="true"] .compass__ring {
+  animation: compass-pulse 5.5s ease-in-out 2s infinite;
+}
+@keyframes compass-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.62;
+  }
+}
+/* oznaka koja veoma sporo obilazi krug */
+.compass[data-anim="on"][data-in="true"] .compass__needle {
+  transform-origin: 50% 50%;
+  animation: compass-spin 28s linear 1.2s infinite;
+}
+@keyframes compass-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* tirkizna tačka jednom prođe kroz linije i poveže kompoziciju */
+.compass__spark {
+  stroke: var(--primary);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-dasharray: 0.07 0.93;
+  stroke-dashoffset: 0.07;
+  opacity: 0;
+}
+.compass[data-anim="on"][data-in="true"] .compass__spark {
+  animation: compass-spark 0.62s var(--c-e) forwards;
+}
+.compass[data-anim="on"][data-in="true"]
+  .compass__thread[data-i="1"]
+  .compass__spark {
+  animation-delay: var(--c-d-spark);
+}
+.compass[data-anim="on"][data-in="true"]
+  .compass__thread[data-i="2"]
+  .compass__spark {
+  animation-delay: calc(var(--c-d-spark) + 0.08s);
+}
+.compass[data-anim="on"][data-in="true"]
+  .compass__thread[data-i="3"]
+  .compass__spark {
+  animation-delay: calc(var(--c-d-spark) + 0.16s);
+}
+@keyframes compass-spark {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 0.07;
+  }
+  18%,
+  76% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -1;
+  }
+}
+.compass[data-anim="on"][data-in="true"] .compass__rail-spark {
+  animation: compass-rail-spark 0.85s var(--c-e) var(--c-d-spark) forwards;
+}
+@keyframes compass-rail-spark {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  20%,
+  75% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(calc(100vh * 6));
+  }
+}
+
+/* ---------- hover: nema klika, samo tiho isticanje ---------- */
+
+@media (hover: hover) {
+  .compass__dir-title,
+  .compass__n,
+  .compass__mark circle,
+  .compass__mark path,
+  .compass__dir {
+    transition:
+      color 0.35s var(--c-e),
+      opacity 0.35s var(--c-e),
+      stroke 0.35s var(--c-e),
+      transform 0.35s var(--c-e);
+  }
+  .compass__dir:hover .compass__dir-title {
+    transform: translateX(3px);
+  }
+  .compass__dir:hover .compass__n {
+    color: var(--primary);
+  }
+  /* ostali pravci se jedva zatamne — tekst mora ostati čitljiv */
+  .compass__stage:has(.compass__dir:hover) .compass__dir:not(:hover) {
+    opacity: 0.86;
+  }
+  /* linija pravca preko kog je pokazivač postaje izraženija */
+  .compass__stage:has(.compass__dir[data-i="1"]:hover)
+    .compass__thread[data-i="1"]
+    .compass__line,
+  .compass__stage:has(.compass__dir[data-i="2"]:hover)
+    .compass__thread[data-i="2"]
+    .compass__line,
+  .compass__stage:has(.compass__dir[data-i="3"]:hover)
+    .compass__thread[data-i="3"]
+    .compass__line {
+    stroke: color-mix(in srgb, var(--primary) 88%, transparent);
+  }
+
+  /* diskretan pokret oznaka */
+  .compass__dir:hover .compass__mark-b {
+    transform: translate(-1.4px, -1.4px);
+  }
+  .compass__dir[data-i="2"]:hover .compass__mark-b {
+    transform: translateY(-2px);
+  }
+  .compass__dir:hover .compass__mark-c1 {
+    transform: translate(-0.9px, -0.7px);
+  }
+  .compass__dir:hover .compass__mark-c2 {
+    transform: translate(0.9px, -0.5px);
+  }
+  .compass__dir:hover .compass__mark-c3 {
+    transform: translate(0, 1px);
+  }
+  .compass__mark-b,
+  .compass__mark-c1,
+  .compass__mark-c2,
+  .compass__mark-c3 {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+}
+
+/* ---------- 4) desktop: asimetrična kompozicija ---------- */
+
+@media (min-width: 1024px) {
+  .compass__stage {
+    /* isti odnos kao viewBox 1000 × 700 — bez toga se linije i blokovi razilaze */
+    aspect-ratio: 10 / 7;
+    margin-top: clamp(2rem, 5vh, 3.25rem);
+  }
+
+  /* vertikalna putanja ne postoji u ovom rasporedu */
+  .compass__rail,
+  .compass__dir::before {
+    display: none;
+  }
+
+  .compass__web {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .compass__line {
+    stroke: color-mix(in srgb, var(--primary) 42%, transparent);
+    stroke-width: 1.3;
+    stroke-linecap: round;
+  }
+  .compass__pin {
+    fill: var(--primary);
+  }
+
+  .compass__node {
+    position: absolute;
+    left: 47%;
+    top: 42.86%;
+    /* veoma tiho uporište iza čvora — bez izraženog sjaja */
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--primary) 6%, transparent) 0%,
+      transparent 68%
+    );
+    --c-node: 10.5rem;
+    margin: 0;
+    transform: translate(-50%, -50%);
+  }
+  /* pomeranje mora da preživi i uvećanje pri otkrivanju */
+  .compass[data-anim="on"] .compass__node {
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+  .compass[data-anim="on"][data-in="true"] .compass__node {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .compass__dir {
+    position: absolute;
+    margin: 0;
+    max-width: 21rem;
+    /* tačka na kraju linije stoji tik iznad oznake 01/02/03 */
+    padding: 0.9rem 0 0;
+  }
+  /* 01 — levo i malo iznad centra, tekst uz liniju sa desne strane */
+  .compass__dir[data-i="1"] {
+    right: 62%;
+    top: 13.7%;
+    text-align: right;
+  }
+  .compass__dir[data-i="1"] .compass__meta {
+    flex-direction: row-reverse;
+  }
+  .compass__dir[data-i="1"] .compass__mark {
+    margin-left: auto;
+  }
+  /* 02 — desno i malo iznad centra */
+  .compass__dir[data-i="2"] {
+    left: 61.4%;
+    top: 10.3%;
+  }
+  /* 03 — ispod centra, blago udesno */
+  .compass__dir[data-i="3"] {
+    left: 55.6%;
+    top: 71.4%;
+  }
+
+  @media (hover: hover) {
+    .compass__dir[data-i="1"]:hover .compass__dir-title {
+      transform: translateX(-3px);
+    }
+  }
+}
+
+/* ---------- smanjeno kretanje: sve odmah, bez otkrivanja ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .compass,
+  .compass * {
+    transition: none !important;
+    animation: none !important;
+  }
+  .compass__rail {
+    transform: none !important;
+  }
+  .compass__spark,
+  .compass__rail-spark {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   MARKER ISPOD NASLOVA — potez flomastera iza teksta (o-nama hero).
+
+   Redovi teksta se mere u JS-u (components/marker-heading.tsx), jer se
+   naslov različito lomi na različitim širinama — CSS ovde samo iscrtava
+   i pozicionira svaki `<svg>` potez na već izračunate koordinate.
+   Iscrtavanje ide preko stroke-dasharray/dashoffset (isti trik kao
+   `.road__spine` i `.compass__line`), sleva nadesno, jednom.
+   ============================================================ */
+
+.marker {
+  position: relative;
+  display: inline-block;
+}
+.marker__text {
+  position: relative;
+  z-index: 2;
+}
+.marker__svg {
+  position: absolute;
+  z-index: 1;
+  overflow: visible;
+  pointer-events: none;
+}
+.marker__stroke {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.82;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.82s cubic-bezier(0.65, 0, 0.2, 1);
+}
+/* sredina poteza malo deblja i tek primetno drugačije nijanse —
+   kao drugi, kraći prevlak flomastera preko istog mesta */
+.marker__stroke--belly {
+  stroke: color-mix(in srgb, var(--primary) 82%, white);
+  stroke-width: 14;
+  opacity: 0.4;
+}
+/* veoma providan duplikat, pomeren 1px — diskretna tekstura poteza */
+.marker__stroke--texture {
+  stroke-width: 7;
+  opacity: 0.16;
+  transition-duration: 0.9s;
+}
+.marker__svg[data-drawn] .marker__stroke {
+  stroke-dashoffset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker__stroke {
+    transition: none;
+    stroke-dashoffset: 0;
+  }
+}
