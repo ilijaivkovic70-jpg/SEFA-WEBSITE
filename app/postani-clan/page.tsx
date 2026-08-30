@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Megaphone, Handshake, ClipboardList, Users } from "lucide-react";
+import { Megaphone, Handshake, Users } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
@@ -8,7 +8,7 @@ import { Reveal } from "@/components/reveal";
 export const metadata: Metadata = {
   title: "Postani član — SEFA",
   description:
-    "Pridruži se SEFA-i i izaberi sektor koji ti najviše odgovara — komunikacije, sponzorstva i prodaja, upravljanje projektima ili ljudski resursi.",
+    "Pridruži se SEFA-i i izaberi sektor koji ti najviše odgovara — komunikacije, sponzorstva i prodaja ili ljudski resursi.",
 };
 
 const SECTORS = [
@@ -22,12 +22,6 @@ const SECTORS = [
     title: "Sektor sponzorstva i prodaje",
     description:
       "Izgradnja i održavanje partnerstava sa kompanijama koje podržavaju rad SEFA-e.",
-  },
-  {
-    icon: ClipboardList,
-    title: "Sektor upravljanja projektima",
-    description:
-      "Planiranje, organizacija i realizacija projekata od ideje do izvedbe.",
   },
   {
     icon: Users,
@@ -62,7 +56,7 @@ export default function PostaniClanPage() {
 
       <Reveal>
         <section className="mx-auto max-w-6xl px-4 py-16">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {SECTORS.map((sector) => (
               <Card key={sector.title} className="ring-border">
                 <CardHeader>

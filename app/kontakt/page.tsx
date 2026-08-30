@@ -38,29 +38,40 @@ export default function KontaktPage() {
       <Reveal>
         <section className="mx-auto max-w-6xl px-4 pb-24">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <Card className="ring-border">
-              <CardHeader>
-                <MapPin className="size-6 text-primary" />
-                <CardTitle className="mt-3">Adresa</CardTitle>
-                <CardDescription>Kamenička 6, Beograd</CardDescription>
-              </CardHeader>
-            </Card>
+            <a
+              href="https://maps.google.com/?q=Kamenička+6+Beograd"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+            >
+              <Card className="ring-border transition-colors hover:border-primary">
+                <CardHeader>
+                  <MapPin className="size-6 text-primary" />
+                  <CardTitle className="mt-3">Adresa</CardTitle>
+                  <CardDescription>Kamenička 6, Beograd</CardDescription>
+                </CardHeader>
+              </Card>
+            </a>
 
-            <Card className="ring-border">
-              <CardHeader>
-                <Mail className="size-6 text-primary" />
-                <CardTitle className="mt-3">Email</CardTitle>
-                <CardDescription>Uskoro dostupno</CardDescription>
-              </CardHeader>
-            </Card>
+            <a href="mailto:office@sefa.org.rs" className="block">
+              <Card className="ring-border transition-colors hover:border-primary">
+                <CardHeader>
+                  <Mail className="size-6 text-primary" />
+                  <CardTitle className="mt-3">Email</CardTitle>
+                  <CardDescription>office@sefa.org.rs</CardDescription>
+                </CardHeader>
+              </Card>
+            </a>
 
-            <Card className="ring-border">
-              <CardHeader>
-                <Phone className="size-6 text-primary" />
-                <CardTitle className="mt-3">Telefon</CardTitle>
-                <CardDescription>Uskoro dostupno</CardDescription>
-              </CardHeader>
-            </Card>
+            <a href="tel:+381631521141" className="block">
+              <Card className="ring-border transition-colors hover:border-primary">
+                <CardHeader>
+                  <Phone className="size-6 text-primary" />
+                  <CardTitle className="mt-3">Telefon</CardTitle>
+                  <CardDescription>+381 63 1521141</CardDescription>
+                </CardHeader>
+              </Card>
+            </a>
           </div>
         </section>
       </Reveal>
