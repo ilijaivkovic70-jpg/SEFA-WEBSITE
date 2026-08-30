@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollProgress } from "@/components/scroll-progress";
 import { cn } from "@/lib/utils";
 import {
   Sheet,
@@ -43,13 +44,23 @@ export function Header() {
 
     setPastIntro(false);
 
+    // navigacija se pojavljuje tek kad uvod skoro izađe iz kadra
     const onScroll = () => {
-      setPastIntro(window.scrollY > window.innerHeight * 3.4);
+      const intro = document.getElementById("sefa-intro");
+      if (!intro) {
+        setPastIntro(true);
+        return;
+      }
+      setPastIntro(intro.getBoundingClientRect().bottom <= window.innerHeight * 0.3);
     };
 
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [isHome]);
 
   return (
@@ -62,6 +73,8 @@ export function Header() {
             : "pointer-events-none -translate-y-2 opacity-0")
       )}
     >
+      <ScrollProgress />
+
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <Image
