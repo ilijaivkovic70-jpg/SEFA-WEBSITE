@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -62,7 +63,18 @@ export default async function ProjekatPage({
             {projekat.naziv}
           </h1>
 
-          <div className="mx-auto mt-6 aspect-video rounded-xl bg-gradient-to-br from-accent/40 to-primary/20 ring-1 ring-border" />
+          <div className="mx-auto mt-6 flex aspect-video items-center justify-center rounded-xl bg-gradient-to-br from-accent/40 to-primary/20 ring-1 ring-border">
+            {projekat.slika && (
+              <Image
+                src={projekat.slika}
+                alt={projekat.naziv}
+                width={400}
+                height={100}
+                unoptimized
+                className="w-1/2 object-contain"
+              />
+            )}
+          </div>
 
           {projekat.lokacije && (
             <div className="mt-6 flex flex-wrap gap-2">
