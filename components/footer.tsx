@@ -1,87 +1,68 @@
-import Link from "next/link";
-import { Mail, MapPin, Phone } from "lucide-react";
-
+/* Adrese naloga — ako se neki nalog promeni, menja se samo `href`. */
 const SOCIAL_LINKS = [
-  { href: "https://facebook.com", label: "Facebook" },
-  { href: "https://instagram.com", label: "Instagram" },
-  { href: "https://x.com", label: "X" },
-  { href: "https://linkedin.com", label: "LinkedIn" },
-  { href: "https://youtube.com", label: "YouTube" },
+  {
+    href: "https://www.instagram.com/sefa_org/",
+    label: "Instagram",
+    icon: InstagramGlyph,
+  },
+  {
+    href: "https://www.youtube.com/@sefa-org",
+    label: "YouTube",
+    icon: YouTubeGlyph,
+  },
+  {
+    href: "https://www.facebook.com/sefa.org/",
+    label: "Facebook",
+    icon: FacebookGlyph,
+  },
+  {
+    href: "https://www.linkedin.com/company/sefa-org/",
+    label: "LinkedIn",
+    icon: LinkedInGlyph,
+  },
 ];
 
-const CONTACT_LINKS = [
-  {
-    icon: Phone,
-    label: "+381 63 1521141",
-    href: "tel:+381631521141",
-  },
-  {
-    icon: Mail,
-    label: "office@sefa.org.rs",
-    href: "mailto:office@sefa.org.rs",
-  },
-  {
-    icon: MapPin,
-    label: "Kamenička 6, Beograd",
-    href: "https://maps.google.com/?q=Kamenička+6+Beograd",
-  },
-];
+/* Traka se vrti tako što se ista grupa linkova iscrta dva puta jednu do
+   druge, a ceo koloseg se pomera za tačno svoju polovinu — u trenutku kad
+   prva grupa isklizne, druga je na njenom mestu i skok se ne vidi.
+   Unutar jedne grupe lista se ponavlja tri puta da bi bila šira od ekrana
+   i na velikim monitorima. */
+const MARQUEE_GROUP = [...SOCIAL_LINKS, ...SOCIAL_LINKS, ...SOCIAL_LINKS];
+
+function MarqueeGroup({ hidden }: { hidden?: boolean }) {
+  return (
+    <ul className="marquee__group" aria-hidden={hidden || undefined}>
+      {MARQUEE_GROUP.map((link, index) => (
+        <li key={`${link.label}-${index}`} className="marquee__item">
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            tabIndex={hidden ? -1 : undefined}
+            className="marquee__link"
+          >
+            <span className="marquee__icon">
+              <link.icon />
+            </span>
+            <span className="marquee__label">{link.label}</span>
+            <span aria-hidden="true" className="marquee__arrow">
+              ↗
+            </span>
+          </a>
+          <span aria-hidden="true" className="marquee__sep" />
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function Footer() {
   return (
     <footer className="border-t">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-3">
-        <div>
-          <p className="font-heading text-lg font-bold">SEFA</p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Studentska ekonomska fakultetska asocijacija
-          </p>
-          <Link
-            href="/kontakt"
-            className="group mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-foreground"
-          >
-            Upoznaj celu priču
-            <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-              →
-            </span>
-          </Link>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-medium">Kontakt</p>
-          <div className="flex flex-col gap-2.5">
-            {CONTACT_LINKS.map(({ icon: Icon, label, href }) => (
-              <a
-                key={label}
-                href={href}
-                target={href.startsWith("http") ? "_blank" : undefined}
-                rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="group flex items-center gap-2.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-border/70 text-primary transition-colors group-hover:border-primary group-hover:bg-primary/10">
-                  <Icon className="size-3.5" />
-                </span>
-                {label}
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3">
-          <p className="text-sm font-medium">Društvene mreže</p>
-          <div className="flex flex-wrap gap-2">
-            {SOCIAL_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-full border border-border/70 px-3.5 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
+      <div className="marquee">
+        <div className="marquee__track">
+          <MarqueeGroup />
+          <MarqueeGroup hidden />
         </div>
       </div>
 
@@ -91,5 +72,48 @@ export function Footer() {
         </p>
       </div>
     </footer>
+  );
+}
+
+/* ---------- znaci mreža ----------
+   Lucide više ne isporučuje logotipe brendova, pa svaki stoji ovde kao
+   mali inline `<svg>`. Boja se nasleđuje preko `currentColor`. */
+
+function InstagramGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function YouTubeGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+      <rect x="2" y="5" width="20" height="14" rx="4.5" />
+      <path d="M10.2 9.3l5 2.7-5 2.7V9.3z" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function FacebookGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+      <path d="M14.8 7.5h2.2V4.2h-2.6c-2.4 0-4 1.6-4 4v2.1H8v3.3h2.4V21h3.4v-7.4h2.4l.5-3.3h-2.9V8.9c0-.9.4-1.4 1-1.4z" />
+    </svg>
+  );
+}
+
+function LinkedInGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="4" />
+      <path d="M7.8 10.4V17" />
+      <path d="M11.6 17v-3.6c0-1.2.8-2 1.9-2s1.9.8 1.9 2V17" />
+      <path d="M11.6 10.4V17" />
+      <circle cx="7.8" cy="7.4" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
   );
 }

@@ -2675,3 +2675,158 @@
     stroke-dashoffset: 0;
   }
 }
+
+/* ============================================================
+   TRAKA DRUŠTVENIH MREŽA — beskonačna vrpca u podnožju.
+
+   Ista grupa linkova stoji dva puta jedna do druge, a koloseg
+   (`.marquee__track`) se pomera za tačno svoju polovinu: kad prva
+   grupa isklizne levo, druga je već tačno na njenom mestu, pa se
+   povratak na početak ne primeti. Grupe se sklapaju u
+   components/footer.tsx.
+
+   Dve ručke za podešavanje: `--marquee-speed` (koliko traje jedan
+   pun krug) i `--marquee-gap` (razmak između linkova).
+   ============================================================ */
+
+.marquee {
+  --marquee-speed: 42s;
+  --marquee-gap: clamp(1.75rem, 4vw, 3.25rem);
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  padding-block: clamp(2.25rem, 4.5vw, 3.5rem);
+  /* tek malo svetlije od pozadine — traka se izdvoji a da ne vice */
+  background: color-mix(in srgb, var(--card) 55%, var(--background));
+  /* krajevi se gube u pozadinu umesto da se seku po ivici ekrana */
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 clamp(3rem, 9vw, 8rem),
+    #000 calc(100% - clamp(3rem, 9vw, 8rem)),
+    transparent
+  );
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee-slide var(--marquee-speed) linear infinite;
+}
+.marquee:hover .marquee__track,
+.marquee:focus-within .marquee__track {
+  animation-play-state: paused;
+}
+
+.marquee__group {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.marquee__item {
+  display: flex;
+  align-items: center;
+  gap: var(--marquee-gap);
+  padding-inline-end: var(--marquee-gap);
+}
+
+/* romb kao razdelnik između dva naloga */
+.marquee__sep {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  rotate: 45deg;
+  background: var(--primary);
+  opacity: 0.45;
+}
+
+.marquee__link {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+  transition: color 0.28s ease;
+}
+
+.marquee__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: none;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--primary);
+  transition:
+    border-color 0.28s ease,
+    background-color 0.28s ease,
+    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.marquee__icon svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.marquee__label {
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1.15rem, 2.2vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+  transition: color 0.28s ease;
+}
+
+/* strelica stoji prigušeno i oživi tek kad se pređe preko linka */
+.marquee__arrow {
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--primary);
+  opacity: 0.35;
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .marquee__link:hover .marquee__label {
+    color: var(--primary);
+  }
+  .marquee__link:hover .marquee__icon {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    transform: translateY(-2px);
+  }
+  .marquee__link:hover .marquee__arrow {
+    opacity: 1;
+    transform: translate(2px, -2px);
+  }
+}
+
+@keyframes marquee-slide {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* ---------- smanjeno kretanje: traka miruje, linkovi ostaju ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    overflow-x: auto;
+  }
+  .marquee__track {
+    animation: none;
+  }
+  .marquee__link,
+  .marquee__icon,
+  .marquee__label,
+  .marquee__arrow {
+    transition: none;
+  }
+}
+
