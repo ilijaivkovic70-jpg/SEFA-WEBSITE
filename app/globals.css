@@ -3976,3 +3976,150 @@
   }
 }
 
+/* ============================================================
+   FLOATING SECTOR REMINDER — mali oblačić koji s vremena na vreme
+   uđe sa desne ivice ekrana i podseti na jedan sektor.
+   Ponašanje (kad se pojavi, koji sektor, koliko dugo) je u
+   components/floating-sector-reminder.tsx — ovde je samo izgled.
+
+   Slojevi, spolja ka unutra, svaki nosi tačno jedan posao da se
+   transformi ne bi sudarali:
+     .reminder-cloud        — fiksna pozicija na ivici ekrana
+     .reminder-cloud__slide — ulazak/izlazak (klizanje sa strane)
+     .reminder-cloud__float — suptilno lebdenje dok oblačić stoji
+     .reminder-cloud__shape — sam oblik: SVG oblak + tekst
+
+   Bez potvrde da je pokret OK (data-motion="on", upisuje JS pošto
+   proveri prefers-reduced-motion), oblačić se samo pojavi i nestane
+   bez klizanja i lebdenja — data-phase i dalje radi, samo je tiši.
+   ============================================================ */
+
+.reminder-cloud {
+  position: fixed;
+  z-index: 40;
+  right: clamp(12px, 4vw, 16px);
+  bottom: 20px;
+  width: min(80vw, 260px);
+  /* prazan prostor oko organskog oblika ne sme da blokira klikove
+     na sadržaj ispod — vraćeno na auto niže, samo na stvarnom telu */
+  pointer-events: none;
+}
+@media (min-width: 640px) {
+  .reminder-cloud {
+    right: 32px;
+    bottom: auto;
+    top: 60%;
+    width: 300px;
+    transform: translateY(-50%);
+  }
+}
+
+.reminder-cloud__slide {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.reminder-cloud[data-phase="enter"] .reminder-cloud__slide,
+.reminder-cloud[data-phase="settled"] .reminder-cloud__slide {
+  opacity: 1;
+}
+
+/* puno kretanje — samo kad JS potvrdi da korisnik ne traži smanjen pokret */
+.reminder-cloud[data-motion="on"] .reminder-cloud__slide {
+  transform: translateX(130%);
+  transition:
+    transform 0.85s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.4s ease;
+}
+.reminder-cloud[data-motion="on"][data-phase="enter"] .reminder-cloud__slide,
+.reminder-cloud[data-motion="on"][data-phase="settled"] .reminder-cloud__slide {
+  transform: translateX(0);
+  /* blag "overshoot" pri sletanju — ista kriva kao uvodna animacija loga */
+  transition:
+    transform 1s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.5s ease;
+}
+.reminder-cloud[data-motion="on"][data-phase="leave"] .reminder-cloud__slide {
+  transform: translateX(130%);
+  transition:
+    transform 0.8s cubic-bezier(0.5, 0, 0.75, 0),
+    opacity 0.7s ease;
+}
+
+.reminder-cloud__float {
+  transform: translateY(0) rotate(0deg);
+}
+.reminder-cloud[data-motion="on"][data-phase="settled"] .reminder-cloud__float {
+  animation: reminder-cloud-float 4.4s ease-in-out infinite alternate;
+}
+@keyframes reminder-cloud-float {
+  from {
+    transform: translateY(-2px) rotate(-0.5deg);
+  }
+  to {
+    transform: translateY(2px) rotate(0.5deg);
+  }
+}
+
+.reminder-cloud__shape {
+  position: relative;
+}
+.reminder-cloud__svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.5)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.38));
+}
+.reminder-cloud__svg path {
+  /* malo svetlije od --card, da se oblačić izdvoji od pozadine iza sebe */
+  fill: #0f1c1a;
+  stroke: rgba(120, 198, 179, 0.3);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.reminder-cloud__body {
+  position: relative;
+  padding: 30px 40px 40px 34px;
+  color: var(--foreground);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.44;
+  text-align: center;
+  pointer-events: auto;
+}
+@media (min-width: 640px) {
+  .reminder-cloud__body {
+    padding: 34px 46px 46px 40px;
+    font-size: 1rem;
+  }
+}
+
+.reminder-cloud__close {
+  position: absolute;
+  top: 16px;
+  right: 24px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: rgba(234, 242, 240, 0.45);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 0.2s ease;
+}
+.reminder-cloud__close:hover {
+  color: var(--foreground);
+}
+@media (min-width: 640px) {
+  .reminder-cloud__close {
+    top: 20px;
+    right: 28px;
+  }
+}

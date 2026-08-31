@@ -1,35 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Megaphone, Handshake, Users } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
+import { SectorReminderOnce } from "@/components/floating-sector-reminder";
 
 export const metadata: Metadata = {
   title: "Postani član — SEFA",
   description:
     "Pridruži se SEFA-i i izaberi sektor koji ti najviše odgovara — komunikacije, sponzorstva i prodaja ili ljudski resursi.",
 };
-
-const SECTORS = [
-  {
-    icon: Megaphone,
-    title: "Sektor komunikacija",
-    description: "PR i marketinške aktivnosti.",
-  },
-  {
-    icon: Handshake,
-    title: "Sektor sponzorstva i prodaje",
-    description:
-      "Izgradnja i održavanje partnerstava sa kompanijama koje podržavaju rad SEFA-e.",
-  },
-  {
-    icon: Users,
-    title: "Sektor upravljanja ljudskim resursima",
-    description:
-      "Regrutacija, razvoj i briga o članovima kroz mentorstvo i edukacije.",
-  },
-];
 
 const PRIJAVE_OTVORENE = false;
 const PRIJAVA_LINK = "/kontakt";
@@ -51,22 +30,6 @@ export default function PostaniClanPage() {
             usmeri svoj talenat i interesovanja ka konkretnoj oblasti i kroz
             praktičan rad stekne novo iskustvo.
           </p>
-        </section>
-      </Reveal>
-
-      <Reveal>
-        <section className="mx-auto max-w-6xl px-4 py-16">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {SECTORS.map((sector) => (
-              <Card key={sector.title} className="ring-border">
-                <CardHeader>
-                  <sector.icon className="size-6 text-primary" />
-                  <CardTitle className="mt-3">{sector.title}</CardTitle>
-                  <CardDescription>{sector.description}</CardDescription>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
         </section>
       </Reveal>
 
@@ -107,6 +70,8 @@ export default function PostaniClanPage() {
           </div>
         </section>
       </Reveal>
+
+      <SectorReminderOnce />
     </div>
   );
 }
