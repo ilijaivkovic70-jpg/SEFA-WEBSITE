@@ -2830,3 +2830,1149 @@
   }
 }
 
+/* ============================================================
+   ALUMNI STRANICA (/alumni)
+
+   Stranica je zamišljena kao živa arhiva: godišnjak, urednički magazin,
+   mapa karijernih puteva i album uspomena u jednoj kompoziciji. Zato ovde
+   nema kartica — sadržaj drže tanke linije, prazan prostor i asimetrija.
+
+   SADRŽAJ SE MENJA U `data/alumni.ts`. Ovde je samo izgled i kretanje.
+
+   Otkrivanje: svaka sekcija dobija `data-in` kad uđe u vidno polje
+   (IntersectionObserver u svojoj komponenti). Početno stanje je skriveno,
+   pa nema treperenja pri učitavanju; blok `@media (scripting: none)` na dnu
+   sve vraća na vidljivo ako se JavaScript uopšte ne izvrši.
+   ============================================================ */
+
+.al-page {
+  --al-max: 72rem;
+  --al-pad: 1rem;
+  --al-e: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --al-draw: cubic-bezier(0.5, 0, 0.2, 1);
+}
+
+/* zajednička širina svih sekcija — isti levi rub kroz celu stranicu */
+.al-hero__inner,
+.al-map__intro,
+.al-map__stage,
+.al-stories__intro,
+.al-stories__list,
+.al-memories__intro,
+.al-outro {
+  margin-inline: auto;
+  width: 100%;
+  max-width: var(--al-max);
+  padding-inline: var(--al-pad);
+}
+
+.al-eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* vrlo tiha zrnastost — jedan mali SVG šum, bez uticaja na skrol */
+.al-grain {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.14;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+/* ---------- okvir za fotografiju ----------
+   Dok slika nije ubačena (`src: null` u data/alumni.ts) stoji prazan okvir
+   istih proporcija, pa se raspored ne pomera kad se prava slika doda. */
+
+.al-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+.al-frame__img {
+  object-fit: cover;
+}
+.al-frame__empty {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 11px,
+    rgba(234, 242, 240, 0.03) 11px 12px
+  );
+}
+.al-frame__corner {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1px solid color-mix(in srgb, var(--primary) 42%, transparent);
+}
+.al-frame__corner:nth-child(1) {
+  top: 7px;
+  left: 7px;
+  border-right: 0;
+  border-bottom: 0;
+}
+.al-frame__corner:nth-child(2) {
+  top: 7px;
+  right: 7px;
+  border-left: 0;
+  border-bottom: 0;
+}
+.al-frame__corner:nth-child(3) {
+  bottom: 7px;
+  right: 7px;
+  border-left: 0;
+  border-top: 0;
+}
+.al-frame__corner:nth-child(4) {
+  bottom: 7px;
+  left: 7px;
+  border-right: 0;
+  border-top: 0;
+}
+
+/* ============================================================
+   HERO — tekst levo, „50+” desno, isečci na tankoj petlji oko broja
+   ============================================================ */
+
+.al-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: clamp(7rem, 13vw, 10.5rem) clamp(3.5rem, 8vw, 6rem);
+}
+
+.al-hero__inner {
+  display: grid;
+  gap: clamp(3rem, 8vw, 4.5rem);
+}
+@media (min-width: 1024px) {
+  .al-hero__inner {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    align-items: center;
+    gap: clamp(2.5rem, 5vw, 4.5rem);
+  }
+}
+
+.al-hero__eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.al-hero__title {
+  margin-top: clamp(1rem, 2vw, 1.5rem);
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 6.4vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+}
+/* svaki red se otkriva ispod maske — okvir seče, unutrašnji red klizi naviše */
+.al-hero__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.al-hero__line > span {
+  display: block;
+  transform: translateY(108%);
+  transition: transform 0.95s var(--al-e);
+}
+.al-hero[data-in] .al-hero__line > span {
+  transform: translateY(0);
+}
+/* "SEFA"/"SEFE" u mint boji loga, svuda gde se ime pominje u naslovu ili pasusu */
+.al-brand {
+  color: var(--primary);
+}
+
+.al-hero__lead {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+  max-width: 34rem;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.8s ease 0.42s,
+    transform 0.8s var(--al-e) 0.42s;
+}
+.al-hero[data-in] .al-hero__lead {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- desna strana: broj u petlji ---------- */
+
+.al-hero__figure {
+  position: relative;
+  width: 100%;
+  max-width: min(100%, 31rem);
+  margin-inline: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.al-hero__trace {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.al-hero__trace-line {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 0.32;
+  stroke-linecap: round;
+  opacity: 0.45;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 2.4s var(--al-draw) 0.1s;
+}
+.al-hero[data-in] .al-hero__trace-line {
+  stroke-dashoffset: 0;
+}
+
+.al-hero__count-wrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  text-align: center;
+}
+.al-hero__count {
+  display: flex;
+  align-items: flex-start;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(4.2rem, 17vw, 8.5rem);
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  /* mesto za tri znaka se drži unapred, pa brojanje ne pomera raspored */
+  font-variant-numeric: tabular-nums;
+}
+.al-hero__plus {
+  font-size: 0.5em;
+  line-height: 1;
+  margin-top: 0.16em;
+  color: var(--primary);
+}
+.al-hero__count-label {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* isečci — različitih proporcija i blago nakrivljeni, kao iz godišnjaka */
+.al-hero__shot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: calc(var(--w) * var(--shot-scale, 1));
+  aspect-ratio: var(--ratio);
+  margin: 0;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(var(--tilt)) translateY(12px);
+  transition:
+    opacity 0.85s ease,
+    transform 0.85s var(--al-e);
+}
+.al-hero[data-in] .al-hero__shot {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(var(--tilt));
+}
+.al-hero__shot .al-frame {
+  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.9);
+}
+
+@media (max-width: 1023px) {
+  /* na užem ekranu je okvir manji, pa isečci moraju malo da porastu */
+  .al-hero__figure {
+    --shot-scale: 1.1;
+    max-width: min(100%, 25rem);
+  }
+  .al-hero__count {
+    font-size: clamp(3.6rem, 15vw, 6rem);
+  }
+}
+
+/* ============================================================
+   MAPA KARIJERNIH PUTEVA — „Put nakon SEFA-e”
+   ============================================================ */
+
+.al-map {
+  padding-block: clamp(4.5rem, 10vw, 8rem);
+}
+
+.al-map__title {
+  margin-top: 0.75rem;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 4.6vw, 3rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.al-map__lead {
+  margin-top: 1rem;
+  max-width: 34rem;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+}
+
+.al-map__stage {
+  position: relative;
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.al-map__origin {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.al-map__origin-dot {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  rotate: 45deg;
+  background: var(--primary);
+}
+
+/* ---------- do 1024px: uspravna putanja koja se prati skrolovanjem ---------- */
+
+.al-map__fan {
+  display: none;
+}
+
+.al-map__spine {
+  position: absolute;
+  left: calc(var(--al-pad) + 3.5px);
+  top: 2.1rem;
+  bottom: 1rem;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--primary) 55%, transparent),
+    var(--border)
+  );
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.5s var(--al-draw);
+}
+.al-map[data-in] .al-map__spine {
+  transform: scaleY(1);
+}
+
+.al-map__list {
+  list-style: none;
+  margin: 1.75rem 0 0;
+  padding: 0 0 0 2rem;
+  display: grid;
+  gap: clamp(2.25rem, 6vw, 2.75rem);
+}
+
+.al-map__stop {
+  position: relative;
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.75s ease var(--stop-delay, 0ms),
+    transform 0.75s var(--al-e) var(--stop-delay, 0ms);
+  /* na uskom ekranu sadržaj prati izvlačenje niti, ne dužinu krive */
+  --stop-delay: calc(var(--i) * 260ms + 320ms);
+}
+.al-map[data-in] .al-map__stop {
+  opacity: 1;
+  transform: none;
+}
+
+.al-map__bead {
+  position: absolute;
+  left: -2rem;
+  top: 0.42em;
+  width: 8px;
+  height: 8px;
+  rotate: 45deg;
+  background: var(--background);
+  border: 1px solid var(--primary);
+}
+
+.al-map__stop-title {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+  letter-spacing: -0.02em;
+  transition: color 0.3s ease;
+}
+.al-map__stop-count {
+  margin-top: 0.35rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.al-map__stop-desc {
+  margin-top: 0.6rem;
+  max-width: 28rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+/* ---------- od 1024px: tri krive koje se razdvajaju iz jedne tačke ---------- */
+
+@media (min-width: 1024px) {
+  .al-map__stage {
+    aspect-ratio: 1000 / 560;
+  }
+
+  .al-map__fan {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .al-map__spine {
+    display: none;
+  }
+
+  .al-map__curve {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    opacity: 0.5;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    /* kašnjenje je kumulativno (v. START u alumni-paths.tsx) — svaka sledeća
+       linija kreće tačno kad prethodna stigne do svog čvora, ne sve odjednom */
+    transition:
+      stroke-dashoffset var(--dur) var(--al-draw) var(--delay),
+      opacity 0.35s ease;
+  }
+  .al-map[data-in] .al-map__curve {
+    stroke-dashoffset: 0;
+  }
+
+  /* rasute tačke u pozadini — teksturu "zvezdane mape", samo zajednički fade-in */
+  .al-map__spark {
+    fill: var(--primary);
+    opacity: 0;
+    transition: opacity 0.6s ease var(--spark-delay, 0ms);
+  }
+  .al-map[data-in] .al-map__spark {
+    opacity: 1;
+  }
+
+  /* polazni čvor "SEFA" — prsten + blaga ispuna, isto mesto gde kreću linije */
+  .al-map__hub-ring,
+  .al-map__hub-fill {
+    opacity: 0;
+    transition: opacity 0.7s ease 0.1s;
+  }
+  .al-map__hub-ring {
+    fill: none;
+    stroke: var(--primary);
+    stroke-opacity: 0.3;
+  }
+  .al-map__hub-fill {
+    fill: var(--primary);
+    fill-opacity: 0.08;
+  }
+  .al-map[data-in] .al-map__hub-ring,
+  .al-map[data-in] .al-map__hub-fill {
+    opacity: 1;
+  }
+
+  /* čvor na kraju svake linije — pojavljuje se tačno kad linija stigne */
+  .al-map__node {
+    opacity: 0;
+    transform: scale(0.5);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 0.4s ease var(--node-delay),
+      transform 0.5s var(--al-e) var(--node-delay);
+  }
+  .al-map[data-in] .al-map__node {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .al-map__node-dot {
+    fill: var(--primary);
+  }
+  .al-map__node-ring {
+    fill: none;
+    stroke: var(--primary);
+    stroke-opacity: 0.3;
+  }
+
+  /* prelaz mišem: izabrana kriva malo svetlija, ostale tiše — bez sjaja */
+  .al-map[data-active] .al-map__curve,
+  .al-map[data-active] .al-map__node {
+    opacity: 0.2;
+  }
+  .al-map[data-active="institucije"] .al-map__curve[data-path="institucije"],
+  .al-map[data-active="korporacije"] .al-map__curve[data-path="korporacije"],
+  .al-map[data-active="preduzetnistvo"] .al-map__curve[data-path="preduzetnistvo"],
+  .al-map[data-active="institucije"] .al-map__node[data-path="institucije"],
+  .al-map[data-active="korporacije"] .al-map__node[data-path="korporacije"],
+  .al-map[data-active="preduzetnistvo"] .al-map__node[data-path="preduzetnistvo"] {
+    opacity: 0.9;
+  }
+  .al-map[data-active] .al-map__node[data-path] {
+    transform: scale(1);
+  }
+  .al-map[data-active="institucije"] .al-map__stop[data-path="institucije"] .al-map__stop-title,
+  .al-map[data-active="korporacije"] .al-map__stop[data-path="korporacije"] .al-map__stop-title,
+  .al-map[data-active="preduzetnistvo"]
+    .al-map__stop[data-path="preduzetnistvo"]
+    .al-map__stop-title {
+    color: var(--primary);
+  }
+
+  /* polazna tačka: tekst levo, romb tačno na mestu gde krive kreću (9,2%) */
+  .al-map__origin {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: calc(9.2% + 4px);
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    transform: translateY(-50%);
+  }
+
+  .al-map__list {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    display: block;
+  }
+  .al-map__bead {
+    display: none;
+  }
+
+  .al-map__stop {
+    position: absolute;
+    left: var(--left);
+    top: var(--top);
+    width: min(30%, 21rem);
+    margin-left: 1.4rem;
+    transform: translateY(calc(-50% + 10px));
+    /* tekst se pojavljuje tek kad njegova kriva stigne do kraja */
+    --stop-delay: var(--delay);
+  }
+  .al-map[data-in] .al-map__stop {
+    transform: translateY(-50%);
+  }
+  .al-map__stop-desc {
+    font-size: 0.9rem;
+  }
+}
+
+/* ============================================================
+   PRIČE ALUMNISTA — strane iz magazina, bez okvira
+   ============================================================ */
+
+.al-stories {
+  padding-block: clamp(4.5rem, 10vw, 8rem);
+}
+
+.al-stories__title {
+  margin-top: 0.75rem;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 4.6vw, 3rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.al-stories__list {
+  margin-top: clamp(2.5rem, 6vw, 4rem);
+}
+
+.al-story {
+  display: grid;
+  gap: clamp(1.75rem, 4vw, 2.5rem);
+  padding-block: clamp(2.75rem, 7vw, 4.5rem);
+  border-top: 1px solid var(--border);
+}
+.al-story:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+@media (min-width: 1024px) {
+  .al-story {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(3rem, 6vw, 5rem);
+  }
+  /* druga priča ide obrnuto — fotografija desno, tekst levo */
+  .al-story[data-layout="media-desno"] .al-story__media {
+    order: 2;
+  }
+  /* treća je uža portretna, a citat nosi celu stranu */
+  .al-story[data-layout="citat"] {
+    grid-template-columns: minmax(0, 0.58fr) minmax(0, 1fr);
+  }
+}
+
+.al-story__media {
+  margin: 0;
+  aspect-ratio: 4 / 5;
+}
+.al-story[data-layout="citat"] .al-story__media {
+  aspect-ratio: 3 / 4.6;
+}
+/* fotografija se otkriva maskom odozdo naviše */
+.al-story__media .al-frame {
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 1.15s var(--al-draw);
+}
+.al-story[data-in] .al-story__media .al-frame {
+  clip-path: inset(0 0 0 0);
+}
+
+.al-story__index,
+.al-story__name,
+.al-story__role,
+.al-story__meta {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.75s ease var(--d, 0ms),
+    transform 0.75s var(--al-e) var(--d, 0ms);
+}
+.al-story__index {
+  --d: 140ms;
+}
+.al-story__name {
+  --d: 220ms;
+}
+.al-story__role {
+  --d: 300ms;
+}
+.al-story__meta {
+  --d: 380ms;
+}
+.al-story[data-in] .al-story__index,
+.al-story[data-in] .al-story__name,
+.al-story[data-in] .al-story__role,
+.al-story[data-in] .al-story__meta {
+  opacity: 1;
+  transform: none;
+}
+
+.al-story__index {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.25rem, 5.5vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: color-mix(in srgb, var(--foreground) 13%, transparent);
+}
+
+.al-story__name {
+  margin-top: clamp(0.75rem, 2vw, 1.25rem);
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.85rem, 4.6vw, 3rem);
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.al-story__role {
+  margin-top: 0.7rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.al-story__quote {
+  margin: clamp(1.25rem, 3vw, 1.75rem) 0 0;
+  padding-left: clamp(0.9rem, 2vw, 1.2rem);
+  border-left: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+}
+.al-story__quote p {
+  font-size: clamp(1.02rem, 2.1vw, 1.22rem);
+  line-height: 1.6;
+  color: var(--foreground);
+}
+.al-story[data-layout="citat"] .al-story__quote p {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.35rem, 3.2vw, 2rem);
+  line-height: 1.28;
+  letter-spacing: -0.025em;
+}
+/* citat se sastavlja reč po reč */
+.al-story__word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(7px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s var(--al-e);
+}
+.al-story[data-in] .al-story__word {
+  opacity: 1;
+  transform: none;
+}
+
+.al-story__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.5rem, 4vw, 2.75rem);
+  margin: clamp(1.5rem, 3vw, 2rem) 0 0;
+  padding-top: clamp(1.25rem, 2.5vw, 1.5rem);
+  border-top: 1px solid var(--border);
+}
+.al-story__meta dt {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--foreground) 45%, transparent);
+}
+.al-story__meta dd {
+  margin: 0.4rem 0 0;
+  font-size: 0.92rem;
+}
+
+/* ============================================================
+   GALERIJA USPOMENA — kontakt-list koji se pomera vodoravno
+   ============================================================ */
+
+.al-memories {
+  padding-block: clamp(4.5rem, 10vw, 8rem) clamp(3rem, 7vw, 5rem);
+}
+
+.al-memories__title {
+  margin-top: 0.75rem;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 4.6vw, 3rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.al-memories__lead {
+  margin-top: 1rem;
+  max-width: 34rem;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+}
+
+.al-strip {
+  list-style: none;
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.9rem, 2.4vw, 1.75rem);
+  margin: clamp(2.25rem, 5vw, 3.25rem) 0 0;
+  /* prvi okvir počinje tačno na levom rubu ostatka stranice, a desno
+     ostaje isto toliko prostora — sledeća fotografija se uvek nazire */
+  padding: 0.25rem max(var(--al-pad), calc((100% - var(--al-max)) / 2 + var(--al-pad)))
+    1.5rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--foreground) 22%, transparent) transparent;
+}
+.al-strip:focus-visible {
+  outline: 1px solid var(--primary);
+  outline-offset: 4px;
+}
+.al-strip[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+  scroll-snap-type: none;
+}
+
+.al-strip__item {
+  flex: none;
+  scroll-snap-align: center;
+}
+/* namerno nejednaki oblici i visine — traka treba da liči na kontakt-list */
+.al-strip__item[data-shape="pejzaz"] {
+  width: clamp(15rem, 38vw, 25rem);
+}
+.al-strip__item[data-shape="portret"] {
+  width: clamp(9.5rem, 24vw, 16rem);
+}
+.al-strip__item[data-shape="kvadrat"] {
+  width: clamp(11.5rem, 30vw, 19rem);
+}
+.al-strip__item:nth-child(2n) {
+  margin-top: clamp(1rem, 2.5vw, 2.25rem);
+}
+.al-strip__item:nth-child(3n) {
+  margin-top: clamp(0.4rem, 1.2vw, 1.1rem);
+}
+
+.al-strip__shot {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+.al-strip__item[data-shape="pejzaz"] .al-strip__shot {
+  aspect-ratio: 3 / 2;
+}
+.al-strip__item[data-shape="portret"] .al-strip__shot {
+  aspect-ratio: 3 / 4;
+}
+.al-strip__item[data-shape="kvadrat"] .al-strip__shot {
+  aspect-ratio: 1 / 1;
+}
+.al-strip__shot .al-frame {
+  transition: border-color 0.3s ease;
+}
+.al-strip__shot:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+@media (hover: hover) {
+  .al-strip__shot:hover .al-frame {
+    border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+  }
+}
+
+/* beleška ispod okvira — kao dopisana u albumu */
+.al-strip__note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.55rem;
+  margin-top: 0.7rem;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  transform: rotate(-0.7deg);
+  transform-origin: left center;
+}
+.al-strip__item:nth-child(2n) .al-strip__note {
+  transform: rotate(0.6deg);
+}
+.al-strip__note-year {
+  color: var(--primary);
+  opacity: 0.8;
+}
+
+/* ---------- uvećan prikaz ---------- */
+
+.al-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(0.5rem, 2vw, 1.5rem);
+  padding: clamp(3.5rem, 6vw, 4rem) clamp(0.75rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2.5rem);
+  background: rgba(4, 10, 9, 0.95);
+}
+
+.al-lightbox__close,
+.al-lightbox__nav {
+  display: grid;
+  place-items: center;
+  flex: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  cursor: pointer;
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+.al-lightbox__nav {
+  width: clamp(2.5rem, 6vw, 3rem);
+  height: clamp(2.5rem, 6vw, 3rem);
+}
+.al-lightbox__close {
+  position: absolute;
+  top: clamp(0.75rem, 2.5vw, 1.5rem);
+  right: clamp(0.75rem, 2.5vw, 1.5rem);
+  width: 2.5rem;
+  height: 2.5rem;
+}
+.al-lightbox__close:focus-visible,
+.al-lightbox__nav:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+@media (hover: hover) {
+  .al-lightbox__close:hover,
+  .al-lightbox__nav:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+}
+
+.al-lightbox__figure {
+  margin: 0;
+  min-width: 0;
+}
+.al-lightbox__frame {
+  position: relative;
+  width: min(100%, 48rem);
+  max-height: 68vh;
+  margin-inline: auto;
+  border: 1px solid var(--border);
+  background: var(--card);
+  overflow: hidden;
+}
+.al-lightbox__frame[data-shape="pejzaz"] {
+  aspect-ratio: 3 / 2;
+}
+.al-lightbox__frame[data-shape="portret"] {
+  aspect-ratio: 3 / 4;
+  width: min(100%, 28rem);
+}
+.al-lightbox__frame[data-shape="kvadrat"] {
+  aspect-ratio: 1 / 1;
+  width: min(100%, 34rem);
+}
+.al-lightbox__img {
+  object-fit: contain;
+}
+
+.al-lightbox__caption {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  margin-top: clamp(0.9rem, 2.5vw, 1.25rem);
+  text-align: center;
+}
+.al-lightbox__caption-title {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
+  letter-spacing: -0.02em;
+}
+.al-lightbox__caption-year {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--primary);
+}
+.al-lightbox__caption-desc {
+  max-width: 38rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+/* ============================================================
+   ZAVRŠNA PORUKA
+   ============================================================ */
+
+.al-outro {
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.25rem, 3vw, 1.75rem);
+  padding-block: clamp(1rem, 3vw, 2rem) clamp(5rem, 11vw, 8rem);
+  text-align: center;
+}
+
+.al-outro__thread {
+  width: 1px;
+  height: clamp(3.5rem, 9vw, 6rem);
+  background: linear-gradient(to bottom, transparent, var(--primary));
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.2s var(--al-draw);
+}
+.al-outro[data-in] .al-outro__thread {
+  transform: scaleY(1);
+}
+
+.al-outro__line,
+.al-outro__link {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.8s ease var(--d, 0ms),
+    transform 0.8s var(--al-e) var(--d, 0ms);
+}
+.al-outro__line {
+  --d: 520ms;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 4.6vw, 2.9rem);
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+.al-outro__link {
+  --d: 700ms;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--primary);
+  transition:
+    opacity 0.8s ease var(--d),
+    transform 0.8s var(--al-e) var(--d),
+    color 0.25s ease;
+}
+.al-outro[data-in] .al-outro__line,
+.al-outro[data-in] .al-outro__link {
+  opacity: 1;
+  transform: none;
+}
+.al-outro__link span {
+  transition: transform 0.25s ease;
+}
+.al-outro__link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+@media (hover: hover) {
+  .al-outro__link:hover {
+    color: var(--foreground);
+  }
+  .al-outro__link:hover span {
+    transform: translateX(3px);
+  }
+}
+
+/* ---------- bez JavaScripta: sve stoji odmah na svom mestu ---------- */
+
+@media (scripting: none) {
+  .al-hero__line > span,
+  .al-hero__lead,
+  .al-hero__shot,
+  .al-map__stop,
+  .al-story__index,
+  .al-story__name,
+  .al-story__role,
+  .al-story__meta,
+  .al-story__word,
+  .al-outro__line,
+  .al-outro__link {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .al-hero__shot {
+    transform: translate(-50%, -50%) rotate(var(--tilt)) !important;
+  }
+  .al-map__stop {
+    transform: translateY(-50%) !important;
+  }
+  .al-map__spine,
+  .al-outro__thread {
+    transform: scaleY(1) !important;
+  }
+  .al-hero__trace-line,
+  .al-map__curve {
+    stroke-dashoffset: 0 !important;
+  }
+  .al-map__spark,
+  .al-map__hub-ring,
+  .al-map__hub-fill,
+  .al-map__node {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .al-story__media .al-frame {
+    clip-path: none !important;
+  }
+}
+@media (scripting: none) and (max-width: 1023px) {
+  .al-map__stop {
+    transform: none !important;
+  }
+}
+
+/* ---------- smanjeno kretanje: sve odmah, bez otkrivanja ----------
+   Isti spisak kao gore: sadržaj se ne krije i ne čeka `data-in`, pa je
+   stranica potpuno pročitana i kad je kretanje isključeno u sistemu. */
+
+@media (prefers-reduced-motion: reduce) {
+  .al-hero *,
+  .al-map *,
+  .al-stories *,
+  .al-memories *,
+  .al-outro * {
+    transition: none !important;
+    animation: none !important;
+  }
+  .al-hero__line > span,
+  .al-hero__lead,
+  .al-hero__shot,
+  .al-map__stop,
+  .al-story__index,
+  .al-story__name,
+  .al-story__role,
+  .al-story__meta,
+  .al-story__word,
+  .al-outro__line,
+  .al-outro__link {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .al-hero__shot {
+    transform: translate(-50%, -50%) rotate(var(--tilt)) !important;
+  }
+  .al-map__spine,
+  .al-outro__thread {
+    transform: scaleY(1) !important;
+  }
+  .al-hero__trace-line,
+  .al-map__curve {
+    stroke-dashoffset: 0 !important;
+  }
+  .al-map__spark,
+  .al-map__hub-ring,
+  .al-map__hub-fill,
+  .al-map__node {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .al-story__media .al-frame {
+    clip-path: none !important;
+  }
+  .al-strip {
+    scroll-behavior: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) and (min-width: 1024px) {
+  .al-map__stop {
+    transform: translateY(-50%) !important;
+  }
+}
+
