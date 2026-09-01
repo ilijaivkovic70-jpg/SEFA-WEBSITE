@@ -1,3 +1,7 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 /* Adrese naloga — ako se neki nalog promeni, menja se samo `href`. */
 const SOCIAL_LINKS = [
   {
@@ -57,9 +61,14 @@ function MarqueeGroup({ hidden }: { hidden?: boolean }) {
 }
 
 export function Footer() {
+  // stranica Kontakt više nema svoj odeljak sa mrežama (traka ga zamenjuje),
+  // pa se ovde traka diže bliže ostatku sadržaja — samo na toj stranici
+  const pathname = usePathname();
+  const raised = pathname === "/kontakt";
+
   return (
     <footer className="border-t">
-      <div className="marquee">
+      <div className="marquee" data-raised={raised || undefined}>
         <div className="marquee__track">
           <MarqueeGroup />
           <MarqueeGroup hidden />

@@ -2699,6 +2699,13 @@
   );
 }
 
+/* stranica Kontakt nema više svoj odeljak sa mrežama — traka ovde
+   stoji umesto njega, pa se diže bliže sadržaju iznad i malo se skupi */
+.marquee[data-raised] {
+  margin-top: clamp(-3.5rem, -7vw, -2rem);
+  padding-block: clamp(1.5rem, 3vw, 2.25rem);
+}
+
 .marquee__track {
   display: flex;
   width: max-content;
