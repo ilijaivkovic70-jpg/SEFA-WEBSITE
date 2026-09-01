@@ -2699,13 +2699,6 @@
   );
 }
 
-/* stranica Kontakt nema više svoj odeljak sa mrežama — traka ovde
-   stoji umesto njega, pa se diže bliže sadržaju iznad i malo se skupi */
-.marquee[data-raised] {
-  margin-top: clamp(-3.5rem, -7vw, -2rem);
-  padding-block: clamp(1.5rem, 3vw, 2.25rem);
-}
-
 .marquee__track {
   display: flex;
   width: max-content;
@@ -4126,5 +4119,480 @@
   .reminder-cloud__close {
     top: 20px;
     right: 28px;
+  }
+}
+
+/* ============================================================
+   KONTAKT — ekran telefona koji se odzumira
+
+   Ono što se na početku vidi preko cele stranice (SEFA logo i
+   „JAVI NAM SE”) zapravo je ekran telefona, samo jako uveličan.
+   Skrol taj kadar odzumira dok telefon ne sedne u sredinu.
+
+   Sam telefon je fotografija ruke koja drži telefon praznog
+   ekrana (`public/kontakt-telefon.webp`), a preko njenog ekrana
+   stoji naš pravi HTML sadržaj — zato su kontakti klikabilni i
+   oštri na svakoj veličini. Mere ekrana na fotografiji su i u
+   `components/contact-scene.tsx` (niz PHOTO); ako se fotografija
+   menja, menjaju se procenti na oba mesta.
+
+   Sekcija je visoka nekoliko ekrana, a unutar nje stoji jedan
+   `sticky` kadar od 100svh. Komponenta samo pretvara napredak
+   skrola u promenljive na korenu sekcije:
+
+     --s      uvećanje telefona (izmereno, ~4 → 1)
+     --ty     koliko je telefon spušten, u pikselima (→ 0)
+     --frame  koliko je fotografija telefona vidljiva (0 → 1)
+     --note   koliko je tekst oko telefona otišao (0 = stoji, 1 = nestao)
+     --p      ukupan napredak kroz sekciju (0 → 1)
+
+   Pomeraju se samo `transform` i `opacity`, pa nema ponovnog
+   raspoređivanja stranice.
+
+   Tri ručke za podešavanje: `--screen-gap` (vazduh iznad i ispod
+   ekrana, od njega zavisi veličina telefona), visina sekcije u
+   `.cs[data-mode="scroll"]` (dužina animacije) i `--phone-u`
+   (veličina svega na ekranu — od nje zavisi i koliko je naslov
+   velik na početku).
+
+   Kad je uključeno „smanjeno kretanje” (data-mode="static") nema
+   sticky kadra ni uvećanja: telefon stoji u svojoj veličini.
+   ============================================================ */
+
+.cs {
+  --stage-top: 4rem;
+  --screen-gap: 2rem;
+  /* Okvir je cela fotografija (kvadrat). Bira se tako da ekran telefona ceo
+     stane u kadar; ruka i zglob smeju da izađu ispod donje ivice, kao na
+     fotografiji koja se drži u ruci. 0.765 je udeo ekrana u visini slike. */
+  --box-h: min(calc((100vh - var(--stage-top) - var(--screen-gap) * 2) / 0.765), 70rem);
+  --box-h: min(calc((100svh - var(--stage-top) - var(--screen-gap) * 2) / 0.765), 70rem);
+  --box-w: var(--box-h);
+  --screen-w: calc(var(--box-w) * 0.354);
+  /* „jedan piksel” ekrana: sadržaj je zadat u merama pravog telefona
+     (ekran širine 372) i množi se ovim brojem */
+  --phone-u: max(0.82px, calc(var(--screen-w) / 372));
+
+  --s: 1;
+  --ty: 0;
+  --frame: 1;
+  --note: 0;
+  --p: 1;
+
+  position: relative;
+  background: var(--background);
+}
+
+.cs[data-mode="scroll"] {
+  height: 320vh;
+  height: 320svh;
+}
+
+.cs__stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: clamp(2.5rem, 6vw, 4rem);
+  /* zaglavlje je lepljivo preko scene — kompozicija se centrira ispod njega */
+  padding: 6rem 0 4rem;
+}
+
+.cs[data-mode="scroll"] .cs__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  gap: 0;
+  /* jedini element u toku je scena i ona mora da popuni kadar — nadnaslov i
+     opis su apsolutni, pa bi red inače ostao bez visine */
+  align-content: stretch;
+  padding: var(--stage-top) 0 0;
+  overflow: hidden;
+}
+
+/* Zrno stoji iznad svega, pa i preko telefona — inače bi se u punom uvećanju
+   videla ivica ekrana, tamo gde telefon prekrije zrnastu pozadinu. Namerno bez
+   `mix-blend-mode`: preko sloja sa transformacijom se blend ne primenjuje, pa
+   bi telefon ostao bez zrna i šav bi se opet video. */
+.cs__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+.cs__stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--frame);
+  background: radial-gradient(
+    115% 85% at 50% 46%,
+    transparent 38%,
+    rgba(3, 8, 7, 0.5) 100%
+  );
+}
+
+/* ---------- tekst oko telefona ----------
+   Nadnaslov stoji pri vrhu kadra, opis i „Skroluj” pri dnu; oboje se
+   povlači čim korisnik krene da odzumira. */
+
+.cs__kicker {
+  position: relative;
+  z-index: 3;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.cs__note {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  padding-inline: 5vw;
+  text-align: center;
+}
+
+.cs[data-mode="scroll"] .cs__kicker {
+  position: absolute;
+  top: clamp(5.5rem, 11vh, 8rem);
+  opacity: calc(1 - var(--note));
+  pointer-events: none;
+}
+
+.cs[data-mode="scroll"] .cs__note {
+  position: absolute;
+  bottom: clamp(2rem, 5vh, 3.25rem);
+  opacity: calc(1 - var(--note));
+  pointer-events: none;
+}
+
+.cs__lead {
+  margin: 0 auto;
+  max-width: 34rem;
+  color: var(--muted-foreground);
+  text-wrap: pretty;
+}
+
+/* tanak potez naniže i jedna reč — jedini nagoveštaj da scena ide dalje */
+.cs__hint {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: clamp(1.5rem, 3.5vh, 2.5rem);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(234, 242, 240, 0.34);
+}
+.cs__hint-line {
+  width: 1px;
+  height: clamp(1.75rem, 4vh, 2.75rem);
+  background: linear-gradient(to top, transparent, var(--primary));
+  transform-origin: 50% 100%;
+  animation: cs-hint 2.8s cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+}
+@keyframes cs-hint {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+    opacity: 0.25;
+  }
+  45% {
+    transform: scaleY(1);
+    opacity: 0.7;
+  }
+}
+.cs[data-mode="static"] .cs__hint {
+  display: none;
+}
+
+/* ---------- telefon ---------- */
+
+.cs__scene {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.cs[data-mode="scroll"] .cs__scene {
+  grid-area: 1 / 1;
+}
+
+/* namerno bez `will-change`: sadržaj se na početku vidi uvećan nekoliko
+   puta, pa treba da se iscrtava u trenutnoj veličini da tekst ostane oštar */
+.cs__phone {
+  position: relative;
+  width: var(--box-w);
+  height: var(--box-h);
+  transform: translate3d(0, calc(var(--ty) * 1px), 0) scale(var(--s));
+  transform-origin: 50% 50%;
+}
+/* u pokretnom režimu se okvir zakači za vrh kadra: ekran dobija tačno
+   `--screen-gap` vazduha, a ruka i zglob izlaze ispod donje ivice */
+.cs[data-mode="scroll"] .cs__phone {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--screen-gap) - var(--box-h) * 0.093);
+  /* u kadru se centrira EKRAN, a ne cela slika: telefon na fotografiji nije
+     tačno na sredini kvadrata (sredina ekrana je na 50.85% širine) */
+  margin-left: calc(var(--box-w) * -0.5085);
+}
+.cs[data-mode="static"] .cs__phone {
+  transform: none;
+}
+
+/* fotografija ruke — prigušena da se uklopi u tamnu scenu */
+.cs__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: var(--frame);
+  filter: brightness(0.46) contrast(1.08) saturate(0.6);
+}
+
+/* ---------- ekran preko fotografije ----------
+   Malo je veći od izmerenog ekrana da sigurno prekrije svetlu površinu
+   sa fotografije, ali ne toliko da pređe preko okvira telefona. */
+
+.cs__screen {
+  position: absolute;
+  left: 32.95%;
+  top: 9.1%;
+  width: 35.8%;
+  height: 76.9%;
+  overflow: hidden;
+  border-radius: calc(var(--screen-w) * 0.082);
+  background: var(--background);
+}
+/* ekran dobija svoju nijansu tek kad se telefon pojavi; dok je kadar pun
+   ekran, boja je ista kao pozadina stranice pa se ivica ne primećuje */
+.cs__screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: var(--frame);
+  background:
+    radial-gradient(
+      115% 62% at 50% -8%,
+      rgba(102, 198, 179, 0.09),
+      transparent 62%
+    ),
+    #0a1413;
+}
+
+/* urez sa fotografije — ostaje vidljiv preko našeg sadržaja */
+.cs__notch {
+  position: absolute;
+  top: 0;
+  left: 25.5%;
+  z-index: 3;
+  width: 52.5%;
+  height: calc(var(--screen-w) * 0.075);
+  border-radius: 0 0 calc(var(--screen-w) * 0.03) calc(var(--screen-w) * 0.03);
+  opacity: var(--frame);
+  background: #05080a;
+}
+
+/* jedan blag odsjaj po staklu, bez sjaja oko telefona */
+.cs__glass {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--frame);
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.02) 16%,
+    transparent 33%,
+    transparent 72%,
+    rgba(255, 255, 255, 0.018) 92%
+  );
+}
+
+/* ---------- sadržaj ekrana ---------- */
+
+.cs__app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: calc(54 * var(--phone-u)) calc(26 * var(--phone-u))
+    calc(26 * var(--phone-u));
+  font-size: calc(16 * var(--phone-u));
+}
+
+/* logo i naslov: u punom uvećanju su ovo naslovni elementi cele stranice,
+   a kad telefon sedne postaju zaglavlje njegovog ekrana */
+.cs__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(12 * var(--phone-u));
+  text-align: center;
+}
+
+.cs__logo {
+  width: calc(58 * var(--phone-u));
+  height: auto;
+}
+
+/* naslov je uvek jedan red — po njegovoj širini se računa koliko kadar
+   sme da se uveća, pa prelom ovde ne dolazi u obzir */
+.cs__title {
+  width: fit-content;
+  margin-inline: auto;
+  font-family: var(--font-heading), sans-serif;
+  font-size: calc(38 * var(--phone-u));
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cs__list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin: calc(24 * var(--phone-u)) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(234, 242, 240, 0.1);
+  transition: border-color 0.45s ease;
+}
+/* prva linija se pali zajedno sa prvim kontaktom, da ekran pre toga
+   ne stoji sa jednom crtom u praznom */
+.cs[data-mode="scroll"]:not([data-rows="in"]) .cs__list {
+  border-top-color: transparent;
+}
+
+/* osnovno stanje je završno (vidljivo), pa lista stoji i bez JS-a;
+   tek pokretni režim je pre otkrivanja sakrije */
+.cs__row {
+  display: flex;
+  flex: 1 1 0;
+  min-height: calc(44 * var(--phone-u));
+  border-bottom: 1px solid rgba(234, 242, 240, 0.1);
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 0.3s ease;
+}
+.cs[data-mode="scroll"]:not([data-rows="in"]) .cs__row {
+  opacity: 0;
+  transform: translateY(calc(12 * var(--phone-u)));
+}
+/* jedan po jedan, na svakih 80ms — kad se skroluje nazad, nestaju odjednom */
+.cs[data-rows="in"] .cs__row {
+  transition-delay: calc(var(--i) * 80ms);
+}
+.cs__row:last-child {
+  border-bottom: 0;
+}
+
+.cs__link {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "label arrow"
+    "value arrow";
+  align-content: center;
+  align-items: center;
+  gap: calc(3 * var(--phone-u)) calc(12 * var(--phone-u));
+  width: 100%;
+}
+
+.cs__label {
+  grid-area: label;
+  font-family: var(--font-heading), sans-serif;
+  font-size: calc(17.5 * var(--phone-u));
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--foreground);
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.cs__value {
+  grid-area: value;
+  font-family: var(--font-mono), monospace;
+  font-size: calc(12.5 * var(--phone-u));
+  letter-spacing: 0.01em;
+  color: var(--muted-foreground);
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.cs__arrow {
+  grid-area: arrow;
+  font-size: calc(13 * var(--phone-u));
+  line-height: 1;
+  color: var(--primary);
+  opacity: 0.4;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .cs__link:hover .cs__label,
+  .cs__link:hover .cs__value {
+    transform: translateX(calc(4 * var(--phone-u)));
+  }
+  .cs__link:hover .cs__arrow {
+    opacity: 1;
+    transform: translate(calc(2 * var(--phone-u)), calc(-2 * var(--phone-u)));
+  }
+  .cs__row:hover {
+    border-bottom-color: rgba(234, 242, 240, 0.24);
+  }
+}
+
+.cs__link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: calc(4 * var(--phone-u));
+  border-radius: calc(6 * var(--phone-u));
+}
+
+/* ---------- uži ekrani ---------- */
+
+@media (max-width: 640px) {
+  .cs {
+    /* zaglavlje je i na mobilnom visoko 4rem — telefon mora da stane ispod
+       njega, inače mu urez ostane presečen */
+    --screen-gap: 1.5rem;
+  }
+  .cs[data-mode="scroll"] {
+    height: 280vh;
+    height: 280svh;
+  }
+  .cs[data-mode="scroll"] .cs__kicker {
+    top: clamp(4.5rem, 9vh, 6rem);
+  }
+  .cs__lead {
+    font-size: 0.95rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs__hint-line {
+    animation: none;
+  }
+  .cs__row {
+    transition: none;
   }
 }
