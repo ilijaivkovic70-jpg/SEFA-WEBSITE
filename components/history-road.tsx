@@ -54,12 +54,9 @@ const WINDOW_FACTOR = 0.38;
 const STEER = 0.12;
 const STEER_MAX = 3.4;
 
-/** Dužina jednog koraka (u jedinicama sveta) — koliko puta „hodač” zakorači. */
-const STRIDE = 48;
-/** Najveći zamah nogu/ruku u stepenima. */
-const LEG_MAX = 24;
-const ARM_MAX = 16;
-/** Najveće poskakivanje pri hodu, u pikselima. */
+/** Dužina jednog ciklusa poskakivanja (u jedinicama sveta), kao ovešeni oslonac na neravnom putu. */
+const BOB_CYCLE = 48;
+/** Najveće poskakivanje, u pikselima. */
 const BOB_MAX = 2.4;
 
 const clamp = (v: number, lo: number, hi: number) =>
@@ -89,7 +86,7 @@ export function HistoryRoad() {
 
   const sectionRef = useRef<HTMLElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const walkerRef = useRef<HTMLDivElement>(null);
+  const carRef = useRef<HTMLDivElement>(null);
 
   const [mode, setMode] = useState<"flow" | "cinema">("flow");
   const [animated, setAnimated] = useState(false);
@@ -176,20 +173,19 @@ export function HistoryRoad() {
 
       const cam = pointAtLength(world, len);
 
-      // hodač: noge/ruke se ljuljaju srazmerno pređenoj dužini, ne vremenu —
-      // stoji kad se ne skroluje, „korača” kad kamera napreduje putem
-      const walker = walkerRef.current;
-      if (walker) {
-        const phase = (len / STRIDE) * Math.PI * 2;
-        const swing = Math.sin(phase);
-        const walkRot = cam.angle - 90 + rot;
-        const style = walker.style;
-        style.setProperty("--leg1", (swing * LEG_MAX).toFixed(2));
-        style.setProperty("--leg2", (-swing * LEG_MAX).toFixed(2));
-        style.setProperty("--arm1", (-swing * ARM_MAX).toFixed(2));
-        style.setProperty("--arm2", (swing * ARM_MAX).toFixed(2));
-        style.setProperty("--bob", (Math.abs(swing) * BOB_MAX).toFixed(2));
-        style.setProperty("--walk-rot", walkRot.toFixed(2));
+      // auto: okreće se u pravcu vožnje (tangenta puta), poskakuje
+      // srazmerno pređenoj dužini, ne vremenu — miruje kad se ne skroluje
+      const car = carRef.current;
+      if (car) {
+        const phase = (len / BOB_CYCLE) * Math.PI * 2;
+        const bounce = Math.abs(Math.sin(phase));
+        // nos je nacrtan na -y u lokalnim koordinatama, a `.road__car` je van
+        // rotiranog `.road__world`, pa treba +180° u odnosu na hodačevu formulu
+        // da bi nos gledao u pravcu vožnje umesto unazad
+        const driveRot = cam.angle + 90 + rot;
+        const style = car.style;
+        style.setProperty("--bob", (bounce * BOB_MAX).toFixed(2));
+        style.setProperty("--drive-rot", driveRot.toFixed(2));
       }
 
       // koliko je kamera blizu neke stanice (0 → 1) — put se tu blago primakne
@@ -478,49 +474,25 @@ export function HistoryRoad() {
           </span>
         </div>
 
-        {/* hodač koji prati kameru po putu — noge/ruke prate pređenu dužinu */}
-        <div className="road__walker" ref={walkerRef} aria-hidden="true">
-          <svg
-            viewBox="-15 -30 30 56"
-            className="road__walker-svg"
-            fill="none"
-          >
-            <line
-              className="road__walker-leg road__walker-leg--l"
-              x1="0"
-              y1="-2"
-              x2="0"
-              y2="18"
+        {/* auto koji prati kameru po putu, iz ptičje perspektive — šiljati
+            „nos” (vrh, kod y ≈ -21) okrenut u pravcu vožnje, zadnji deo ravan */}
+        <div className="road__car" ref={carRef} aria-hidden="true">
+          <svg viewBox="-14 -24 28 42" className="road__car-svg" fill="none">
+            <path
+              className="road__car-body"
+              d="M 0 -21 L 7 -12 L 7 9 L 4 13 L -4 13 L -7 9 L -7 -12 Z"
             />
             <line
-              className="road__walker-leg road__walker-leg--r"
-              x1="0"
-              y1="-2"
-              x2="0"
-              y2="18"
+              className="road__car-windshield"
+              x1="-4"
+              y1="-6"
+              x2="4"
+              y2="-6"
             />
-            <line
-              className="road__walker-torso"
-              x1="0"
-              y1="-19"
-              x2="0"
-              y2="-2"
-            />
-            <line
-              className="road__walker-arm road__walker-arm--l"
-              x1="0"
-              y1="-16"
-              x2="0"
-              y2="-2"
-            />
-            <line
-              className="road__walker-arm road__walker-arm--r"
-              x1="0"
-              y1="-16"
-              x2="0"
-              y2="-2"
-            />
-            <circle className="road__walker-head" cx="0" cy="-24" r="4.5" />
+            <circle className="road__car-wheel" cx="-8.5" cy="-9" r="2.6" />
+            <circle className="road__car-wheel" cx="8.5" cy="-9" r="2.6" />
+            <circle className="road__car-wheel" cx="-8.5" cy="7" r="2.6" />
+            <circle className="road__car-wheel" cx="8.5" cy="7" r="2.6" />
           </svg>
         </div>
       </div>
