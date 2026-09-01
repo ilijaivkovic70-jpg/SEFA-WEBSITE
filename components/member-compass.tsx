@@ -158,7 +158,7 @@ export function MemberCompass() {
         </h2>
 
         <p className="compass__lead">
-          SEFA članstvo donosi više od projektnog iskustva — podršku starijih
+          SEFA članstvo donosi više od projektnog iskustva: podršku starijih
           kolega, nova znanja i ljude sa kojima nastaju uspomene.
         </p>
 

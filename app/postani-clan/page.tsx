@@ -5,9 +5,9 @@ import { Reveal } from "@/components/reveal";
 import { SectorReminderOnce } from "@/components/floating-sector-reminder";
 
 export const metadata: Metadata = {
-  title: "Postani član — SEFA",
+  title: "Postani član",
   description:
-    "Pridruži se SEFA-i i izaberi sektor koji ti najviše odgovara — komunikacije, sponzorstva i prodaja ili ljudski resursi.",
+    "Pridruži se SEFA-i i izaberi sektor koji ti najviše odgovara: komunikacije, sponzorstva i prodaja ili ljudski resursi.",
 };
 
 const PRIJAVE_OTVORENE = false;
@@ -25,7 +25,7 @@ export default function PostaniClanPage() {
             Izaberi sektor, gradi iskustvo
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-muted-foreground">
-            SEFA je organizovana po uzoru na strukturu jednog preduzeća —
+            SEFA je organizovana po uzoru na strukturu jednog preduzeća,
             članovi rade po sektorima. Ovakva podela omogućava svakom članu da
             usmeri svoj talenat i interesovanja ka konkretnoj oblasti i kroz
             praktičan rad stekne novo iskustvo.

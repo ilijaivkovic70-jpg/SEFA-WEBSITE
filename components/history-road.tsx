@@ -313,7 +313,7 @@ export function HistoryRoad() {
   };
 
   const meterYear =
-    active >= 0 ? stops[active].year : passed >= count ? "Danas" : "—";
+    active >= 0 ? stops[active].year : passed >= count ? "Danas" : "";
 
   return (
     <section

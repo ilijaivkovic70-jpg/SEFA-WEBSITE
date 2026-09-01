@@ -6,7 +6,7 @@ import { HistoryRoad } from "@/components/history-road";
 import { MemberCompass } from "@/components/member-compass";
 
 export const metadata: Metadata = {
-  title: "O nama — SEFA",
+  title: "O nama",
   description:
     "Misija, struktura i brojke Studentske ekonomske fakultetske asocijacije.",
 };

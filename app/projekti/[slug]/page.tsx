@@ -21,11 +21,11 @@ export async function generateMetadata({
   const projekat = getProjekatBySlug(slug);
 
   if (!projekat) {
-    return { title: "Projekat nije pronađen — SEFA" };
+    return { title: "Projekat nije pronađen" };
   }
 
   return {
-    title: `${projekat.naziv} — SEFA`,
+    title: projekat.naziv,
     description: projekat.kratakOpis,
   };
 }

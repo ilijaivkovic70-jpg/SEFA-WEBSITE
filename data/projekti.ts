@@ -17,7 +17,7 @@ export type Projekat = {
 /**
  * Redosled u ovom nizu je i redosled prikaza na stranici /projekti.
  * Da bi se projekat pomerio gore ili dole, dovoljno je pomeriti njegov
- * objekat u nizu — nigde drugde se redosled ne zadaje.
+ * objekat u nizu, nigde drugde se redosled ne zadaje.
  */
 export const PROJEKTI: Projekat[] = [
   {
@@ -27,7 +27,7 @@ export const PROJEKTI: Projekat[] = [
     kratakOpis:
       "Najveća konferencija posvećena temi socijalnog preduzetništva u regionu, sa gostima, panelima i radionicama.",
     opis: [
-      "REPSUS — Regionalni privredni susreti studenata. Simbol organizacije od samog osnivanja. Konferencija na koju učestvuju eminentne ličnosti iz sveta ekonomije, sa ciljem da studenti steknu znanje i prate aktuelne trendove u ekonomiji.",
+      "REPSUS: Regionalni privredni susreti studenata. Simbol organizacije od samog osnivanja. Konferencija na koju učestvuju eminentne ličnosti iz sveta ekonomije, sa ciljem da studenti steknu znanje i prate aktuelne trendove u ekonomiji.",
     ],
     lokacije: [
       "Zlatibor (2016)",
@@ -38,18 +38,18 @@ export const PROJEKTI: Projekat[] = [
       {
         naslov: "Izbor tema i govornika kroz godine",
         stavke: [
-          "Rade Jokimović — dostupnosti i kako doći do fondova stranog kapitala",
-          "Vladimir Nikolić (Limundo/Kupindo) — razvoj online trgovine u Srbiji",
-          "Milenko Škorić (Sky Music Corporation) — Moj put do uspeha",
-          "Zoran Petrović (Raiffeisen) — investiciono bankarstvo, upravljanje rizikom i kapitalom",
-          "Telenor i Sberbanka — budućnost bankarskog sektora",
-          "Hasan Hanić — inovacije u obrazovanju, preduzetništvo i privreda",
-          "StartUp Srbija — Seeder, Evoke, Miracle Dojo",
-          "Tomislav Momirović (Mona) — male tajne našeg uspeha",
-          "Srđan Janićijević (Mokrogorska škola menadžmenta) — obrazovanjem do uspešne karijere",
-          "Aleksandar Marušić (KEA) — karijera iz mitologije",
-          "Kosara Dangić Melentijević (Kabinet Brewery) — put do najuspešnijeg startup-a",
-          "Ovation BBDO — advertajzing, čemu učiti i kako radi",
+          "Rade Jokimović: dostupnosti i kako doći do fondova stranog kapitala",
+          "Vladimir Nikolić (Limundo/Kupindo): razvoj online trgovine u Srbiji",
+          "Milenko Škorić (Sky Music Corporation): Moj put do uspeha",
+          "Zoran Petrović (Raiffeisen): investiciono bankarstvo, upravljanje rizikom i kapitalom",
+          "Telenor i Sberbanka: budućnost bankarskog sektora",
+          "Hasan Hanić: inovacije u obrazovanju, preduzetništvo i privreda",
+          "StartUp Srbija: Seeder, Evoke, Miracle Dojo",
+          "Tomislav Momirović (Mona): male tajne našeg uspeha",
+          "Srđan Janićijević (Mokrogorska škola menadžmenta): obrazovanjem do uspešne karijere",
+          "Aleksandar Marušić (KEA): karijera iz mitologije",
+          "Kosara Dangić Melentijević (Kabinet Brewery): put do najuspešnijeg startup-a",
+          "Ovation BBDO: advertajzing, čemu učiti i kako radi",
         ],
       },
       {
@@ -67,7 +67,7 @@ export const PROJEKTI: Projekat[] = [
     slug: "sport-business-day",
     naziv: "Sport Business Day",
     kratakOpis:
-      
+
       "Konferencija koja povezuje svet sporta i biznisa, sa stručnjacima iz sportske industrije kao govornicima.",
     opis: [
       "Konferencija pokrenuta 2018. godine, namenjena studentima čija su interesovanja vezana za sport. Prosečno okuplja 200 do 300 delegata.",
@@ -79,7 +79,7 @@ export const PROJEKTI: Projekat[] = [
     slug: "prava-stvar",
     naziv: "Prava stvar",
     kratakOpis:
-      
+
       "Humanitarni projekat kroz koji članovi SEFA-e pomažu lokalnoj zajednici i razvijaju osećaj društvene odgovornosti.",
     opis: [
       "Humanitarni projekat zabavno-edukativnog karaktera, sa ciljem podizanja svesti o humanosti i prikupljanja sredstava za one kojima je najpotrebnije.",
@@ -88,43 +88,43 @@ export const PROJEKTI: Projekat[] = [
       {
         naslov: "Gosti i saradnici projekta",
         stavke: [
-          "Sergej Trifunović — „Zašto je teško biti human”",
-          "Nenad Danilović (Neša Brđis) — stand up veče",
-          "Vlado Georgiev — nastup u Amfiteatru 1 Ekonomskog fakulteta",
-          "Dejan Savić — „Psihologija pobednika”",
+          "Sergej Trifunović: „Zašto je teško biti human”",
+          "Nenad Danilović (Neša Brđis): stand up veče",
+          "Vlado Georgiev: nastup u Amfiteatru 1 Ekonomskog fakulteta",
+          "Dejan Savić: „Psihologija pobednika”",
         ],
       },
     ],
   },
   {
-    // TODO(SEFA): dopuniti pravim sadržajem — tekst ispod je privremen,
+    // TODO(SEFA): dopuniti pravim sadržajem, tekst ispod je privremen,
     // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
     slug: "link-to-the-future",
     naziv: "Link to the Future",
     kratakOpis:
-      
+
       "Projekat koji povezuje studente sa kompanijama i ljudima iz struke, od prvog kontakta do prve prilike.",
     opis: [
-      "Projekat okrenut karijernom razvoju studenata Ekonomskog fakulteta — kroz susrete sa kompanijama, ljudima iz struke i alumnistima SEFA-e, studenti dobijaju uvid u to kako izgleda posao koji ih čeka i kako do njega doći.",
+      "Projekat okrenut karijernom razvoju studenata Ekonomskog fakulteta. Kroz susrete sa kompanijama, ljudima iz struke i alumnistima SEFA-e, studenti dobijaju uvid u to kako izgleda posao koji ih čeka i kako do njega doći.",
     ],
   },
   {
-    // TODO(SEFA): dopuniti pravim sadržajem — tekst ispod je privremen,
+    // TODO(SEFA): dopuniti pravim sadržajem, tekst ispod je privremen,
     // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
     slug: "greenfield",
     naziv: "Greenfield",
     kratakOpis:
-      
+
       "Projekat posvećen ulaganjima i održivom razvoju, kroz koji studenti prate put od ideje do poslovnog poduhvata.",
     opis: [
-      "Projekat posvećen investicijama i održivom razvoju — od prve ideje do poslovnog poduhvata koji stoji na svojim nogama. Kroz predavanja i rad na konkretnim primerima studenti se upoznaju sa načinom na koji se ulaganja planiraju, procenjuju i sprovode.",
+      "Projekat posvećen investicijama i održivom razvoju, od prve ideje do poslovnog poduhvata koji stoji na svojim nogama. Kroz predavanja i rad na konkretnim primerima studenti se upoznaju sa načinom na koji se ulaganja planiraju, procenjuju i sprovode.",
     ],
   },
   {
     slug: "bez-straha",
     naziv: "Bez straha",
     kratakOpis:
-      
+
       "Projekat posvećen podizanju svesti o mentalnom zdravlju i podršci studentima u prevazilaženju izazova.",
     opis: [
       "Panel diskusija posvećena temi anksioznosti i mentalnog zdravlja, sa ciljem normalizovanja stresa, izgradnje samopouzdanja, izlaska iz zone komfora i postavljanja prioriteta.",
@@ -142,10 +142,10 @@ export const PROJEKTI: Projekat[] = [
       {
         naslov: "Učesnici",
         stavke: [
-          "Aleksandra „Saša” Simonić — diplomirani novinar / PR menadžer",
-          "Teodora Milović — PR menadžer / influencer",
-          "Sandra Bijelac — psihoterapeut",
-          "Stella Karl Coci — executive & leadership coach",
+          "Aleksandra „Saša” Simonić: diplomirani novinar / PR menadžer",
+          "Teodora Milović: PR menadžer / influencer",
+          "Sandra Bijelac: psihoterapeut",
+          "Stella Karl Coci: executive & leadership coach",
         ],
       },
     ],
@@ -154,23 +154,23 @@ export const PROJEKTI: Projekat[] = [
     slug: "sefa-talks",
     naziv: "SEFA Talks",
     kratakOpis:
-      
+
       "Podkast u kom gosti iz sveta biznisa i preduzetništva dele svoja iskustva i savete sa studentima.",
     opis: [
       "Podkast studentske organizacije SEFA, pokrenut sa idejom da kroz razgovore sa preduzetnicima i ljudima iz sveta biznisa mladima približi preduzetništvo i omogući im da čuju iskustva i ispovesti ljudi koji su u tome uspeli.",
-      "U podkastu gostuju ljudi koji imaju mnogo toga da nauče — preduzetnici, direktori i stručnjaci iz kompanija, ali i profesori Ekonomskog fakulteta, koji sa studentima dele svoja iskustva i savete za početak karijere. Autori sami biraju sagovornike i teme, na osnovu interesovanja i pregleda slušalaca.",
+      "U podkastu gostuju ljudi koji imaju mnogo toga da nauče: preduzetnici, direktori i stručnjaci iz kompanija, ali i profesori Ekonomskog fakulteta, koji sa studentima dele svoja iskustva i savete za početak karijere. Autori sami biraju sagovornike i teme, na osnovu interesovanja i pregleda slušalaca.",
       "Podkast je dostupan na YouTube-u, Spotify-ju, Deezer-u i Amazon Music-u, kao i na povezanom Instagram nalogu (@sefatalks).",
     ],
     sekcije: [
       {
         naslov: "Dosadašnji gosti i teme (izbor)",
         stavke: [
-          "Nikola Marković — CFO kompanije Gomex, alumnista Ekonomskog fakulteta, osnivač EKOF Case Study Cluba i programa EKOF Mentorship — o radu u „Big four” kompanijama i iskustvu mentorstva",
-          "Anđelka Balrinović — šef odeljenja za planiranje i analizu prodaje, Delta Sport",
-          "Aleksandar Gradić — bivši asistent na predmetima Osnovi ekonomije i Osnovi statističke analize",
-          "Branislav Borić — bivši dekan i profesor Ekonomskog fakulteta — o ekonomskim, društvenim i političkim temama",
-          "Nenad Atanacković — suvlasnik Thyme street food restorana",
-          "Nikola Stamenić — direktor sektora za reviziju u kompaniji PwC",
+          "Nikola Marković: CFO kompanije Gomex, alumnista Ekonomskog fakulteta, osnivač EKOF Case Study Cluba i programa EKOF Mentorship, o radu u „Big four” kompanijama i iskustvu mentorstva",
+          "Anđelka Balrinović: šef odeljenja za planiranje i analizu prodaje, Delta Sport",
+          "Aleksandar Gradić: bivši asistent na predmetima Osnovi ekonomije i Osnovi statističke analize",
+          "Branislav Borić: bivši dekan i profesor Ekonomskog fakulteta, o ekonomskim, društvenim i političkim temama",
+          "Nenad Atanacković: suvlasnik Thyme street food restorana",
+          "Nikola Stamenić: direktor sektora za reviziju u kompaniji PwC",
         ],
       },
     ],
@@ -179,19 +179,19 @@ export const PROJEKTI: Projekat[] = [
     slug: "ekof-u-pokretu",
     naziv: "EKOF u pokretu",
     kratakOpis:
-      
+
       "Sportsko-zabavni projekat koji okuplja studente Ekonomskog fakulteta kroz aktivnosti van učionice.",
     opis: [
-      "Stručna ekskurzija pokrenuta 2016. godine — projekat upoznaje studente sa iskustvima u inostranstvu i master programima, uz upoznavanje novih kultura, gradova i kolega. Do sada realizovano 4 ekskurzije, sa preko 450 studenata.",
+      "Stručna ekskurzija pokrenuta 2016. godine. Projekat upoznaje studente sa iskustvima u inostranstvu i master programima, uz upoznavanje novih kultura, gradova i kolega. Do sada realizovano 4 ekskurzije, sa preko 450 studenata.",
     ],
     sekcije: [
       {
         naslov: "Ekskurzije kroz godine",
         stavke: [
-          "Milano vol. 1 (oktobar 2016) — poseta univerzitetu Bocconi i Trst; obišli i videli Veneciju, Monzu, Trst, jezero Komo",
-          "Rim vol. 2 (oktobar 2017) — poseta univerzitetu Sapienza; obišli i Bolonju, Napulj, Firencu",
-          "Istanbul vol. 3 (oktobar 2018) — poseta 160 studenata, najveća ekskurzija do sada",
-          "Prag vol. 4 (oktobar 2019) — obišli i Beč (WU — Ekonomski fakultet) i Drezden",
+          "Milano vol. 1 (oktobar 2016): poseta univerzitetu Bocconi i Trst; obišli i videli Veneciju, Monzu, Trst, jezero Komo",
+          "Rim vol. 2 (oktobar 2017): poseta univerzitetu Sapienza; obišli i Bolonju, Napulj, Firencu",
+          "Istanbul vol. 3 (oktobar 2018): poseta 160 studenata, najveća ekskurzija do sada",
+          "Prag vol. 4 (oktobar 2019): obišli i Beč (WU, Ekonomski fakultet) i Drezden",
         ],
       },
     ],

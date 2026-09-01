@@ -7,7 +7,7 @@ import { Reveal } from "@/components/reveal";
 import { PROJEKTI } from "@/data/projekti";
 
 export const metadata: Metadata = {
-  title: "Projekti — SEFA",
+  title: "Projekti",
   description: "Pregled projekata Studentske ekonomske fakultetske asocijacije.",
 };
 
