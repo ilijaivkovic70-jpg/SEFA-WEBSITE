@@ -1,24 +1,25 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 
 /**
  * Sekcija „Javi nam se” — kontakt scena u kojoj se ekran telefona odzumira.
  *
- * KONTAKT PODACI SE MENJAJU U NIZU `CONTACTS` ISPOD. Ovde je sve ostalo samo
+ * KONTAKT PODACI SE MENJAJU U NIZU `APPS` ISPOD. Ovde je sve ostalo samo
  * kretanje i raspored.
  *
  * Ideja: ono što se na početku vidi preko cele stranice — veliki SEFA logo i
  * „JAVI NAM SE” — zapravo je ekran telefona, samo jako uveličan. Skrol taj
  * kadar odzumira: telefon se pojavljuje u ruci, sve se smanjuje i sedne u
- * sredinu ekrana, pa se tek onda pale kontakti.
+ * sredinu ekrana, pa se tek onda pali početni ekran sa aplikacijama.
  *
  * Telefon je fotografija (`public/kontakt-telefon.webp`, ruka koja drži telefon
  * praznog ekrana, Unsplash licenca), a preko njenog ekrana stoji naš pravi HTML
- * sadržaj — zato su kontakti klikabilni i oštri na svakoj veličini. Mere ekrana
- * na fotografiji su u `PHOTO` ispod; ako se fotografija ikad zameni, menjaju se
- * samo ti brojevi.
+ * sadržaj — zato su aplikacije klikabilne i oštre na svakoj veličini. Fotografija
+ * je nakrivljena 0.66°, pa je CSS uspravlja (`.cs__photo`); mere ekrana na tako
+ * uspravljenoj slici su u `PHOTO` ispod, i ako se fotografija ikad zameni,
+ * menjaju se samo ti brojevi (i ugao).
  *
  * Dva režima, bira se posle montiranja:
  *
@@ -30,82 +31,201 @@ import { useEffect, useRef, useState } from "react";
  *      ostaje normalan i animacija ide u oba smera.
  *
  *  „static” (`prefers-reduced-motion`, i SSR pre nego što se JS izvrši)
- *      Telefon stoji u svojoj veličini, sa svim kontaktima. Bez sticky kadra,
- *      bez uvećanja i bez pomeranja — sadržaj je odmah čitljiv.
+ *      Telefon stoji u svojoj veličini, sa svim aplikacijama. Bez sticky
+ *      kadra, bez uvećanja i bez pomeranja — sadržaj je odmah čitljiv.
  *
  * Jedan `requestAnimationFrame` ciklus i jedan slušalac skrola; animiraju se
  * samo `transform` i `opacity`.
  */
 
-/* ---------- podaci ----------
-   Isti nalozi kao u traci u podnožju (`components/footer.tsx`) — ako se
-   neki nalog ili podatak promeni, menja se `href` i `value` ovde. */
+/* ---------- aplikacije na ekranu ----------
+   Sve što je na ekranu telefona je aplikacija: četiri mreže i tri prečice do
+   kontakta. Isti nalozi kao u traci u podnožju (`components/footer.tsx`) — ako
+   se neki podatak promeni, menja se `href` (i `detail`) ovde.
 
-type Contact = {
-  /** Naziv u listi, npr. „Instagram”. */
-  label: string;
-  /** Ono što se prikazuje ispod naziva: nalog, adresa, broj. */
-  value: string;
+   Crteži su inline SVG, bez fajlova i bez mreže, da ostanu oštri i kada je
+   ekran uvećan preko cele stranice. Boju pločice daje `data-app` u
+   `app/globals.css`. */
+
+type App = {
+  /** Bira boju pločice u CSS-u i služi kao ključ u listi. */
+  id: string;
+  /** Ime ispod ikonice, kao na početnom ekranu telefona. */
+  name: string;
+  /** Nalog, adresa ili broj — stoji u `title` i u opisu za čitač ekrana. */
+  detail: string;
   href: string;
   /** Mreže i mapa se otvaraju u novoj kartici; mailto i tel ostaju u istoj. */
   external?: boolean;
+  /** Stoji u traci pri dnu ekrana, bez imena — kao dok na pravom telefonu. */
+  dock?: boolean;
+  icon: ReactNode;
 };
 
-const CONTACTS: Contact[] = [
+const APPS: App[] = [
   {
-    label: "Instagram",
-    value: "@sefa_org",
+    id: "instagram",
+    name: "Instagram",
+    detail: "@sefa_org",
     href: "https://www.instagram.com/sefa_org/",
     external: true,
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect
+          x="3.7"
+          y="3.7"
+          width="16.6"
+          height="16.6"
+          rx="5"
+          stroke="#fff"
+          strokeWidth="1.9"
+        />
+        <circle cx="12" cy="12" r="3.9" stroke="#fff" strokeWidth="1.9" />
+        <circle cx="17.1" cy="6.9" r="1.2" fill="#fff" />
+      </svg>
+    ),
   },
   {
-    label: "LinkedIn",
-    value: "SEFA",
+    id: "linkedin",
+    name: "LinkedIn",
+    detail: "SEFA",
     href: "https://www.linkedin.com/company/sefa-org/",
     external: true,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="#fff"
+          d="M6.94 8.9v11.2H3.2V8.9h3.74Zm.24-3.46a2.06 2.06 0 1 1-4.12 0 2.06 2.06 0 0 1 4.12 0Zm13.22 8.24v6.42h-3.73v-5.99c0-1.5-.54-2.53-1.89-2.53-1.03 0-1.64.69-1.91 1.36-.1.24-.12.57-.12.9v6.26H9.02V8.9h3.73v1.6c.5-.77 1.38-1.87 3.37-1.87 2.46 0 4.28 1.6 4.28 5.05Z"
+        />
+      </svg>
+    ),
   },
   {
-    label: "Facebook",
-    value: "sefa.org",
+    id: "facebook",
+    name: "Facebook",
+    detail: "sefa.org",
     href: "https://www.facebook.com/sefa.org/",
     external: true,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="#fff"
+          d="M15.12 5.32H17V2.14A26.11 26.11 0 0 0 14.26 2C11.54 2 9.68 3.66 9.68 6.7v2.62H6.61v3.56h3.07V22h3.68v-9.12h3.06l.46-3.56h-3.52V7.05c0-1.05.28-1.73 1.76-1.73Z"
+        />
+      </svg>
+    ),
   },
   {
-    label: "YouTube",
-    value: "@sefa-org",
+    id: "youtube",
+    name: "YouTube",
+    detail: "@sefa-org",
     href: "https://www.youtube.com/@sefa-org",
     external: true,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="#f00"
+          d="M22.54 7.42a2.78 2.78 0 0 0-1.95-1.97C18.88 5 12 5 12 5s-6.88 0-8.59.45a2.78 2.78 0 0 0-1.95 1.97A29.1 29.1 0 0 0 1 12a29.1 29.1 0 0 0 .46 4.58 2.78 2.78 0 0 0 1.95 1.97C5.12 19 12 19 12 19s6.88 0 8.59-.45a2.78 2.78 0 0 0 1.95-1.97A29.1 29.1 0 0 0 23 12a29.1 29.1 0 0 0-.46-4.58Z"
+        />
+        <path fill="#fff" d="M9.75 15.02 15.52 12 9.75 8.98v6.04Z" />
+      </svg>
+    ),
   },
   {
-    label: "Email",
-    value: "office@sefa.org.rs",
+    id: "posta",
+    name: "Pošta",
+    detail: "office@sefa.org.rs",
     href: "mailto:office@sefa.org.rs",
+    dock: true,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="2.6" y="5.6" width="18.8" height="12.8" rx="2.8" fill="#fff" />
+        <path
+          d="M4.9 8.4 12 13.3l7.1-4.9"
+          fill="none"
+          stroke="#0b62dd"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
   },
   {
-    label: "Telefon",
-    value: "+381 63 1521141",
+    id: "telefon",
+    name: "Telefon",
+    detail: "+381 63 1521141",
     href: "tel:+381631521141",
+    dock: true,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="#fff"
+          d="M6.55 3.2a1.65 1.65 0 0 1 2.28.5l1.5 2.38a1.65 1.65 0 0 1-.32 2.15l-1.2.99a.6.6 0 0 0-.15.72 10.6 10.6 0 0 0 5.08 5.08.6.6 0 0 0 .72-.15l.99-1.2a1.65 1.65 0 0 1 2.15-.32l2.38 1.5c.72.46.94 1.4.5 2.28l-.86 1.36c-.5.8-1.46 1.2-2.38.98A17 17 0 0 1 3.9 6.4c-.22-.92.18-1.88.98-2.38l1.67-.82Z"
+        />
+      </svg>
+    ),
   },
   {
-    label: "Lokacija",
-    value: "Kamenička 6, Beograd",
+    id: "mapa",
+    name: "Mapa",
+    detail: "Kamenička 6, Beograd",
     href: "https://maps.google.com/?q=Kamenička+6+Beograd",
     external: true,
+    dock: true,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          fill="#fff"
+          d="M12 2.4a6.9 6.9 0 0 0-6.9 6.9c0 4.9 5.98 11.6 6.24 11.88a.9.9 0 0 0 1.32 0c.26-.29 6.24-6.98 6.24-11.88A6.9 6.9 0 0 0 12 2.4Zm0 9.6a2.7 2.7 0 1 1 0-5.4 2.7 2.7 0 0 1 0 5.4Z"
+        />
+      </svg>
+    ),
   },
 ];
 
+/** Jedna ikonica: pločica sa crtežom, a u mreži i ime ispod nje. */
+function AppLink({
+  app,
+  index,
+  withName = true,
+}: {
+  app: App;
+  index: number;
+  withName?: boolean;
+}) {
+  return (
+    <a
+      className="cs__app-link"
+      data-app={app.id}
+      style={{ "--i": index } as React.CSSProperties}
+      href={app.href}
+      title={app.detail}
+      aria-label={`${app.name} — ${app.detail}`}
+      {...(app.external
+        ? { target: "_blank", rel: "noopener noreferrer" }
+        : {})}
+    >
+      <span className="cs__tile">{app.icon}</span>
+      {withName ? <span className="cs__app-name">{app.name}</span> : null}
+    </a>
+  );
+}
+
 /* ---------- mere sa fotografije ----------
-   Izmereno na `public/kontakt-telefon.webp` (2000 × 2000): ekran zauzima
-   x 663–1370, y 186–1715, a vrh telefona je na y 147. Sve kao udeo slike. */
+   Izmereno na `public/kontakt-telefon.webp` (2000 × 2000), pošto CSS uspravi
+   nagib od 0.66°: ekran zauzima x 662–1370, y 182–1720, a vrh telefona je na
+   y 145. Ovde su iste vrednosti kao u `.cs__screen` (sa jednim pikselom
+   preklopa), sve kao udeo slike. */
 
 const PHOTO = {
   /** Vidljivi ekran telefona. */
-  screenLeft: 0.3315,
-  screenTop: 0.093,
-  screenWidth: 0.354,
-  screenHeight: 0.765,
+  screenLeft: 0.3305,
+  screenTop: 0.0905,
+  screenWidth: 0.355,
+  screenHeight: 0.77,
   /** Gornja ivica telefona — od nje zavisi koliko uvećanja treba na početku. */
-  phoneTop: 0.0735,
+  phoneTop: 0.0725,
 } as const;
 
 /* ---------- tempo scene (udeo napretka kroz sekciju, 0 → 1) ---------- */
@@ -243,7 +363,10 @@ export function ContactScene() {
     let p = 0;
     let primed = false;
     let frame = 0;
-    let lastRows = false;
+    // pre prvog crtanja lista je vidljiva (takvo je osnovno stanje, da radi i
+    // bez JS-a) — zato se polazi od stvarnog stanja, inače bi ostala upaljena
+    // preko uvećanog ekrana na vrhu sekcije
+    let lastRows = section.dataset.rows === "in";
 
     const paint = () => {
       frame = 0;
@@ -349,12 +472,17 @@ export function ContactScene() {
           }}
         >
           <div className="cs__phone" ref={phoneRef}>
+            {/* `unoptimized`: fotografija je već pripremljen webp sa providnom
+                pozadinom (77 KB), a Next-ov optimizator joj u ovom projektu
+                izbaci alfa kanal — providno postane crno, pa telefon i ruka
+                nestanu u crnom kvadratu. Ovako se šalje original. */}
             <Image
               src="/kontakt-telefon.webp"
               alt=""
               width={2000}
               height={2000}
               priority
+              unoptimized
               className="cs__photo"
             />
 
@@ -369,6 +497,7 @@ export function ContactScene() {
                     width={2453}
                     height={900}
                     priority
+                    unoptimized
                     className="cs__logo"
                   />
                   <h1 id="kontakt-naslov" className="cs__title" ref={titleRef}>
@@ -376,29 +505,23 @@ export function ContactScene() {
                   </h1>
                 </div>
 
-                <ul className="cs__list">
-                  {CONTACTS.map((contact, i) => (
-                    <li
-                      key={contact.label}
-                      className="cs__row"
-                      style={{ "--i": i } as React.CSSProperties}
-                    >
-                      <a
-                        className="cs__link"
-                        href={contact.href}
-                        {...(contact.external
-                          ? { target: "_blank", rel: "noopener noreferrer" }
-                          : {})}
-                      >
-                        <span className="cs__label">{contact.label}</span>
-                        <span className="cs__value">{contact.value}</span>
-                        <span className="cs__arrow" aria-hidden="true">
-                          ↗
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
+                <div className="cs__apps">
+                  {APPS.map((app, i) =>
+                    app.dock ? null : (
+                      <AppLink key={app.id} app={app} index={i} />
+                    )
+                  )}
+                </div>
+
+                <div className="cs__dock">
+                  {APPS.map((app, i) =>
+                    app.dock ? (
+                      <AppLink key={app.id} app={app} index={i} withName={false} />
+                    ) : null
+                  )}
+                </div>
+
+                <span className="cs__home" aria-hidden="true" />
               </div>
 
               <span className="cs__glass" aria-hidden="true" />
@@ -409,7 +532,7 @@ export function ContactScene() {
         <div className="cs__note">
           <p className="cs__lead">
             Sva pitanja, predlozi i saradnje su dobrodošli, pronađi nas na
-            društvenim mrežama ili prođi kroz kontakt podatke ispod.
+            društvenim mrežama ili nam se javi preko aplikacija na ekranu.
           </p>
           <p className="cs__hint" aria-hidden="true">
             <span className="cs__hint-line" />

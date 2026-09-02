@@ -1,5 +1,7 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 /* Adrese naloga — ako se neki nalog promeni, menja se samo `href`. */
 const SOCIAL_LINKS = [
   {
@@ -59,14 +61,20 @@ function MarqueeGroup({ hidden }: { hidden?: boolean }) {
 }
 
 export function Footer() {
+  /* Kontakt stranica već pokazuje iste naloge kao ikonice na ekranu
+     telefona — traka bi tu bila dupla, pa se na njoj ne prikazuje. */
+  const isKontakt = usePathname() === "/kontakt";
+
   return (
     <footer className="border-t">
-      <div className="marquee">
-        <div className="marquee__track">
-          <MarqueeGroup />
-          <MarqueeGroup hidden />
+      {isKontakt ? null : (
+        <div className="marquee">
+          <div className="marquee__track">
+            <MarqueeGroup />
+            <MarqueeGroup hidden />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="border-t">
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-muted-foreground">

@@ -4164,11 +4164,11 @@
   --screen-gap: 2rem;
   /* Okvir je cela fotografija (kvadrat). Bira se tako da ekran telefona ceo
      stane u kadar; ruka i zglob smeju da izađu ispod donje ivice, kao na
-     fotografiji koja se drži u ruci. 0.765 je udeo ekrana u visini slike. */
-  --box-h: min(calc((100vh - var(--stage-top) - var(--screen-gap) * 2) / 0.765), 70rem);
-  --box-h: min(calc((100svh - var(--stage-top) - var(--screen-gap) * 2) / 0.765), 70rem);
+     fotografiji koja se drži u ruci. 0.77 je udeo ekrana u visini slike. */
+  --box-h: min(calc((100vh - var(--stage-top) - var(--screen-gap) * 2) / 0.77), 70rem);
+  --box-h: min(calc((100svh - var(--stage-top) - var(--screen-gap) * 2) / 0.77), 70rem);
   --box-w: var(--box-h);
-  --screen-w: calc(var(--box-w) * 0.354);
+  --screen-w: calc(var(--box-w) * 0.355);
   /* „jedan piksel” ekrana: sadržaj je zadat u merama pravog telefona
      (ekran širine 372) i množi se ovim brojem */
   --phone-u: max(0.82px, calc(var(--screen-w) / 372));
@@ -4343,10 +4343,10 @@
 .cs[data-mode="scroll"] .cs__phone {
   position: absolute;
   left: 50%;
-  top: calc(var(--screen-gap) - var(--box-h) * 0.093);
+  top: calc(var(--screen-gap) - var(--box-h) * 0.0905);
   /* u kadru se centrira EKRAN, a ne cela slika: telefon na fotografiji nije
-     tačno na sredini kvadrata (sredina ekrana je na 50.85% širine) */
-  margin-left: calc(var(--box-w) * -0.5085);
+     tačno na sredini kvadrata (sredina ekrana je na 50.81% širine) */
+  margin-left: calc(var(--box-w) * -0.5081);
 }
 .cs[data-mode="static"] .cs__phone {
   transform: none;
@@ -4358,22 +4358,41 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  /* telefon na fotografiji je nakrivljen 0.66° udesno; slika se uspravlja da
+     bi naš ekran preko nje mogao da bude običan pravougaonik — inače uglovi
+     tamne podloge vire preko okvira, a s druge strane se vidi beli ekran */
+  transform: rotate(-0.66deg);
+  /* Između palca i ivice telefona je u fotografiji ostao zatvoren džep bele
+     studijske pozadine (x 595–624, y 1029–1210 od 2000) — onaj ko je vadio
+     pozadinu ga nije izrezao jer nije spojen sa spoljnom belinom. Maska ga
+     skida, pa se kroz procep vidi pozadina stranice; sam fajl ostaje
+     netaknut. Putanja je obris tog džepa, prosiren za ~2px zbog mekog ruba.
+     Maska se računa pre rotacije, pa su tačke u merama same slike. */
+  --pocket-mask: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%202000%202000'%3E%3Cfilter%20id='s'%20x='-2%'%20y='-2%'%20width='104%'%20height='104%'%3E%3CfeGaussianBlur%20stdDeviation='2.5'/%3E%3C/filter%3E%3Cpath%20filter='url(%23s)'%20fill='%23fff'%20fill-rule='evenodd'%20d='M0%200H2000V2000H0ZM614%201029L612%201037L611%201045L607%201053L604%201061L603%201069L601%201077L600%201085L600%201093L600%201101L600%201109L600%201117L599%201125L598%201133L598%201141L598%201149L597%201157L597%201165L596%201173L596%201181L596%201189L595%201197L595%201205L596%201210L602%201210L606%201205L620%201197L621%201189L621%201181L621%201173L621%201165L621%201157L622%201149L622%201141L622%201133L623%201125L623%201117L623%201109L623%201101L623%201093L623%201085L623%201077L624%201069L624%201061L624%201053L624%201045L623%201037L623%201029Z'/%3E%3C/svg%3E");
+  -webkit-mask-image: var(--pocket-mask);
+  mask-image: var(--pocket-mask);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
   opacity: var(--frame);
   filter: brightness(0.46) contrast(1.08) saturate(0.6);
 }
 
 /* ---------- ekran preko fotografije ----------
-   Malo je veći od izmerenog ekrana da sigurno prekrije svetlu površinu
-   sa fotografije, ali ne toliko da pređe preko okvira telefona. */
+   Izmereno na uspravljenoj fotografiji: ekran zauzima tačno x 662–1370,
+   y 182–1720 (od 2000). Ovde je svuda po jedan piksel više — toliko treba da
+   beli ekran sa fotografije nigde ne proviri, a da podloga ne izađe na okvir.
+   Poluprečnik uglova je najveći pri kome ništa belo ne ostane otkriveno. */
 
 .cs__screen {
   position: absolute;
-  left: 32.95%;
-  top: 9.1%;
-  width: 35.8%;
-  height: 76.9%;
+  left: 33.05%;
+  top: 9.05%;
+  width: 35.5%;
+  height: 77%;
   overflow: hidden;
-  border-radius: calc(var(--screen-w) * 0.082);
+  border-radius: calc(var(--screen-w) * 0.104);
   background: var(--background);
 }
 /* ekran dobija svoju nijansu tek kad se telefon pojavi; dok je kadar pun
@@ -4391,16 +4410,24 @@
       transparent 62%
     ),
     #0a1413;
+  /* Sam rub ekrana je na pravom telefonu crn, tek se unutra vidi boja slike.
+     Bez ovoga se zelenkasta podloga (#0a1413) sudara sa skoro crnim okvirom
+     (7,5,4) i tanak preklop se vidi kao ivica koja štrči. */
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 calc(var(--screen-w) * 0.007) #05080a,
+    inset 0 0 calc(var(--screen-w) * 0.02) calc(var(--screen-w) * 0.006)
+      rgba(3, 6, 7, 0.85);
 }
 
 /* urez sa fotografije — ostaje vidljiv preko našeg sadržaja */
 .cs__notch {
   position: absolute;
   top: 0;
-  left: 25.5%;
+  left: 26.5%;
   z-index: 3;
-  width: 52.5%;
-  height: calc(var(--screen-w) * 0.075);
+  width: 48.6%;
+  height: calc(var(--screen-w) * 0.0817);
   border-radius: 0 0 calc(var(--screen-w) * 0.03) calc(var(--screen-w) * 0.03);
   opacity: var(--frame);
   background: #05080a;
@@ -4433,7 +4460,7 @@
   flex-direction: column;
   height: 100%;
   padding: calc(54 * var(--phone-u)) calc(26 * var(--phone-u))
-    calc(26 * var(--phone-u));
+    calc(14 * var(--phone-u));
   font-size: calc(16 * var(--phone-u));
 }
 
@@ -4458,7 +4485,7 @@
   width: fit-content;
   margin-inline: auto;
   font-family: var(--font-heading), sans-serif;
-  font-size: calc(38 * var(--phone-u));
+  font-size: calc(30 * var(--phone-u));
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -4466,106 +4493,140 @@
   white-space: nowrap;
 }
 
-.cs__list {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  margin: calc(24 * var(--phone-u)) 0 0;
-  padding: 0;
-  list-style: none;
-  border-top: 1px solid rgba(234, 242, 240, 0.1);
-  transition: border-color 0.45s ease;
-}
-/* prva linija se pali zajedno sa prvim kontaktom, da ekran pre toga
-   ne stoji sa jednom crtom u praznom */
-.cs[data-mode="scroll"]:not([data-rows="in"]) .cs__list {
-  border-top-color: transparent;
+/* ---------- početni ekran ----------
+   Sve na ekranu je aplikacija: društvene mreže su ikonice ispod naslova, a
+   prečice do kontakta (pošta, telefon, mapa) stoje u traci pri dnu — tamo gde
+   su na pravom telefonu Telefon i Pošta. Ispod trake je crtica za povratak na
+   početni ekran. Ikonice se pale jedna po jedna, isto kao ranije lista. */
+
+.cs__apps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-content: start;
+  gap: calc(26 * var(--phone-u)) calc(6 * var(--phone-u));
+  margin-top: calc(30 * var(--phone-u));
 }
 
-/* osnovno stanje je završno (vidljivo), pa lista stoji i bez JS-a;
-   tek pokretni režim je pre otkrivanja sakrije */
-.cs__row {
+/* traka je zalepljena za dno ekrana, iznad crtice */
+.cs__dock {
   display: flex;
-  flex: 1 1 0;
-  min-height: calc(44 * var(--phone-u));
-  border-bottom: 1px solid rgba(234, 242, 240, 0.1);
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: auto;
+  padding: calc(9 * var(--phone-u));
+  border: 1px solid rgba(234, 242, 240, 0.07);
+  border-radius: calc(30 * var(--phone-u));
+  background: rgba(234, 242, 240, 0.055);
+}
+
+/* osnovno stanje je završno (vidljivo), pa ekran stoji i bez JS-a;
+   tek pokretni režim ga pre otkrivanja sakrije */
+.cs__app-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(7 * var(--phone-u));
   transition:
     opacity 0.45s ease,
-    transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1),
-    border-color 0.3s ease;
+    transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.cs[data-mode="scroll"]:not([data-rows="in"]) .cs__row {
+.cs[data-mode="scroll"]:not([data-rows="in"]) .cs__app-link {
   opacity: 0;
   transform: translateY(calc(12 * var(--phone-u)));
 }
-/* jedan po jedan, na svakih 80ms — kad se skroluje nazad, nestaju odjednom */
-.cs[data-rows="in"] .cs__row {
-  transition-delay: calc(var(--i) * 80ms);
-}
-.cs__row:last-child {
-  border-bottom: 0;
+/* jedna po jedna, na svakih 70ms — kad se skroluje nazad, nestaju odjednom */
+.cs[data-rows="in"] .cs__app-link {
+  transition-delay: calc(var(--i) * 70ms);
 }
 
-.cs__link {
+.cs__tile {
   display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-areas:
-    "label arrow"
-    "value arrow";
-  align-content: center;
-  align-items: center;
-  gap: calc(3 * var(--phone-u)) calc(12 * var(--phone-u));
-  width: 100%;
+  place-items: center;
+  width: calc(58 * var(--phone-u));
+  height: calc(58 * var(--phone-u));
+  /* iOS pločica: zaobljenje je oko četvrtine stranice */
+  border-radius: calc(15 * var(--phone-u));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.09),
+    0 calc(4 * var(--phone-u)) calc(10 * var(--phone-u)) rgba(0, 0, 0, 0.32);
+  transition: transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.cs__tile svg {
+  display: block;
+  width: 62%;
+  height: 62%;
+}
+[data-app="youtube"] .cs__tile svg {
+  width: 74%;
+  height: 74%;
 }
 
-.cs__label {
-  grid-area: label;
-  font-family: var(--font-heading), sans-serif;
-  font-size: calc(17.5 * var(--phone-u));
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  color: var(--foreground);
-  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+.cs__app-name {
+  font-size: calc(10.5 * var(--phone-u));
+  letter-spacing: 0.005em;
+  line-height: 1.2;
+  color: rgba(234, 242, 240, 0.86);
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
-.cs__value {
-  grid-area: value;
-  font-family: var(--font-mono), monospace;
-  font-size: calc(12.5 * var(--phone-u));
-  letter-spacing: 0.01em;
-  color: var(--muted-foreground);
-  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+[data-app="instagram"] .cs__tile {
+  background:
+    radial-gradient(
+      120% 120% at 27% 107%,
+      #fdd76a 0%,
+      #f7803b 24%,
+      #e6396b 48%,
+      rgba(207, 46, 146, 0) 78%
+    ),
+    linear-gradient(155deg, #8a3ab9 0%, #4c5fd7 100%);
 }
-
-.cs__arrow {
-  grid-area: arrow;
-  font-size: calc(13 * var(--phone-u));
-  line-height: 1;
-  color: var(--primary);
-  opacity: 0.4;
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+[data-app="linkedin"] .cs__tile {
+  background: #0a66c2;
+}
+[data-app="facebook"] .cs__tile {
+  background: linear-gradient(180deg, #18a5ff 0%, #0a63e0 100%);
+}
+[data-app="youtube"] .cs__tile {
+  background: #fff;
+}
+[data-app="posta"] .cs__tile {
+  background: linear-gradient(180deg, #5ab4ff 0%, #0b62dd 100%);
+}
+[data-app="telefon"] .cs__tile {
+  background: linear-gradient(180deg, #4cd964 0%, #1fa845 100%);
+}
+[data-app="mapa"] .cs__tile {
+  background: linear-gradient(165deg, #7ed3a1 0%, #37a2b8 100%);
 }
 
 @media (hover: hover) {
-  .cs__link:hover .cs__label,
-  .cs__link:hover .cs__value {
-    transform: translateX(calc(4 * var(--phone-u)));
-  }
-  .cs__link:hover .cs__arrow {
-    opacity: 1;
-    transform: translate(calc(2 * var(--phone-u)), calc(-2 * var(--phone-u)));
-  }
-  .cs__row:hover {
-    border-bottom-color: rgba(234, 242, 240, 0.24);
+  .cs__app-link:hover .cs__tile {
+    transform: translateY(calc(-3 * var(--phone-u))) scale(1.05);
   }
 }
-
-.cs__link:focus-visible {
+.cs__app-link:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: calc(4 * var(--phone-u));
-  border-radius: calc(6 * var(--phone-u));
+  border-radius: calc(8 * var(--phone-u));
+}
+
+/* crtica za povratak na početni ekran */
+.cs__home {
+  align-self: center;
+  flex: none;
+  width: calc(118 * var(--phone-u));
+  height: calc(4.5 * var(--phone-u));
+  margin-top: calc(14 * var(--phone-u));
+  border-radius: 999px;
+  background: rgba(234, 242, 240, 0.3);
+  transition: opacity 0.45s ease;
+}
+.cs[data-mode="scroll"]:not([data-rows="in"]) .cs__home {
+  opacity: 0;
+}
+.cs[data-rows="in"] .cs__home {
+  transition-delay: 560ms;
 }
 
 /* ---------- uži ekrani ---------- */
@@ -4592,7 +4653,9 @@
   .cs__hint-line {
     animation: none;
   }
-  .cs__row {
+  .cs__app-link,
+  .cs__home,
+  .cs__tile {
     transition: none;
   }
 }
