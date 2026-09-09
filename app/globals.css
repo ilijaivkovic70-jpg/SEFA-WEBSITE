@@ -609,7 +609,7 @@
 .sc__cont-tint {
   position: absolute;
   inset: 0;
-  background: rgba(7, 16, 15, 0.22);
+  background: rgba(7, 16, 15, 0.5);
   mix-blend-mode: multiply;
 }
 .sc__cont-fade {
