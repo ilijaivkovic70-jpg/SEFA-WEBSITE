@@ -474,14 +474,58 @@ export function ContactScene() {
       }
     };
 
+    // sopstvena, kontrolisana animacija skrola — ugrađeni `smooth` zna da
+    // bude nagao na velikoj razdaljini (ili čak trenutan uz „smanjeno
+    // kretanje” na nivou sistema), pa umesto njega koristimo isto meko
+    // usporavanje kao i ostatak scene, sa fiksnim trajanjem
     const runAutoScroll = () => {
       timer = 0;
       triggered = true;
       const state = rawProgress();
       if (!state || state.raw >= 0.05) return;
+
       const target = 0.88;
-      const delta = (target - state.raw) * state.travel;
-      window.scrollTo({ top: window.scrollY + delta, behavior: "smooth" });
+      const startY = window.scrollY;
+      const endY = startY + (target - state.raw) * state.travel;
+      const duration = 1100;
+      const startTime = performance.now();
+      let cancelled = false;
+
+      // ako gost sam uhvati miš, dodirne ekran ili pritisne taster dok
+      // animacija traje, odmah joj se sklanjamo s puta
+      const stopOnIntent = () => {
+        cancelled = true;
+      };
+      window.addEventListener("wheel", stopOnIntent, {
+        passive: true,
+        once: true,
+      });
+      window.addEventListener("touchstart", stopOnIntent, {
+        passive: true,
+        once: true,
+      });
+      window.addEventListener("keydown", stopOnIntent, { once: true });
+
+      const cleanup = () => {
+        window.removeEventListener("wheel", stopOnIntent);
+        window.removeEventListener("touchstart", stopOnIntent);
+        window.removeEventListener("keydown", stopOnIntent);
+      };
+
+      const tick = (now: number) => {
+        if (cancelled) {
+          cleanup();
+          return;
+        }
+        const t = clamp((now - startTime) / duration, 0, 1);
+        window.scrollTo(0, startY + (endY - startY) * ease(t));
+        if (t < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          cleanup();
+        }
+      };
+      requestAnimationFrame(tick);
     };
 
     const onScroll = () => {
