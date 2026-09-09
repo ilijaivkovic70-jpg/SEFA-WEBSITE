@@ -447,6 +447,61 @@ export function ContactScene() {
     };
   }, [mode]);
 
+  // kad gost stigne do uvećanog „Javi nam se” i zastane tu 3 sekunde, scena
+  // sama odskrola do telefona sa aplikacijama — bez toga bi trebalo ručno
+  // skrolovati kroz ceo prelaz da bi se videli kontakti
+  useEffect(() => {
+    const section = sectionRef.current;
+    const stage = stageRef.current;
+    if (!section || !stage || mode !== "scroll") return;
+
+    let triggered = false;
+    let timer: ReturnType<typeof setTimeout> | 0 = 0;
+
+    const rawProgress = () => {
+      const travel = section.offsetHeight - stage.offsetHeight;
+      if (travel <= 0) return null;
+      return {
+        travel,
+        raw: clamp(-section.getBoundingClientRect().top / travel, 0, 1),
+      };
+    };
+
+    const cancelPending = () => {
+      if (timer) {
+        clearTimeout(timer);
+        timer = 0;
+      }
+    };
+
+    const runAutoScroll = () => {
+      timer = 0;
+      triggered = true;
+      const state = rawProgress();
+      if (!state || state.raw >= 0.05) return;
+      const target = 0.88;
+      const delta = (target - state.raw) * state.travel;
+      window.scrollTo({ top: window.scrollY + delta, behavior: "smooth" });
+    };
+
+    const onScroll = () => {
+      if (triggered) return;
+      const state = rawProgress();
+      if (!state) return;
+      if (state.raw > 0 && state.raw < 0.05) {
+        if (!timer) timer = setTimeout(runAutoScroll, 3000);
+      } else if (timer) {
+        cancelPending();
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelPending();
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [mode]);
+
   return (
     <section
       ref={sectionRef}
