@@ -447,7 +447,7 @@ export function ContactScene() {
     };
   }, [mode]);
 
-  // kad gost stigne do uvećanog „Javi nam se” i zastane tu 3 sekunde, scena
+  // kad gost stigne do uvećanog „Javi nam se” i zastane tu 1.5 sekunde, scena
   // sama odskrola do telefona sa aplikacijama — bez toga bi trebalo ručno
   // skrolovati kroz ceo prelaz da bi se videli kontakti
   useEffect(() => {
@@ -489,7 +489,7 @@ export function ContactScene() {
       const state = rawProgress();
       if (!state) return;
       if (state.raw < 0.05) {
-        if (!timer) timer = setTimeout(runAutoScroll, 3000);
+        if (!timer) timer = setTimeout(runAutoScroll, 1500);
       } else if (timer) {
         cancelPending();
       }
