@@ -488,15 +488,21 @@ export function ContactScene() {
       if (triggered) return;
       const state = rawProgress();
       if (!state) return;
-      if (state.raw > 0 && state.raw < 0.05) {
+      if (state.raw < 0.05) {
         if (!timer) timer = setTimeout(runAutoScroll, 3000);
       } else if (timer) {
         cancelPending();
       }
     };
 
+    // ako je gost stigao pravo na sekciju (npr. klik na „Kontakt” u meniju),
+    // stranica se otvori već u ovom kadru bez ijednog scroll eventa — zato se
+    // proveri i odmah, ne samo pri skrolu
+    const initial = requestAnimationFrame(onScroll);
+
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
+      cancelAnimationFrame(initial);
       cancelPending();
       window.removeEventListener("scroll", onScroll);
     };
