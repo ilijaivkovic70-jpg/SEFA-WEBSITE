@@ -218,6 +218,45 @@ export function SectorsScroll() {
     };
   }, [mode]);
 
+  // pozadina reaguje na pokret miša — blagi 3D nagib daje utisak dubine
+  // umesto ravne slike zalepljene za ekran
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section || mode !== "scroll") return;
+
+    let frame = 0;
+    let mx = 0;
+    let my = 0;
+
+    const paint = () => {
+      frame = 0;
+      section.style.setProperty("--mx", mx.toFixed(3));
+      section.style.setProperty("--my", my.toFixed(3));
+    };
+
+    const onMove = (e: PointerEvent) => {
+      mx = e.clientX / window.innerWidth - 0.5;
+      my = e.clientY / window.innerHeight - 0.5;
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    const onLeave = () => {
+      mx = 0;
+      my = 0;
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerleave", onLeave);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerleave", onLeave);
+      if (frame) cancelAnimationFrame(frame);
+      section.style.removeProperty("--mx");
+      section.style.removeProperty("--my");
+    };
+  }, [mode]);
+
   // statični režim (mobilni): poglavlje se otkriva kad uđe u vidno polje
   useEffect(() => {
     const section = sectionRef.current;
@@ -275,14 +314,16 @@ export function SectorsScroll() {
       aria-labelledby="sektori-naslov"
     >
       <div className="sc__cont" aria-hidden="true">
-        <div className="sc__cont-move">
-          <Image
-            src="/sektori-pozadina.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="sc__cont-img"
-          />
+        <div className="sc__cont-tilt">
+          <div className="sc__cont-move">
+            <Image
+              src="/sektori-pozadina.jpg"
+              alt=""
+              fill
+              sizes="100vw"
+              className="sc__cont-img"
+            />
+          </div>
         </div>
         <div className="sc__cont-tint" />
         <div className="sc__cont-fade" />

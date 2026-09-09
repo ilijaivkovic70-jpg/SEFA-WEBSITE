@@ -586,6 +586,10 @@
 /* Fotografija izranja iz tamnog dna "žive" pozadine iznad (isti
    gotovo-crni ton) i tone se nazad u ravnu pozadinu ka dnu panela —
    spoj između sekcija ostaje bez vidljive linije ili reza. */
+.sc {
+  --mx: 0;
+  --my: 0;
+}
 .sc__cont {
   position: absolute;
   inset: 0 0 auto 0;
@@ -594,11 +598,22 @@
   z-index: 0;
   pointer-events: none;
   background: var(--background);
+  perspective: 1400px;
+}
+/* nagib prati pokret miša — daje utisak da je slika stvarna,
+   3D površina, a ne ravno zalepljena za ekran */
+.sc__cont-tilt {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--my) * -7deg)) rotateY(calc(var(--mx) * 9deg));
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
 }
 .sc__cont-move {
   position: absolute;
-  inset: -12% 0;
-  transform: translate3d(0, calc(var(--p) * 3%), 0);
+  inset: -18% -10%;
+  transform: translate3d(0, calc(var(--p) * 3%), 0) scale(1.1);
   will-change: transform;
 }
 .sc__cont-img {
@@ -1114,6 +1129,9 @@
     transition: none !important;
   }
   .sc__cont-move {
+    transform: none;
+  }
+  .sc__cont-tilt {
     transform: none;
   }
 }
