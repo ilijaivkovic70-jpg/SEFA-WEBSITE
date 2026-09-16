@@ -15,8 +15,9 @@ import { useEffect, useRef, useState } from "react";
  *
  * Etape (data-stage): 0 uvod → 1, 2, 3 sektori → 4 zaključak.
  *
- * Na mobilnom i kad je uključeno „smanjeno kretanje” nema sticky animacije —
- * ista poglavlja se prikazuju jedno ispod drugog (vidi `data-mode` u CSS-u).
+ * Sticky animacija radi na svim širinama (i na telefonu). Samo kad je
+ * uključeno „smanjeno kretanje” poglavlja stoje jedno ispod drugog
+ * (vidi `data-mode` u CSS-u).
  *
  * Sadržaj sektora se menja u nizu SECTORS ispod.
  */
@@ -159,20 +160,15 @@ export function SectorsScroll() {
   // sadržaj ostaje odmah vidljiv i čitljiv
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const wide = window.matchMedia("(min-width: 1024px)");
 
     const sync = () => {
       setAnimated(!reduced.matches);
-      setMode(!reduced.matches && wide.matches ? "scroll" : "static");
+      setMode(!reduced.matches ? "scroll" : "static");
     };
 
     sync();
     reduced.addEventListener("change", sync);
-    wide.addEventListener("change", sync);
-    return () => {
-      reduced.removeEventListener("change", sync);
-      wide.removeEventListener("change", sync);
-    };
+    return () => reduced.removeEventListener("change", sync);
   }, []);
 
   // sticky režim: napredak kroz sekciju → --p, --lp i data-stage
@@ -218,8 +214,8 @@ export function SectorsScroll() {
     };
   }, [mode]);
 
-  // pozadina reaguje na pokret miša — blagi 3D nagib daje utisak dubine
-  // umesto ravne slike zalepljene za ekran
+  // pozadina reaguje na pokret miša (ili prsta na telefonu) — blagi 3D nagib
+  // daje utisak dubine umesto ravne slike zalepljene za ekran
   useEffect(() => {
     const section = sectionRef.current;
     if (!section || mode !== "scroll") return;
@@ -240,6 +236,14 @@ export function SectorsScroll() {
       if (!frame) frame = requestAnimationFrame(paint);
     };
 
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      mx = t.clientX / window.innerWidth - 0.5;
+      my = t.clientY / window.innerHeight - 0.5;
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
     const onLeave = () => {
       mx = 0;
       my = 0;
@@ -248,8 +252,14 @@ export function SectorsScroll() {
 
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerleave", onLeave);
+    window.addEventListener("touchstart", onTouch, { passive: true });
+    window.addEventListener("touchmove", onTouch, { passive: true });
+    window.addEventListener("touchend", onLeave);
     return () => {
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("touchstart", onTouch);
+      window.removeEventListener("touchmove", onTouch);
+      window.removeEventListener("touchend", onLeave);
       window.removeEventListener("pointerleave", onLeave);
       if (frame) cancelAnimationFrame(frame);
       section.style.removeProperty("--mx");

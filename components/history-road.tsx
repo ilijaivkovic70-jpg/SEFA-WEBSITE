@@ -18,7 +18,7 @@ import { historyMilestones } from "@/lib/history-milestones";
  *
  * Dva režima, bira se posle montiranja:
  *
- *  „cinema” (desktop, ≥1024px, bez „smanjenog kretanja”)
+ *  „cinema” (sve širine, i telefon, bez „smanjenog kretanja”)
  *      Sekcija je visoka (uvod + stanica × N + kraj), a unutar nje stoji jedan
  *      `sticky` kadar od 100vh. Napredak skrola pomera kameru duž putanje:
  *      SVG `viewBox` se svaki kadar pomera tako da trenutna tačka na putu
@@ -26,7 +26,7 @@ import { historyMilestones } from "@/lib/history-milestones";
  *      se linija samo iscrtava. Ceo kadar se blago rotira u smeru krivine
  *      (najviše ±3.4°). Nema scroll-jackinga — skrol ostaje potpuno normalan.
  *
- *  „flow” (mobilni, tablet, `prefers-reduced-motion`, i SSR)
+ *  „flow” (`prefers-reduced-motion` i SSR)
  *      Obična vertikalna lista. Iza nje stoji vijugava linija koja se iscrtava
  *      dok se skroluje, a stanice se otkrivaju jedna po jedna
  *      (IntersectionObserver). Bez pomeranja kamere, rotacije i paralakse.
@@ -97,20 +97,15 @@ export function HistoryRoad() {
   /* ---------- izbor režima ---------- */
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const wide = window.matchMedia("(min-width: 1024px)");
 
     const sync = () => {
       setAnimated(!reduced.matches);
-      setMode(!reduced.matches && wide.matches ? "cinema" : "flow");
+      setMode(!reduced.matches ? "cinema" : "flow");
     };
 
     sync();
     reduced.addEventListener("change", sync);
-    wide.addEventListener("change", sync);
-    return () => {
-      reduced.removeEventListener("change", sync);
-      wide.removeEventListener("change", sync);
-    };
+    return () => reduced.removeEventListener("change", sync);
   }, []);
 
   /* ---------- „cinema”: kamera putuje putanjom ---------- */

@@ -561,7 +561,7 @@
      1) osnovni raspored — mobilni, bez JS-a i uz „smanjeno
         kretanje”: tri poglavlja jedno ispod drugog, sve vidljivo;
      2) [data-anim="on"] — početna (skrivena) stanja i prelazi;
-     3) @media (min-width: 1024px) + [data-mode="scroll"] —
+     3) [data-mode="scroll"] (sve širine, uži ekrani imaju doradu) —
         sticky kadar i smenjivanje poglavlja.
 
    Ručke za podešavanje: --sc-pad (bočna margina), --sc-e (krivа
@@ -893,8 +893,8 @@
   transform: translateX(0);
 }
 
-/* ---------- 3) desktop: sticky kadar ---------- */
-@media (min-width: 1024px) {
+/* ---------- 3) sticky kadar (sve širine; telefon doteruje blok ispod) ---------- */
+@media all {
   .sc[data-mode="scroll"] {
     min-height: 300vh;
   }
@@ -1113,6 +1113,60 @@
   }
 }
 
+/* ---------- 3b) telefon i tablet: isti sticky kadar, složen u jednu kolonu ---------- */
+@media (max-width: 1023px) {
+  .sc[data-mode="scroll"] .sc__stage {
+    height: 100svh;
+    padding: 0 var(--sc-pad);
+  }
+  .sc[data-mode="scroll"] .sc__head {
+    top: clamp(4.25rem, 11svh, 5.5rem);
+    transform: translate3d(0, 16svh, 0);
+  }
+  .sc[data-mode="scroll"] .sc__title {
+    font-size: clamp(2.7rem, 12vw, 4.6rem);
+  }
+  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__title {
+    transform: scale(0.42);
+  }
+  .sc[data-mode="scroll"] .sc__lead {
+    font-size: 1rem;
+  }
+  .sc[data-mode="scroll"] .sc__chapter {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    row-gap: clamp(1.25rem, 3.5svh, 2.25rem);
+    padding: clamp(7.5rem, 20svh, 10rem) var(--sc-pad) clamp(2rem, 6svh, 3.5rem);
+  }
+  .sc[data-mode="scroll"] .sc__num-wrap {
+    top: 34%;
+    font-size: clamp(11rem, 52vw, 20rem);
+  }
+  .sc[data-mode="scroll"] .sc__name {
+    font-size: clamp(2.5rem, 11.5vw, 4.4rem);
+  }
+  .sc[data-mode="scroll"] .sc__desc {
+    font-size: 0.98rem;
+  }
+  .sc[data-mode="scroll"] .sc__illo {
+    justify-self: start;
+    width: min(100%, 15rem, 30svh);
+  }
+  .sc[data-mode="scroll"] .sc__finale {
+    padding: clamp(7.5rem, 20svh, 10rem) var(--sc-pad) clamp(2rem, 6svh, 3.5rem);
+  }
+  .sc__finale-name {
+    font-size: clamp(1.9rem, 9vw, 3.2rem);
+  }
+  .sc[data-mode="scroll"] .sc__meter {
+    top: clamp(4.4rem, 11.4svh, 5.6rem);
+    gap: 0.6rem;
+  }
+  .sc__meter-rail i {
+    width: 1rem;
+  }
+}
+
 /* dno „SEFA u brojevima” se smiruje u čistu pozadinu, da spoj sa
    travom ispod nema vidljiv prelaz u tonu */
 .living-bg::after {
@@ -1147,7 +1201,7 @@
         sve odmah čitljivo;
      2) [data-anim="on"] — početna stanja i prelazi po fazama
         (data-phase: before → in → after);
-     3) @media (min-width: 1024px) + [data-mode="cinema"] — sticky
+     3) [data-mode="cinema"] (sve širine, uži ekrani imaju doradu) — sticky
         kadar od 100vh u kome kamera putuje putanjom.
 
    JS upisuje: --rot (nagib kadra), --travel (koliko je puta pređeno),
@@ -1532,9 +1586,9 @@
   clip-path: inset(0 0 0 0);
 }
 
-/* ---------- 3) desktop: sticky kadar sa kamerom ---------- */
+/* ---------- 3) sticky kadar sa kamerom (sve širine; telefon doteruje blok ispod) ---------- */
 
-@media (min-width: 1024px) {
+@media all {
   .road[data-mode="cinema"] {
     /* uvod + stanice + završetak; tempo je u history-road.tsx */
     min-height: calc((186 + var(--road-stops) * 118) * 1vh);
@@ -1914,6 +1968,95 @@
   }
   .road__meter-rail i[data-on]::after {
     transform: scaleY(1);
+  }
+}
+
+/* ---------- 3b) telefon i tablet: kamera i auto ostaju, stanica u jednoj koloni ---------- */
+@media (max-width: 1023px) {
+  .road[data-mode="cinema"] .road__stage {
+    height: 100svh;
+  }
+  .road[data-mode="cinema"] .road__stop {
+    grid-template-columns: minmax(0, 1fr);
+    /* tekst gore, fotografija dole — sredina kadra ostaje slobodna za auto */
+    align-content: space-between;
+    padding: clamp(5rem, 12svh, 6.5rem) var(--road-pad) clamp(3.5rem, 9svh, 5rem);
+  }
+  .road[data-mode="cinema"] .road__stop .road__body,
+  .road[data-mode="cinema"] .road__stop .road__figure {
+    grid-column: 1 !important;
+    grid-row: auto;
+    margin: 0 !important;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="left"] .road__body,
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__figure {
+    justify-self: start;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__body,
+  .road[data-mode="cinema"] .road__stop[data-align="left"] .road__figure {
+    justify-self: end;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__body {
+    text-align: right;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__stop-title,
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__desc {
+    margin-left: auto;
+  }
+  /* fotografija je uvek ispod teksta, a veličina prati visinu ekrana */
+  .road[data-mode="cinema"] .road__stop .road__figure {
+    grid-row: 2;
+    width: min(80%, 20rem, 33svh) !important;
+  }
+  .road[data-mode="cinema"] .road__body {
+    max-width: 100% !important;
+  }
+  .road[data-mode="cinema"] .road__body::before {
+    inset: -1.5rem -1.25rem;
+  }
+  .road[data-mode="cinema"] .road__year,
+  .road[data-mode="cinema"] .road__stop[data-shape="1"] .road__year {
+    font-size: clamp(3.6rem, 19vw, 7rem);
+  }
+  .road[data-mode="cinema"] .road__stop-title {
+    font-size: clamp(1.35rem, 5.6vw, 2rem);
+  }
+  .road[data-mode="cinema"] .road__desc {
+    font-size: 0.95rem;
+  }
+  .road[data-mode="cinema"] .road__caption {
+    display: none;
+  }
+  .road[data-mode="cinema"] .road__title {
+    font-size: clamp(2.6rem, 12vw, 4.6rem);
+  }
+  .road[data-mode="cinema"] .road__outro-title {
+    font-size: clamp(2.1rem, 9vw, 3.6rem);
+  }
+  /* indikator ide vodoravno na dno, da ne prelazi preko teksta */
+  .road[data-mode="cinema"] .road__meter {
+    top: auto;
+    bottom: clamp(1rem, 3svh, 1.6rem);
+    right: var(--road-pad);
+    transform: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.62rem;
+  }
+  .road__meter-rail {
+    flex-direction: row;
+  }
+  .road__meter-rail i {
+    width: 1rem;
+    height: 1px;
+  }
+  .road__meter-rail i::after {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  .road__meter-rail i[data-on]::after {
+    transform: scaleX(1);
   }
 }
 
