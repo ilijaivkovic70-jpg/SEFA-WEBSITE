@@ -302,13 +302,18 @@
     0 14px 36px rgba(0, 0, 0, 0.6);
 }
 
-/* ---------- paralaksa: slika "dublje" u sajtu, iza sadržaja ---------- */
-.parallax-image__wrap {
-  position: absolute;
-  inset: -14% 0;
-  will-change: transform;
+/* ---------- "prozor": slika stoji, sajt klizi preko nje ---------- */
+.window-frame {
+  /* seče fiksiranu sliku na granice sekcije */
+  clip-path: inset(0);
 }
-.parallax-image__img {
+.window-image__wrap {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.window-image__img {
   object-fit: cover;
   object-position: center 30%;
 }

@@ -1,13 +1,13 @@
-import { ParallaxImage } from "@/components/parallax-image";
+import { WindowImage } from "@/components/window-image";
 
 export function TeamHero() {
   return (
     <section
       id="team-hero-section"
-      className="relative isolate h-screen overflow-hidden [height:100svh]"
+      className="window-frame relative isolate h-screen overflow-hidden [height:100svh]"
       aria-label="Studenti Ekonomskog fakulteta"
     >
-      <ParallaxImage
+      <WindowImage
         src="/tim-2.jpg"
         alt="Članovi SEFA-e u amfiteatru Ekonomskog fakulteta"
         priority
