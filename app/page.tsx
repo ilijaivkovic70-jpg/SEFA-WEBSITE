@@ -72,7 +72,7 @@ export default function Home() {
             Pogledaj šta smo do sada uradili
           </h2>
           <p className="max-w-xl text-muted-foreground">
-            Od REPSUS konferencije do EKOF-a u pokretu: istraži projekte kroz
+            Od REPSUS konferencije do SEFA Talks podkasta: istraži projekte kroz
             koje članovi stiču iskustvo i grade zajednicu.
           </p>
           <Button size="lg" nativeButton={false} render={<Link href="/projekti" />}>

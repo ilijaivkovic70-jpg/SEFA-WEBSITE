@@ -64,15 +64,28 @@ export const PROJEKTI: Projekat[] = [
     ],
   },
   {
-    slug: "sport-business-day",
-    naziv: "Sport Business Day",
+    slug: "sefa-talks",
+    naziv: "SEFA Talks",
     kratakOpis:
 
-      "Konferencija koja povezuje svet sporta i biznisa, sa stručnjacima iz sportske industrije kao govornicima.",
+      "Podkast u kom gosti iz sveta biznisa i preduzetništva dele svoja iskustva i savete sa studentima.",
     opis: [
-      "Konferencija pokrenuta 2018. godine, namenjena studentima čija su interesovanja vezana za sport. Prosečno okuplja 200 do 300 delegata.",
-      "Cilj je edukacija o funkcionisanju klubova, sportskih udruženja i preduzeća koja organizuju sportske događaje, kroz teme menadžmenta, marketinga, inovacija, tehnologije i novinarstva u sportu. Projekat posebno promoviše mogućnost izgradnje karijere žena u sportskim organizacijama.",
-      "Namenjen je studentima Ekonomskog fakulteta, kao i Pravnog fakulteta, FON-a, FPN-a, DIF-a i ETF-a.",
+      "Podkast studentske organizacije SEFA, pokrenut sa idejom da kroz razgovore sa preduzetnicima i ljudima iz sveta biznisa mladima približi preduzetništvo i omogući im da čuju iskustva i ispovesti ljudi koji su u tome uspeli.",
+      "U podkastu gostuju ljudi koji imaju mnogo toga da nauče: preduzetnici, direktori i stručnjaci iz kompanija, ali i profesori Ekonomskog fakulteta, koji sa studentima dele svoja iskustva i savete za početak karijere. Autori sami biraju sagovornike i teme, na osnovu interesovanja i pregleda slušalaca.",
+      "Podkast je dostupan na YouTube-u, Spotify-ju, Deezer-u i Amazon Music-u, kao i na povezanom Instagram nalogu (@sefatalks).",
+    ],
+    sekcije: [
+      {
+        naslov: "Dosadašnji gosti i teme (izbor)",
+        stavke: [
+          "Nikola Marković: CFO kompanije Gomex, alumnista Ekonomskog fakulteta, osnivač EKOF Case Study Cluba i programa EKOF Mentorship, o radu u „Big four” kompanijama i iskustvu mentorstva",
+          "Anđelka Balrinović: šef odeljenja za planiranje i analizu prodaje, Delta Sport",
+          "Aleksandar Gradić: bivši asistent na predmetima Osnovi ekonomije i Osnovi statističke analize",
+          "Branislav Borić: bivši dekan i profesor Ekonomskog fakulteta, o ekonomskim, društvenim i političkim temama",
+          "Nenad Atanacković: suvlasnik Thyme street food restorana",
+          "Nikola Stamenić: direktor sektora za reviziju u kompaniji PwC",
+        ],
+      },
     ],
   },
   {
@@ -94,30 +107,6 @@ export const PROJEKTI: Projekat[] = [
           "Dejan Savić: „Psihologija pobednika”",
         ],
       },
-    ],
-  },
-  {
-    // TODO(SEFA): dopuniti pravim sadržajem, tekst ispod je privremen,
-    // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
-    slug: "link-to-the-future",
-    naziv: "Link to the Future",
-    kratakOpis:
-
-      "Projekat koji povezuje studente sa kompanijama i ljudima iz struke, od prvog kontakta do prve prilike.",
-    opis: [
-      "Projekat okrenut karijernom razvoju studenata Ekonomskog fakulteta. Kroz susrete sa kompanijama, ljudima iz struke i alumnistima SEFA-e, studenti dobijaju uvid u to kako izgleda posao koji ih čeka i kako do njega doći.",
-    ],
-  },
-  {
-    // TODO(SEFA): dopuniti pravim sadržajem, tekst ispod je privremen,
-    // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
-    slug: "greenfield",
-    naziv: "Greenfield",
-    kratakOpis:
-
-      "Projekat posvećen ulaganjima i održivom razvoju, kroz koji studenti prate put od ideje do poslovnog poduhvata.",
-    opis: [
-      "Projekat posvećen investicijama i održivom razvoju, od prve ideje do poslovnog poduhvata koji stoji na svojim nogama. Kroz predavanja i rad na konkretnim primerima studenti se upoznaju sa načinom na koji se ulaganja planiraju, procenjuju i sprovode.",
     ],
   },
   {
@@ -151,49 +140,39 @@ export const PROJEKTI: Projekat[] = [
     ],
   },
   {
-    slug: "sefa-talks",
-    naziv: "SEFA Talks",
+    // TODO(SEFA): dopuniti pravim sadržajem, tekst ispod je privremen,
+    // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
+    slug: "greenfield",
+    naziv: "Greenfield",
     kratakOpis:
 
-      "Podkast u kom gosti iz sveta biznisa i preduzetništva dele svoja iskustva i savete sa studentima.",
+      "Projekat posvećen ulaganjima i održivom razvoju, kroz koji studenti prate put od ideje do poslovnog poduhvata.",
     opis: [
-      "Podkast studentske organizacije SEFA, pokrenut sa idejom da kroz razgovore sa preduzetnicima i ljudima iz sveta biznisa mladima približi preduzetništvo i omogući im da čuju iskustva i ispovesti ljudi koji su u tome uspeli.",
-      "U podkastu gostuju ljudi koji imaju mnogo toga da nauče: preduzetnici, direktori i stručnjaci iz kompanija, ali i profesori Ekonomskog fakulteta, koji sa studentima dele svoja iskustva i savete za početak karijere. Autori sami biraju sagovornike i teme, na osnovu interesovanja i pregleda slušalaca.",
-      "Podkast je dostupan na YouTube-u, Spotify-ju, Deezer-u i Amazon Music-u, kao i na povezanom Instagram nalogu (@sefatalks).",
-    ],
-    sekcije: [
-      {
-        naslov: "Dosadašnji gosti i teme (izbor)",
-        stavke: [
-          "Nikola Marković: CFO kompanije Gomex, alumnista Ekonomskog fakulteta, osnivač EKOF Case Study Cluba i programa EKOF Mentorship, o radu u „Big four” kompanijama i iskustvu mentorstva",
-          "Anđelka Balrinović: šef odeljenja za planiranje i analizu prodaje, Delta Sport",
-          "Aleksandar Gradić: bivši asistent na predmetima Osnovi ekonomije i Osnovi statističke analize",
-          "Branislav Borić: bivši dekan i profesor Ekonomskog fakulteta, o ekonomskim, društvenim i političkim temama",
-          "Nenad Atanacković: suvlasnik Thyme street food restorana",
-          "Nikola Stamenić: direktor sektora za reviziju u kompaniji PwC",
-        ],
-      },
+      "Projekat posvećen investicijama i održivom razvoju, od prve ideje do poslovnog poduhvata koji stoji na svojim nogama. Kroz predavanja i rad na konkretnim primerima studenti se upoznaju sa načinom na koji se ulaganja planiraju, procenjuju i sprovode.",
     ],
   },
   {
-    slug: "ekof-u-pokretu",
-    naziv: "EKOF u pokretu",
+    slug: "sport-business-day",
+    naziv: "Sport Business Day",
     kratakOpis:
 
-      "Sportsko-zabavni projekat koji okuplja studente Ekonomskog fakulteta kroz aktivnosti van učionice.",
+      "Konferencija koja povezuje svet sporta i biznisa, sa stručnjacima iz sportske industrije kao govornicima.",
     opis: [
-      "Stručna ekskurzija pokrenuta 2016. godine. Projekat upoznaje studente sa iskustvima u inostranstvu i master programima, uz upoznavanje novih kultura, gradova i kolega. Do sada realizovano 4 ekskurzije, sa preko 450 studenata.",
+      "Konferencija pokrenuta 2018. godine, namenjena studentima čija su interesovanja vezana za sport. Prosečno okuplja 200 do 300 delegata.",
+      "Cilj je edukacija o funkcionisanju klubova, sportskih udruženja i preduzeća koja organizuju sportske događaje, kroz teme menadžmenta, marketinga, inovacija, tehnologije i novinarstva u sportu. Projekat posebno promoviše mogućnost izgradnje karijere žena u sportskim organizacijama.",
+      "Namenjen je studentima Ekonomskog fakulteta, kao i Pravnog fakulteta, FON-a, FPN-a, DIF-a i ETF-a.",
     ],
-    sekcije: [
-      {
-        naslov: "Ekskurzije kroz godine",
-        stavke: [
-          "Milano vol. 1 (oktobar 2016): poseta univerzitetu Bocconi i Trst; obišli i videli Veneciju, Monzu, Trst, jezero Komo",
-          "Rim vol. 2 (oktobar 2017): poseta univerzitetu Sapienza; obišli i Bolonju, Napulj, Firencu",
-          "Istanbul vol. 3 (oktobar 2018): poseta 160 studenata, najveća ekskurzija do sada",
-          "Prag vol. 4 (oktobar 2019): obišli i Beč (WU, Ekonomski fakultet) i Drezden",
-        ],
-      },
+  },
+  {
+    // TODO(SEFA): dopuniti pravim sadržajem, tekst ispod je privremen,
+    // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
+    slug: "link-to-the-future",
+    naziv: "Link to the Future",
+    kratakOpis:
+
+      "Projekat koji povezuje studente sa kompanijama i ljudima iz struke, od prvog kontakta do prve prilike.",
+    opis: [
+      "Projekat okrenut karijernom razvoju studenata Ekonomskog fakulteta. Kroz susrete sa kompanijama, ljudima iz struke i alumnistima SEFA-e, studenti dobijaju uvid u to kako izgleda posao koji ih čeka i kako do njega doći.",
     ],
   },
 ];
