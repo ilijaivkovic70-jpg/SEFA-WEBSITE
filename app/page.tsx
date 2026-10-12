@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,15 +38,22 @@ export default function Home() {
               <p className="font-mono text-xs uppercase tracking-widest text-primary">
                 O organizaciji
               </p>
-              <h2 className="font-heading mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Studentska organizacija Ekonomskog fakulteta
+              <h2 className="mt-5 flex justify-center">
+                <Image
+                  src="/logo.png"
+                  alt="SEFA, studentska organizacija Ekonomskog fakulteta"
+                  width={2453}
+                  height={900}
+                  unoptimized
+                  className="h-16 w-auto sm:h-20"
+                />
               </h2>
               <p className="mt-4 text-muted-foreground">
                 <TextMarker>
                   SEFA okuplja preko 70 aktivnih članova posvećenih ličnom i
                   profesionalnom razvoju kroz projekte, edukacije i saradnju sa
                   privredom. Kroz rad u sektorima komunikacija, sponzorstava i
-                  prodaje i ljudskih resursa, članovi stiču praktično iskustvo
+                  ljudskih resursa, članovi stiču praktično iskustvo
                   koje ih priprema za tržište rada.
                 </TextMarker>
               </p>

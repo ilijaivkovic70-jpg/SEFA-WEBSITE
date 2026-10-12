@@ -7,7 +7,7 @@ import { SectorReminderOnce } from "@/components/floating-sector-reminder";
 export const metadata: Metadata = {
   title: "Postani član",
   description:
-    "Pridruži se SEFA-i i izaberi sektor koji ti najviše odgovara: komunikacije, sponzorstva i prodaja ili ljudski resursi.",
+    "Pridruži se SEFA-i i izaberi sektor koji ti najviše odgovara: komunikacije, sponzorstva ili ljudski resursi.",
 };
 
 const PRIJAVE_OTVORENE = false;

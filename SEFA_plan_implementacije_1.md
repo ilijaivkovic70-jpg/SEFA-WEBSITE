@@ -110,7 +110,7 @@
 **Zadaci:**
 - Napraviti fajl `app/o-nama/page.tsx`.
 - Preneti tekst o misiji i motu organizacije.
-- Prikazati tri sektora (komunikacije, sponzorstva i prodaje, ljudskih resursa) kao kartice (shadcn `card` komponenta).
+- Prikazati tri sektora (komunikacije, sponzorstva, ljudskih resursa) kao kartice (shadcn `card` komponenta).
 - Dodati sekciju "Briga o članovima" (mentorstvo, edukacije, druženja).
 - Dodati sekciju sa brojkama (aktivni članovi, alumni klub).
 

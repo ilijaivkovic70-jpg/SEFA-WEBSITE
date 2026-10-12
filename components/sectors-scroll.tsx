@@ -52,7 +52,7 @@ function IllustrationKomunikacije() {
   );
 }
 
-/** Sponzorstva i prodaja: dve strane koje jedna neprekidna linija spaja. */
+/** Sponzorstva: dve strane koje jedna neprekidna linija spaja. */
 function IllustrationSponzorstva() {
   return (
     <svg {...ILLO_PROPS}>
@@ -121,17 +121,17 @@ const SECTORS: Sector[] = [
   },
   {
     num: "02",
-    title: "Sponzorstva i prodaja",
+    title: "Sponzorstva",
     description:
-      "Gradimo partnerstva sa kompanijama i pretvaramo dobre ideje u podršku projektima SEFA-e.",
-    keywords: ["Partnerstva", "Saradnja", "Prodaja"],
+      "Gradimo partnerstva sa kompanijama, i pretvaramo dobre ideje u podršku projektima SEFA-e.",
+    keywords: ["Partnerstva", "Saradnja", "Kompanije"],
     Illustration: IllustrationSponzorstva,
   },
   {
     num: "03",
     title: "Ljudski resursi",
     description:
-      "Okupljamo, razvijamo i povezujemo članove kroz mentorstvo, edukacije i snažnu timsku kulturu.",
+      "Okupljamo, razvijamo i povezujemo članove kroz mentorstvo, edukacije i snažnu timsku atmosferu.",
     keywords: ["Članovi", "Mentorstvo", "Razvoj"],
     Illustration: IllustrationLjudskiResursi,
   },

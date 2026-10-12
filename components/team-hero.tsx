@@ -24,7 +24,8 @@ export function TeamHero() {
           <span id="logo-e-target" className="text-primary">E</span>KONOMSKOG
           <br />
           <span id="logo-f-target" className="text-primary">F</span>
-          <span id="logo-a-target" className="text-primary">A</span>KULTETA
+          AKULTET
+          <span id="logo-a-target" className="text-primary">A</span>
         </h2>
         <p className="mt-[1.1rem] max-w-[44ch] text-white/[0.78]">
           Ljudi koji organizuju panele, vode projekte i dovode kompanije u
