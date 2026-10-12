@@ -25,9 +25,9 @@ export const PROJEKTI: Projekat[] = [
     naziv: "REPSUS",
     slika: "/repsus-logo.svg",
     kratakOpis:
-      "Najveća konferencija posvećena temi socijalnog preduzetništva u regionu, sa gostima, panelima i radionicama.",
+      "Regionalni privredni susreti studenata: konferencija na kojoj studenti uče od istaknutih ljudi iz sveta ekonomije i biznisa.",
     opis: [
-      "REPSUS: Regionalni privredni susreti studenata. Simbol organizacije od samog osnivanja. Konferencija na koju učestvuju eminentne ličnosti iz sveta ekonomije, sa ciljem da studenti steknu znanje i prate aktuelne trendove u ekonomiji.",
+      "REPSUS, Regionalni privredni susreti studenata, simbol je SEFA-e od samog osnivanja. Na konferenciji učestvuju eminentne ličnosti iz sveta ekonomije, a cilj je da studenti steknu nova znanja i prate aktuelne trendove u privredi.",
     ],
     lokacije: [
       "Zlatibor (2016)",
