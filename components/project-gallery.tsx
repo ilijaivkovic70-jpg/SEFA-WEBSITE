@@ -3,6 +3,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { ImageReveal } from "@/components/image-reveal";
+
+// različita brzina po koloni, kao "lanac" slika na savor.it
+const PARALLAX = [0, 24, 12];
 
 export function ProjectGallery({
   images,
@@ -22,11 +26,11 @@ export function ProjectGallery({
       </h2>
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {images.map((src, i) => (
+          <ImageReveal key={src} parallax={PARALLAX[i % 3]}>
           <button
-            key={src}
             type="button"
             onClick={() => setSelected(i)}
-            className="group relative aspect-square overflow-hidden rounded-lg ring-1 ring-border"
+            className="group relative block aspect-square w-full overflow-hidden rounded-lg ring-1 ring-border"
           >
             <Image
               src={src}
@@ -36,6 +40,7 @@ export function ProjectGallery({
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </button>
+          </ImageReveal>
         ))}
       </div>
 

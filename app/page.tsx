@@ -8,6 +8,7 @@ import { LogoDrop } from "@/components/logo-drop";
 import { StatsSection } from "@/components/stats-section";
 import { SectorsScroll } from "@/components/sectors-scroll";
 import { Reveal } from "@/components/reveal";
+import { LineReveal } from "@/components/line-reveal";
 import { TextMarker } from "@/components/text-marker";
 
 export default function Home() {
@@ -69,7 +70,7 @@ export default function Home() {
       <Reveal>
         <section className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-24 text-center">
           <h2 className="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Pogledaj šta smo do sada uradili
+            <LineReveal text="Pogledaj šta smo do sada uradili" />
           </h2>
           <p className="max-w-xl text-muted-foreground">
             Od REPSUS konferencije do SEFA Talks podkasta: istraži projekte kroz

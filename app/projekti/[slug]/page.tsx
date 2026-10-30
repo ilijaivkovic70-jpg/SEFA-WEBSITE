@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
+import { ImageReveal } from "@/components/image-reveal";
+import { LineReveal } from "@/components/line-reveal";
 import { ProjectGallery } from "@/components/project-gallery";
 import { PROJEKTI, getProjekatBySlug } from "@/data/projekti";
 
@@ -60,10 +62,10 @@ export default async function ProjekatPage({
             Projekat
           </p>
           <h1 className="font-heading mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
-            {projekat.naziv}
+            <LineReveal text={projekat.naziv} />
           </h1>
 
-          <div className="mx-auto mt-6 flex aspect-video items-center justify-center rounded-xl bg-gradient-to-br from-accent/40 to-primary/20 ring-1 ring-border">
+          <ImageReveal className="mx-auto mt-6 flex aspect-video items-center justify-center rounded-xl bg-gradient-to-br from-accent/40 to-primary/20 ring-1 ring-border">
             {projekat.slika && (
               <Image
                 src={projekat.slika}
@@ -74,7 +76,7 @@ export default async function ProjekatPage({
                 className="w-1/2 object-contain"
               />
             )}
-          </div>
+          </ImageReveal>
 
           {projekat.lokacije && (
             <div className="mt-6 flex flex-wrap gap-2">

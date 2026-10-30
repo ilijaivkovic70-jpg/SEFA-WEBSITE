@@ -4,6 +4,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Reveal } from "@/components/reveal";
+import { ImageReveal } from "@/components/image-reveal";
+import { LineReveal } from "@/components/line-reveal";
 import { PROJEKTI } from "@/data/projekti";
 
 export const metadata: Metadata = {
@@ -33,7 +35,7 @@ export default function ProjektiPage() {
             Projekti
           </p>
           <h1 className="font-heading mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
-            Ono po čemu nas pamte
+            <LineReveal text="Ono po čemu nas pamte" />
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-muted-foreground">
             Od konferencija do humanitarnih akcija, svaki projekat je prilika
@@ -50,7 +52,7 @@ export default function ProjektiPage() {
             {PROJEKTI.map((projekat) => (
               <Link key={projekat.slug} href={`/projekti/${projekat.slug}`}>
                 <Card className="ring-border h-full hover:-translate-y-1 hover:bg-card/70 hover:shadow-lg max-sm:grid max-sm:grid-cols-[5.5rem_minmax(0,1fr)] max-sm:gap-x-3 max-sm:gap-y-1.5 max-sm:p-3">
-                  <div className="mx-4 flex aspect-video items-center justify-center rounded-lg bg-zinc-800 ring-1 ring-border max-sm:row-span-2 max-sm:mx-0 max-sm:aspect-square max-sm:self-center">
+                  <ImageReveal className="mx-4 flex aspect-video items-center justify-center rounded-lg bg-zinc-800 ring-1 ring-border max-sm:row-span-2 max-sm:mx-0 max-sm:aspect-square max-sm:self-center">
                     {projekat.slika && (
                       <Image
                         src={projekat.slika}
@@ -61,7 +63,7 @@ export default function ProjektiPage() {
                         className="w-2/3 object-contain"
                       />
                     )}
-                  </div>
+                  </ImageReveal>
                   <CardHeader className="max-sm:px-0">
                     <CardTitle
                     className="w-fit rounded-md bg-no-repeat px-1.5 py-0.5 text-lg [background-image:linear-gradient(var(--primary),var(--primary))] [background-position:0_0] [background-size:0%_100%] transition-[background-size,color] duration-500 ease-out group-hover/card:[background-size:100%_100%] group-hover/card:text-primary-foreground"

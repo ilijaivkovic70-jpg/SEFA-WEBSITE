@@ -302,6 +302,15 @@
     0 14px 36px rgba(0, 0, 0, 0.6);
 }
 
+/* unutrašnje slovo nosi 3D let (okret, gužvanje, debljinu), a spoljni
+   klon samo poziciju — tako se slovo okreće oko svog centra */
+.logo-drop-clone__glyph {
+  display: inline-block;
+  transform-origin: 50% 55%;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
 /* ---------- "prozor": slika stoji, sajt klizi preko nje ---------- */
 .window-frame {
   /* seče fiksiranu sliku na granice sekcije */
@@ -4823,5 +4832,56 @@
   .cs__home,
   .cs__tile {
     transition: none;
+  }
+}
+
+/* ── Animacije po uzoru na savor.it/mission ─────────────────────────────
+   .ir      slika se otvara od uske trake do pune visine + parallax
+   .ir-hero pozadina blago zaostaje i uvećava se dok sekcija odlazi
+   .lr      reči naslova izranjaju iz maske jedna za drugom            */
+.ir {
+  clip-path: inset(calc(var(--ir-clip, 0%) - 2px) -2px);
+  transform: translate3d(0, var(--ir-y, 0px), 0);
+}
+.ir[data-ir="intro"] {
+  transition: clip-path 1s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ir[data-ir="live"] {
+  will-change: clip-path, transform;
+}
+.ir-hero {
+  transform: translate3d(0, var(--ir-y, 0px), 0) scale(var(--ir-scale, 1));
+  transform-origin: 50% 30%;
+}
+
+.lr__mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  /* mesto za kvačice i repove slova (č, ć, g, j) unutar maske */
+  padding: 0.08em 0.02em 0.14em;
+  margin: -0.08em -0.02em -0.14em;
+}
+.lr__word {
+  display: inline-block;
+  transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* pre nego što JS preuzme: slika je zatvorena traka, reči ispod maske */
+  .ir:not([data-ir]) {
+    --ir-clip: 30%;
+  }
+  .lr:not(.is-in) .lr__word {
+    transform: translate3d(0, 110%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ir,
+  .ir-hero {
+    clip-path: none;
+    transform: none;
   }
 }

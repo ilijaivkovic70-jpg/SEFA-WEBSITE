@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/reveal";
+import { LineReveal } from "@/components/line-reveal";
 import { SectorReminderOnce } from "@/components/floating-sector-reminder";
 
 export const metadata: Metadata = {
@@ -22,7 +23,7 @@ export default function PostaniClanPage() {
             Postani član
           </p>
           <h1 className="font-heading mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">
-            Izaberi sektor, gradi iskustvo
+            <LineReveal text="Izaberi sektor, gradi iskustvo" />
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-muted-foreground">
             SEFA je organizovana po uzoru na strukturu jednog preduzeća,
@@ -40,7 +41,7 @@ export default function PostaniClanPage() {
               Prijave
             </p>
             <h2 className="font-heading mt-3 text-3xl font-extrabold tracking-tight sm:text-4xl">
-              {PRIJAVE_OTVORENE ? "Prijavi se odmah" : "Prijave uskoro"}
+              <LineReveal text={PRIJAVE_OTVORENE ? "Prijavi se odmah" : "Prijave uskoro"} />
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-muted-foreground">
               {PRIJAVE_OTVORENE

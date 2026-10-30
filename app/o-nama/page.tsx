@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Reveal } from "@/components/reveal";
+import { ImageReveal } from "@/components/image-reveal";
 import { MarkerHeading } from "@/components/marker-heading";
 import { HistoryRoad } from "@/components/history-road";
 import { MemberCompass } from "@/components/member-compass";
@@ -18,6 +19,7 @@ export default function ONamaPage() {
         <section className="relative isolate overflow-hidden pb-20 pt-28 text-center sm:pt-36 sm:pb-28">
           {/* pozadina: fotografija članova, zatamnjena i zamućena da tekst ostane najupečatljiviji */}
           <div className="absolute inset-0 -z-10">
+            <ImageReveal mode="hero" parallax={0.22} className="absolute inset-0">
             <Image
               src="/o-nama-pozadina.jpg"
               alt=""
@@ -26,6 +28,7 @@ export default function ONamaPage() {
               sizes="100vw"
               className="scale-110 object-cover object-[center_28%] blur-[2px]"
             />
+            </ImageReveal>
             {/* jako zatamnjenje tačno iza teksta, fotografija ostaje vidljiva ka ivicama */}
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_62%_75%_at_50%_38%,rgba(7,16,15,0.9)_0%,rgba(7,16,15,0.6)_55%,rgba(7,16,15,0.22)_100%)]" />
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />

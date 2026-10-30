@@ -5,6 +5,26 @@ import { useEffect, useRef } from "react";
 const LETTERS = ["s", "e", "f", "a"] as const;
 
 /**
+ * 3D "let" svakog slova: koliko se okrene oko svake ose (u stepenima) i
+ * koliko se iskrivi kad je let na vrhuncu, koliko se odmakne u stranu (dx)
+ * i koliko izađe ka gledaocu (z, u em). Svako slovo ima svoj ugao, pa
+ * izgledaju kao četiri prava predmeta, a ne kao jedan isti efekat.
+ */
+const FLIGHT = [
+  { rx: 34, ry: -38, rz: -12, sk: 9, dx: -0.32, z: 2.2 },
+  { rx: -28, ry: 24, rz: -8, sk: -7, dx: -0.16, z: 1.6 },
+  { rx: 36, ry: 22, rz: 7, sk: 6, dx: 0.14, z: 1.8 },
+  { rx: -30, ry: -28, rz: 13, sk: -9, dx: 0.32, z: 2.2 },
+] as const;
+
+// vrhunac leta (0 = početak skrola, 1 = slovo sletelo u naslov)
+const PEAK = 0.38;
+const smooth = (t: number) => t * t * (3 - 2 * t);
+/** 0 → 1 → 0 tokom leta: koliko je slovo "izašlo" iz ekrana */
+const lift = (p: number) =>
+  p < PEAK ? smooth(p / PEAK) : 1 - smooth(Math.min(1, (p - PEAK) / (0.92 - PEAK)));
+
+/**
  * Slova S-E-F-A iz uvodnog logoa "padaju" tačno na svoja mesta u naslovu
  * tima dok korisnik skroluje: S -> STUDENTI, E -> EKONOMSKOG, F i A ->
  * FAKULTETA. Klonovi slova se pomeraju 1:1 sa skrolom (nema pinovanja):
@@ -23,6 +43,8 @@ export function LogoDrop() {
 
     type Rig = {
       clone: HTMLSpanElement;
+      glyph: HTMLSpanElement;
+      flight: (typeof FLIGHT)[number];
       sourceGlyph: HTMLElement;
       sourceLetter: HTMLElement;
       target: HTMLElement;
@@ -40,9 +62,12 @@ export function LogoDrop() {
       const sourceGlyph = document.getElementById(`logo-${key}-source`);
       const sourceLetter = sourceGlyph?.parentElement ?? null;
       const target = document.getElementById(`logo-${key}-target`);
-      if (clone && sourceGlyph && sourceLetter && target) {
+      const glyph = clone?.firstElementChild as HTMLSpanElement | null;
+      if (clone && glyph && sourceGlyph && sourceLetter && target) {
         rigs.push({
           clone,
+          glyph,
+          flight: FLIGHT[i],
           sourceGlyph,
           sourceLetter,
           target,
@@ -110,6 +135,46 @@ export function LogoDrop() {
         const justStarted = p <= 0.004;
         const landed = p >= 0.995;
         const color = lerpColor(p);
+        const b = lift(p);
+        const deg = Math.PI / 180;
+
+        rigs.forEach((rig, i) => {
+          const f = rig.flight;
+          // gužvanje: slovo se savija i krivi tamo-amo dok skroluješ,
+          // svako u svom ritmu, najjače na vrhuncu leta
+          const wave = Math.sin(p * Math.PI * 5 + i * 1.7);
+          const wave2 = Math.cos(p * Math.PI * 4 + i * 2.3);
+          const rx = f.rx * b + wave * 9 * b;
+          const ry = f.ry * b + wave2 * 11 * b;
+          const skx = f.sk * b + wave2 * 7 * b;
+          const sky = -f.sk * 0.5 * b + wave * 5 * b;
+          const sx = 1 + 0.06 * b - wave * 0.07 * b;
+          const sy = 1 - 0.1 * b + wave2 * 0.08 * b;
+          // slovo se diže ka gledaocu (veće + bliže), pa se ispravlja i pada
+          rig.glyph.style.transform =
+            `translateX(${(f.dx * b).toFixed(3)}em) perspective(7em) translateZ(${(b * f.z).toFixed(3)}em) ` +
+            `rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) ` +
+            `rotateZ(${(f.rz * b).toFixed(2)}deg) skew(${skx.toFixed(2)}deg, ${sky.toFixed(2)}deg) ` +
+            `scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`;
+
+          // debljina: naslagane senke u pravcu okreta daju slovu telo
+          if (b > 0.02) {
+            const layers = 9;
+            const dx = -Math.sin(ry * deg) * 0.013 * b;
+            const dy = Math.sin(rx * deg) * 0.013 * b + 0.006 * b;
+            const depth: string[] = [];
+            for (let k = 1; k <= layers; k++) {
+              const shade = Math.round(70 - k * 5);
+              depth.push(
+                `${(dx * k).toFixed(4)}em ${(dy * k).toFixed(4)}em 0 rgb(${shade - 30}, ${shade + 10}, ${shade})`
+              );
+            }
+            depth.push(`0 ${(0.35 * b).toFixed(3)}em ${(0.4 * b).toFixed(3)}em rgba(0,0,0,${(0.55 * b).toFixed(3)})`);
+            rig.glyph.style.textShadow = depth.join(", ");
+          } else {
+            rig.glyph.style.textShadow = "";
+          }
+        });
 
         for (const rig of rigs) {
           const top = lerp(rig.sTop, rig.tTop, p) - scrollY;
@@ -161,6 +226,8 @@ export function LogoDrop() {
         for (const rig of rigs) {
           rig.sourceLetter.style.removeProperty("opacity");
           rig.target.style.opacity = "";
+          rig.glyph.style.transform = "";
+          rig.glyph.style.textShadow = "";
         }
       });
     })();
@@ -182,7 +249,7 @@ export function LogoDrop() {
           className="logo-drop-clone"
           aria-hidden="true"
         >
-          {key.toUpperCase()}
+          <span className="logo-drop-clone__glyph">{key.toUpperCase()}</span>
         </span>
       ))}
     </>
