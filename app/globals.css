@@ -327,6 +327,47 @@
   object-position: center 30%;
 }
 
+/* ---------- kolaž iza naslova tima (components/team-collage.tsx) ---------- */
+.team-collage {
+  background: #08110f;
+}
+.team-collage__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(7, 1fr);
+  gap: 4px;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .team-collage__grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 6px;
+    padding: 6px;
+  }
+  /* prva fotografija je veća (2 × 2), malo levo od sredine */
+  .team-collage__tile[data-i="1"] {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+  }
+}
+.team-collage__tile {
+  min-width: 0;
+  min-height: 0;
+}
+.team-collage__tile .al-frame {
+  border-radius: 6px;
+  /* prazni okviri: blago različite nijanse da se mreža čita kao kolaž */
+  background: hsl(165 22% calc(7% + var(--tone, 0) * 0.9%));
+}
+.team-collage__tile .al-frame__img {
+  object-fit: cover;
+}
+
 /* ---------- tim: fotografija sa natpisom preko ---------- */
 .team-hero__title {
   /* naslaganih par oštrih senki daje utisak reljefa (3D dubine), a

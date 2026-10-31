@@ -1,4 +1,4 @@
-import { WindowImage } from "@/components/window-image";
+import { TeamCollage } from "@/components/team-collage";
 
 export function TeamHero() {
   return (
@@ -7,12 +7,7 @@ export function TeamHero() {
       className="window-frame relative isolate h-screen overflow-hidden [height:100svh]"
       aria-label="Studenti Ekonomskog fakulteta"
     >
-      <WindowImage
-        src="/tim-2.jpg"
-        alt="Članovi SEFA-e u amfiteatru Ekonomskog fakulteta"
-        priority
-        sizes="100vw"
-      />
+      <TeamCollage />
       <div className="team__scrim absolute inset-0" aria-hidden="true" />
 
       <div className="relative flex h-full flex-col items-center justify-center px-[5vw] text-center">
