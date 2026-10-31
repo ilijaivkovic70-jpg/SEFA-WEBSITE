@@ -3809,12 +3809,11 @@
   display: flex;
   align-items: flex-start;
   gap: clamp(0.9rem, 2.4vw, 1.75rem);
-  margin: clamp(0.25rem, 3vw, 1.25rem) 0 0;
+  margin: clamp(2.25rem, 5vw, 3.25rem) 0 0;
   /* prvi okvir počinje tačno na levom rubu ostatka stranice, a desno
      ostaje isto toliko prostora — sledeća fotografija se uvek nazire */
-  /* gore i dole ima mesta da fotografije plutaju (parallax ±30px) bez sečenja */
-  padding: 2.25rem max(var(--al-pad), calc((100% - var(--al-max)) / 2 + var(--al-pad)))
-    3.5rem;
+  padding: 0.25rem max(var(--al-pad), calc((100% - var(--al-max)) / 2 + var(--al-pad)))
+    1.5rem;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
@@ -3880,6 +3879,64 @@
   .al-strip__shot:hover .al-frame {
     border-color: color-mix(in srgb, var(--primary) 55%, transparent);
   }
+}
+
+/* ---------- lanac na računaru (components/alumni-memories.tsx) ----------
+   data-chain="on" postavlja JS samo na računaru bez „smanjenog kretanja”:
+   sekcija se zalepi, traka klizi ulevo, slike talasaju i otvaraju se. */
+.al-chain[data-chain="on"] {
+  position: relative;
+}
+.al-chain[data-chain="on"] .al-chain__sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.al-chain[data-chain="on"] .al-strip {
+  position: relative;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding-block: 0;
+  overflow: visible;
+  scroll-snap-type: none;
+  will-change: transform;
+}
+.al-chain[data-chain="on"] .al-strip__item {
+  margin-top: 0;
+}
+.al-chain[data-chain="on"] .al-strip__item[data-shape="pejzaz"] {
+  width: min(30vw, 30rem);
+}
+.al-chain[data-chain="on"] .al-strip__item[data-shape="portret"] {
+  width: min(19vw, 18rem);
+}
+.al-chain[data-chain="on"] .al-strip__item[data-shape="kvadrat"] {
+  width: min(24vw, 23rem);
+}
+/* telefon i tablet: slike veće u odnosu na ekran, da se vide dok putuju */
+@media (max-width: 1023.98px) {
+  .al-chain[data-chain="on"] .al-strip__item[data-shape="pejzaz"] {
+    width: min(74vw, 26rem);
+  }
+  .al-chain[data-chain="on"] .al-strip__item[data-shape="portret"] {
+    width: min(46vw, 16rem);
+  }
+  .al-chain[data-chain="on"] .al-strip__item[data-shape="kvadrat"] {
+    width: min(58vw, 20rem);
+  }
+}
+.al-chain[data-chain="on"] :is(.al-strip__move, .al-strip__clip) {
+  will-change: transform, clip-path;
+}
+.al-chain[data-chain="on"] .al-strip__shot .al-frame {
+  border-radius: 0;
+}
+.al-chain[data-chain="on"] .al-strip__note {
+  padding-left: 0.6rem;
 }
 
 /* beleška ispod okvira — kao dopisana u albumu */

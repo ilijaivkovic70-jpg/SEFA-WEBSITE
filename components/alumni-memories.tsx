@@ -6,11 +6,26 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { MEMORIES } from "@/data/alumni";
 import { AlumniFrame } from "@/components/alumni-frame";
 import { AlumniBrand } from "@/components/alumni-brand";
-import { ImageReveal } from "@/components/image-reveal";
 
-/** Svaka fotografija pluta svojom brzinom dok se skroluje, kao lanac slika
- *  na savor.it (u px, gore/dole u odnosu na sredinu ekrana). */
-const FLOAT = [-28, 22, -10, 30, -22, 12, -30, 18];
+/**
+ * „Lanac” na računaru (po uzoru na savor.it/mission): sekcija se zalepi za
+ * ekran, a skrol nadole pomera traku ulevo. Fotografije se talasasto penju
+ * i spuštaju, a svaka je uska traka kad ulazi sa desne strane, otvori se do
+ * pune visine na sredini ekrana i ponovo suzi dok izlazi levo.
+ * Radi i na telefonu (veće slike za uzan ekran); samo uz „smanjeno
+ * kretanje” ostaje obična traka koja se prevlači.
+ */
+const CHAIN_QUERY = "(prefers-reduced-motion: no-preference)";
+/** koliko px skrola nadole po px pomeranja trake ulevo (veće = sporije) */
+const CHAIN_PACE = 1.35;
+/** najveće pomeranje gore/dole, u delovima visine ekrana */
+const CHAIN_WAVE = 0.13;
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const smoothstep = (e0: number, e1: number, v: number) => {
+  const t = clamp01((v - e0) / (e1 - e0));
+  return t * t * (3 - 2 * t);
+};
 
 /**
  * „Trenuci koji ostaju” — galerija uspomena kao kontakt-list, ne kao mreža:
@@ -37,6 +52,7 @@ export function AlumniMemories() {
   const closeRef = useRef<HTMLButtonElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
   const draggedRef = useRef(false);
+  const chainRef = useRef<HTMLDivElement>(null);
 
   const [open, setOpen] = useState<number | null>(null);
 
@@ -79,6 +95,123 @@ export function AlumniMemories() {
       rail.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+    };
+  }, []);
+
+  /* ---------- lanac: lepljiva traka koja klizi ulevo dok se skroluje ---------- */
+  useEffect(() => {
+    const chain = chainRef.current;
+    const rail = railRef.current;
+    if (!chain || !rail) return;
+
+    const mq = window.matchMedia(CHAIN_QUERY);
+    const items = Array.from(rail.querySelectorAll<HTMLElement>(".al-strip__item"));
+    const movers = items.map((li) => li.querySelector<HTMLElement>(".al-strip__move")!);
+    const clips = items.map((li) => li.querySelector<HTMLElement>(".al-strip__clip")!);
+
+    let on = false;
+    let travel = 0;
+    let railLeft = 0;
+    let base: number[] = [];
+    let widths: number[] = [];
+    let target = 0;
+    let shown = 0;
+    let raf = 0;
+    let last = 0;
+    let lastWidth = 0;
+
+    const measure = () => {
+      lastWidth = window.innerWidth;
+      rail.style.transform = "";
+      railLeft = rail.getBoundingClientRect().left;
+      base = items.map((li) => li.offsetLeft);
+      widths = items.map((li) => li.offsetWidth);
+      travel = Math.max(0, rail.scrollWidth - window.innerWidth);
+      chain.style.height = `${Math.round(travel * CHAIN_PACE + window.innerHeight)}px`;
+    };
+
+    const progress = () => {
+      const r = chain.getBoundingClientRect();
+      return clamp01(-r.top / Math.max(1, r.height - window.innerHeight));
+    };
+
+    const paint = (p: number) => {
+      const vw = window.innerWidth;
+      const amp = window.innerHeight * CHAIN_WAVE;
+      const x = -p * travel;
+      rail.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0)`;
+      items.forEach((_, i) => {
+        const cx = railLeft + base[i] + x + widths[i] / 2;
+        // 0 na sredini (malo levo od centra), 1 na ivicama ekrana
+        const d = Math.abs(cx - vw * 0.45) / (vw * 0.55);
+        const inset = 30 * smoothstep(0.3, 1, d);
+        // talas: visina zavisi od mesta na ekranu, pa se menja dok slika putuje
+        const y = amp * Math.sin((cx / vw) * Math.PI * 1.7 + i * 1.25);
+        movers[i].style.transform = `translate3d(0, ${y.toFixed(1)}px, 0)`;
+        clips[i].style.clipPath = `inset(${inset.toFixed(2)}% -1px)`;
+      });
+    };
+
+    // glatko praćenje skrola (kao „smooth scroll” na savor.it), petlja se odmara
+    const tick = (now: number) => {
+      const dt = Math.min(100, now - (last || now));
+      last = now;
+      shown += (target - shown) * (1 - Math.pow(1 - 0.12, dt / 16.667));
+      const settled = Math.abs(target - shown) < 0.0004;
+      if (settled) shown = target;
+      paint(shown);
+      if (settled) {
+        raf = 0;
+        last = 0;
+      } else {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+    const onScroll = () => {
+      target = progress();
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const onResize = () => {
+      // na telefonu traka adrese menja samo visinu dok se skroluje: tada se
+      // ne meri ponovo (visina sekcije bi skočila), samo se iscrta
+      if (window.innerWidth !== lastWidth) measure();
+      target = shown = progress();
+      paint(shown);
+    };
+
+    const enable = () => {
+      if (on) return;
+      on = true;
+      chain.dataset.chain = "on";
+      measure();
+      target = shown = progress();
+      paint(shown);
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onResize);
+    };
+    const disable = () => {
+      if (!on) return;
+      on = false;
+      delete chain.dataset.chain;
+      chain.style.height = "";
+      rail.style.transform = "";
+      movers.forEach((m) => (m.style.transform = ""));
+      clips.forEach((c) => (c.style.clipPath = ""));
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+    };
+    const apply = () => (mq.matches ? enable() : disable());
+    mq.addEventListener("change", apply);
+    apply();
+    // fontovi i slike mogu malo da pomere širine posle prvog crtanja
+    const settle = window.setTimeout(() => on && onResize(), 600);
+
+    return () => {
+      window.clearTimeout(settle);
+      mq.removeEventListener("change", apply);
+      disable();
     };
   }, []);
 
@@ -160,10 +293,13 @@ export function AlumniMemories() {
         </p>
       </div>
 
+      <div ref={chainRef} className="al-chain">
+      <div className="al-chain__sticky">
       <ul ref={railRef} className="al-strip" tabIndex={0} aria-label="Traka fotografija">
         {MEMORIES.map((memory, i) => (
           <li key={`${memory.title}-${i}`} className="al-strip__item" data-shape={memory.shape}>
-            <ImageReveal parallax={FLOAT[i % FLOAT.length]}>
+            <div className="al-strip__move">
+            <div className="al-strip__clip">
             <button
               type="button"
               className="al-strip__shot"
@@ -180,14 +316,17 @@ export function AlumniMemories() {
                 sizes="(min-width: 1024px) 26vw, 60vw"
               />
             </button>
+            </div>
             <p className="al-strip__note">
               <span className="al-strip__note-title">{memory.title}</span>
               {memory.year && <span className="al-strip__note-year">{memory.year}</span>}
             </p>
-            </ImageReveal>
+            </div>
           </li>
         ))}
       </ul>
+      </div>
+      </div>
 
       {current && (
         <div
