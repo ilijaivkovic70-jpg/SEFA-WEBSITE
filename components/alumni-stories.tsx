@@ -6,7 +6,7 @@ import { AlumniFrame } from "@/components/alumni-frame";
 import { AlumniBrand } from "@/components/alumni-brand";
 
 /**
- * „Od SEFE do novih uspeha” — priče bivših članova, složene kao strane
+ * „Od SEFA-E do novih uspeha” — priče bivših članova, složene kao strane
  * iz magazina, a ne kao tri profilne kartice: naizmenično fotografija levo
  * pa desno, treća uža sa citatom kao dominantnim elementom. Nema okvira ni
  * pozadina — priče razdvajaju tanka linija i prazan prostor.
@@ -55,7 +55,7 @@ export function AlumniStories() {
       <div className="al-stories__intro">
         <p className="al-eyebrow">Alumni priče</p>
         <h2 id="alumni-price" className="al-stories__title">
-          <AlumniBrand>Od SEFE do novih uspeha</AlumniBrand>
+          <AlumniBrand>Od SEFA-E do novih uspeha</AlumniBrand>
         </h2>
       </div>
 

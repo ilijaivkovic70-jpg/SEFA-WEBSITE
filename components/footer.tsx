@@ -15,11 +15,6 @@ const SOCIAL_LINKS = [
     icon: YouTubeGlyph,
   },
   {
-    href: "https://www.facebook.com/sefa.org/",
-    label: "Facebook",
-    icon: FacebookGlyph,
-  },
-  {
     href: "https://www.linkedin.com/company/sefa-org/",
     label: "LinkedIn",
     icon: LinkedInGlyph,
@@ -104,14 +99,6 @@ function YouTubeGlyph() {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
       <rect x="2" y="5" width="20" height="14" rx="4.5" />
       <path d="M10.2 9.3l5 2.7-5 2.7V9.3z" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function FacebookGlyph() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-      <path d="M14.8 7.5h2.2V4.2h-2.6c-2.4 0-4 1.6-4 4v2.1H8v3.3h2.4V21h3.4v-7.4h2.4l.5-3.3h-2.9V8.9c0-.9.4-1.4 1-1.4z" />
     </svg>
   );
 }

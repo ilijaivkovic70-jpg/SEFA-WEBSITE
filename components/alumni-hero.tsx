@@ -43,7 +43,7 @@ const TRACE =
 
 /* Razmak na kraju prvog reda ostaje namerno — vizuelno se ne vidi (blok
    element ga saseca), ali bez njega bi čitač ekrana pročitao „trajei”. */
-const TITLE_LINES = ["Zajednica koja traje ", "i posle SEFE"];
+const TITLE_LINES = ["Zajednica koja traje ", "i posle SEFA-E"];
 
 function easeOutCubic(t: number) {
   return 1 - Math.pow(1 - t, 3);
@@ -124,7 +124,7 @@ export function AlumniHero() {
 
           <p className="al-hero__lead">
             <AlumniBrand>
-              Alumni klub okuplja bivše članove SEFE koji su svoje iskustvo iz
+              Alumni klub okuplja bivše članove SEFA-E koji su svoje iskustvo iz
               organizacije preneli dalje u profesionalni svet, ostajući deo naše
               zajednice i podrška generacijama koje dolaze.
             </AlumniBrand>

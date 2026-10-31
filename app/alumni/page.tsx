@@ -9,7 +9,7 @@ import { AlumniOutro } from "@/components/alumni-outro";
 export const metadata: Metadata = {
   title: "Alumni",
   description:
-    "Alumni klub Studentske ekonomske fakultetske asocijacije: bivši članovi, njihovi karijerni putevi i uspomene iz SEFE.",
+    "Alumni klub Studentske ekonomske fakultetske asocijacije: bivši članovi, njihovi karijerni putevi i uspomene iz SEFA-E.",
 };
 
 /**

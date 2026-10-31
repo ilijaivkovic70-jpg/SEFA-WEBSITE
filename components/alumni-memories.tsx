@@ -6,6 +6,11 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { MEMORIES } from "@/data/alumni";
 import { AlumniFrame } from "@/components/alumni-frame";
 import { AlumniBrand } from "@/components/alumni-brand";
+import { ImageReveal } from "@/components/image-reveal";
+
+/** Svaka fotografija pluta svojom brzinom dok se skroluje, kao lanac slika
+ *  na savor.it (u px, gore/dole u odnosu na sredinu ekrana). */
+const FLOAT = [-28, 22, -10, 30, -22, 12, -30, 18];
 
 /**
  * „Trenuci koji ostaju” — galerija uspomena kao kontakt-list, ne kao mreža:
@@ -158,6 +163,7 @@ export function AlumniMemories() {
       <ul ref={railRef} className="al-strip" tabIndex={0} aria-label="Traka fotografija">
         {MEMORIES.map((memory, i) => (
           <li key={`${memory.title}-${i}`} className="al-strip__item" data-shape={memory.shape}>
+            <ImageReveal parallax={FLOAT[i % FLOAT.length]}>
             <button
               type="button"
               className="al-strip__shot"
@@ -178,6 +184,7 @@ export function AlumniMemories() {
               <span className="al-strip__note-title">{memory.title}</span>
               {memory.year && <span className="al-strip__note-year">{memory.year}</span>}
             </p>
+            </ImageReveal>
           </li>
         ))}
       </ul>

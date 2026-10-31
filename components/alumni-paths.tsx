@@ -5,7 +5,7 @@ import { CAREER_PATHS } from "@/data/alumni";
 import { AlumniBrand } from "@/components/alumni-brand";
 
 /**
- * „Put nakon SEFE” — mapa karijernih puteva, u stilu konstelacije: SEFA je
+ * „Put nakon SEFA-E” — mapa karijernih puteva, u stilu konstelacije: SEFA je
  * čvor iz kog izlaze tri linije, svaka vodi ka jednom pravcu i završava se
  * malim čvorom (tačka + prsten), uz rasute sitne tačke u pozadini kao
  * teksturu zvezdane mape. Naziv i opis stoje slobodno uz kraj linije, bez
@@ -131,11 +131,11 @@ export function AlumniPaths() {
       <div className="al-map__intro">
         <p className="al-eyebrow">Gde su danas</p>
         <h2 id="put-nakon-sefe" className="al-map__title">
-          <AlumniBrand>Put nakon SEFE</AlumniBrand>
+          <AlumniBrand>Put nakon SEFA-E</AlumniBrand>
         </h2>
         <p className="al-map__lead">
           <AlumniBrand>
-            Iskustvo stečeno kroz rad u sektorima SEFE otvara vrata ka
+            Iskustvo stečeno kroz rad u sektorima SEFA-E otvara vrata ka
             različitim karijernim putevima.
           </AlumniBrand>
         </p>

@@ -101,21 +101,6 @@ const APPS: App[] = [
     ),
   },
   {
-    id: "facebook",
-    name: "Facebook",
-    detail: "sefa.org",
-    href: "https://www.facebook.com/sefa.org/",
-    external: true,
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          fill="#fff"
-          d="M15.12 5.32H17V2.14A26.11 26.11 0 0 0 14.26 2C11.54 2 9.68 3.66 9.68 6.7v2.62H6.61v3.56h3.07V22h3.68v-9.12h3.06l.46-3.56h-3.52V7.05c0-1.05.28-1.73 1.76-1.73Z"
-        />
-      </svg>
-    ),
-  },
-  {
     id: "youtube",
     name: "YouTube",
     detail: "@sefa-org",

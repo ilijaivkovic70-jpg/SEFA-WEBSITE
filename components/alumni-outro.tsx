@@ -34,7 +34,7 @@ export function AlumniOutro() {
     <section ref={ref} className="al-outro" data-in={revealed || undefined}>
       <span className="al-outro__thread" aria-hidden="true" />
       <p className="al-outro__line">
-        <AlumniBrand>Jednom deo SEFE. Uvek deo priče.</AlumniBrand>
+        <AlumniBrand>Jednom deo SEFA-E. Uvek deo priče.</AlumniBrand>
       </p>
       <Link href="/kontakt" className="al-outro__link">
         Poveži se sa alumni zajednicom

@@ -28,15 +28,15 @@ export type AlumniSnapshot = {
 };
 
 export const ALUMNI_SNAPSHOTS: AlumniSnapshot[] = [
-  { src: null, alt: "Alumni članovi SEFE na okupljanju" },
-  { src: null, alt: "Tim SEFE tokom rada na projektu" },
-  { src: null, alt: "Bivši član SEFE na konferenciji" },
-  { src: null, alt: "Generacija članova SEFE" },
+  { src: null, alt: "Alumni članovi SEFA-E na okupljanju" },
+  { src: null, alt: "Tim SEFA-E tokom rada na projektu" },
+  { src: null, alt: "Bivši član SEFA-E na konferenciji" },
+  { src: null, alt: "Generacija članova SEFA-E" },
   { src: null, alt: "Alumni članovi na dodeli priznanja" },
 ];
 
 /* ============================================================
-   MAPA KARIJERNIH PUTEVA — „Put nakon SEFE”
+   MAPA KARIJERNIH PUTEVA — „Put nakon SEFA-E”
    `count` ostaviti `null` dok ne postoji tačan broj; ne prikazuje se
    dok je prazan, da se ne bi objavljivala izmišljena statistika.
    ============================================================ */
@@ -73,7 +73,7 @@ export const CAREER_PATHS: CareerPath[] = [
 ];
 
 /* ============================================================
-   PRIČE ALUMNISTA — „Od SEFE do novih uspeha”
+   PRIČE ALUMNISTA — „Od SEFA-E do novih uspeha”
 
    PRIVREMENI PODACI. Sva tri unosa su prazni obrasci koje treba
    popuniti pravim imenima, pozicijama i izjavama — tek uz saglasnost
@@ -102,7 +102,7 @@ export const ALUMNI_STORIES: AlumniStory[] = [
     sefaRole: "Uloga u SEFA-i",
     sefaYear: "20XX",
     image: null,
-    imageAlt: "Portret bivšeg člana SEFE",
+    imageAlt: "Portret bivšeg člana SEFA-E",
     quote: "Kratka lična uspomena ili poruka budućim članovima.",
   },
   {
@@ -111,7 +111,7 @@ export const ALUMNI_STORIES: AlumniStory[] = [
     sefaRole: "Uloga u SEFA-i",
     sefaYear: "20XX",
     image: null,
-    imageAlt: "Portret bivše članice SEFE",
+    imageAlt: "Portret bivše članice SEFA-E",
     quote: "Kratka lična uspomena ili poruka budućim članovima.",
   },
   {
@@ -120,7 +120,7 @@ export const ALUMNI_STORIES: AlumniStory[] = [
     sefaRole: "Uloga u SEFA-i",
     sefaYear: "20XX",
     image: null,
-    imageAlt: "Portret bivšeg člana SEFE",
+    imageAlt: "Portret bivšeg člana SEFA-E",
     quote: "Kratka lična uspomena ili poruka budućim članovima.",
   },
 ];
@@ -155,12 +155,13 @@ export type Memory = {
 };
 
 export const MEMORIES: Memory[] = [
-  { src: null, alt: "Sa konferencije REPSUS", title: "REPSUS", year: null, description: null, shape: "pejzaz" },
-  { src: null, alt: "Snimanje podkasta SEFA Talks", title: "SEFA Talks", year: null, description: null, shape: "portret" },
-  { src: null, alt: "Sa projekta Sport Business Day", title: "Sport Business Day", year: null, description: null, shape: "kvadrat" },
-  { src: null, alt: "Sa ekskurzije EKOF u pokretu", title: "EKOF u pokretu", year: null, description: null, shape: "pejzaz" },
-  { src: null, alt: "Sa humanitarne akcije Prava stvar", title: "Prava stvar", year: null, description: null, shape: "portret" },
-  { src: null, alt: "Sa projekta Link to the Future", title: "Link to the Future", year: null, description: null, shape: "kvadrat" },
-  { src: null, alt: "Sa projekta Greenfield", title: "Greenfield", year: null, description: null, shape: "pejzaz" },
-  { src: null, alt: "Sa tribine Bez straha", title: "Bez straha", year: null, description: null, shape: "portret" },
+  // PRIVREMENO: postojeće slike sajta, samo da se vidi animacija trake. Zameniti pravim fotografijama sa događaja.
+  { src: "/tim-2.jpg", alt: "Sa konferencije REPSUS", title: "REPSUS", year: null, description: null, shape: "pejzaz" },
+  { src: "/o-nama-pozadina.jpg", alt: "Snimanje podkasta SEFA Talks", title: "SEFA Talks", year: null, description: null, shape: "portret" },
+  { src: "/komunikacije-glas.png", alt: "Sa projekta Sport Business Day", title: "Sport Business Day", year: null, description: null, shape: "kvadrat" },
+  { src: "/put-pozadina.jpg", alt: "Sa ekskurzije EKOF u pokretu", title: "EKOF u pokretu", year: null, description: null, shape: "pejzaz" },
+  { src: "/ljudski-resursi-glas.png", alt: "Sa humanitarne akcije Prava stvar", title: "Prava stvar", year: null, description: null, shape: "portret" },
+  { src: "/sektori-pozadina.jpg", alt: "Sa projekta Link to the Future", title: "Link to the Future", year: null, description: null, shape: "kvadrat" },
+  { src: "/projekti-pozadina.jpg", alt: "Sa projekta Greenfield", title: "Greenfield", year: null, description: null, shape: "pejzaz" },
+  { src: "/tim-2.jpg", alt: "Sa tribine Bez straha", title: "Bez straha", year: null, description: null, shape: "portret" },
 ];

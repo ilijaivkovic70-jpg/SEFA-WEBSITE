@@ -3207,7 +3207,7 @@
 .al-hero[data-in] .al-hero__line > span {
   transform: translateY(0);
 }
-/* "SEFA"/"SEFE" u mint boji loga, svuda gde se ime pominje u naslovu ili pasusu */
+/* "SEFA"/"SEFA-E" u mint boji loga, svuda gde se ime pominje u naslovu ili pasusu */
 .al-brand {
   color: var(--primary);
 }
@@ -3809,11 +3809,12 @@
   display: flex;
   align-items: flex-start;
   gap: clamp(0.9rem, 2.4vw, 1.75rem);
-  margin: clamp(2.25rem, 5vw, 3.25rem) 0 0;
+  margin: clamp(0.25rem, 3vw, 1.25rem) 0 0;
   /* prvi okvir počinje tačno na levom rubu ostatka stranice, a desno
      ostaje isto toliko prostora — sledeća fotografija se uvek nazire */
-  padding: 0.25rem max(var(--al-pad), calc((100% - var(--al-max)) / 2 + var(--al-pad)))
-    1.5rem;
+  /* gore i dole ima mesta da fotografije plutaju (parallax ±30px) bez sečenja */
+  padding: 2.25rem max(var(--al-pad), calc((100% - var(--al-max)) / 2 + var(--al-pad)))
+    3.5rem;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x proximity;
@@ -4799,9 +4800,6 @@
 }
 [data-app="linkedin"] .cs__tile {
   background: #0a66c2;
-}
-[data-app="facebook"] .cs__tile {
-  background: linear-gradient(180deg, #18a5ff 0%, #0a63e0 100%);
 }
 [data-app="youtube"] .cs__tile {
   background: #fff;
