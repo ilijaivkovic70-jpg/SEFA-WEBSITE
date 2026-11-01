@@ -4889,7 +4889,7 @@ html[data-theme="light"] {
 
 .cs__apps {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   align-content: start;
   gap: calc(26 * var(--phone-u)) calc(6 * var(--phone-u));
   margin-top: calc(30 * var(--phone-u));
