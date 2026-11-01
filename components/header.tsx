@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { cn } from "@/lib/utils";
 import {
@@ -102,7 +101,6 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-1">
-        <ThemeToggle className="size-11 md:size-9" />
         <div className="md:hidden">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger

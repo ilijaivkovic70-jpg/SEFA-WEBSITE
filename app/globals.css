@@ -90,41 +90,6 @@
   --sidebar-ring: #66c6b3;
 }
 
-/* ---------- svetla tema ----------
-   Bira se dugmetom u zaglavlju (components/theme-toggle.tsx); skripta u
-   app/layout.tsx postavlja `data-theme` pre iscrtavanja da ne bljesne. */
-html[data-theme="light"] {
-  --ink: 11 22 21;
-  --mint: 29 127 108;
-  --bg-rgb: 245 248 247;
-  color-scheme: light;
-  --background: #f5f8f7;
-  --foreground: #0b1615;
-  --card: #ffffff;
-  --card-foreground: #0b1615;
-  --popover: #ffffff;
-  --popover-foreground: #0b1615;
-  --primary: #1d7f6c;
-  --primary-foreground: #ffffff;
-  --secondary: #e8efed;
-  --secondary-foreground: #0b1615;
-  --muted: #e8efed;
-  --muted-foreground: rgba(11, 22, 21, 0.66);
-  --accent: #2f6f63;
-  --accent-foreground: #ffffff;
-  --border: rgba(11, 22, 21, 0.13);
-  --input: rgba(11, 22, 21, 0.13);
-  --ring: #1d7f6c;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0b1615;
-  --sidebar-primary: #1d7f6c;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #2f6f63;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: rgba(11, 22, 21, 0.13);
-  --sidebar-ring: #1d7f6c;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -5094,65 +5059,6 @@ html[data-theme="light"] {
     clip-path: none;
     transform: none;
   }
-}
-
-/* ---------- dugme za temu: u tamnoj temi se nudi sunce, u svetloj mesec ---------- */
-.theme-toggle__moon { display: none; }
-html[data-theme="light"] .theme-toggle__sun { display: none; }
-html[data-theme="light"] .theme-toggle__moon { display: block; }
-
-/* ---------- svetla tema: fotografije u pozadini se „peru” ka beloj ---------- */
-html[data-theme="light"] .road__backdrop-img,
-html[data-theme="light"] .sc__cont-img {
-  filter: saturate(0.3) brightness(1.7) contrast(0.8);
-}
-html[data-theme="light"] .al-bg__img {
-  filter: saturate(0.3) brightness(1.8) contrast(0.75);
-}
-/* logotip je svetao (mint + belo) — na svetloj pozadini se zatamni */
-html[data-theme="light"] img[src="/logo.png"] {
-  filter: brightness(0.28) saturate(1.5);
-}
-
-html[data-theme="light"] .reminder-cloud__svg path {
-  fill: #ffffff;
-  stroke: rgb(var(--mint) / 0.4);
-}
-
-/* ---------- svetla tema: tamna ostrva ----------
-   Kolaž iza naslova tima je fotografski i uvek taman, pa sekcija zadržava
-   tamne boje teme i u svetlom režimu — bez ovoga tekst na njoj nestaje. */
-html[data-theme="light"] .window-frame {
-  --ink: 234 242 240;
-  --mint: 102 198 179;
-  --bg-rgb: 7 16 15;
-  --background: #07100f;
-  --foreground: #eaf2f0;
-  --card: #0b1615;
-  --primary: #66c6b3;
-  --primary-foreground: #07100f;
-  --muted-foreground: rgba(234, 242, 240, 0.64);
-  --border: rgba(234, 242, 240, 0.13);
-  color: var(--foreground);
-}
-html[data-theme="light"] .al-bg__img {
-  opacity: 0.22;
-}
-
-/* ekran telefona na Kontaktu je uvek taman — ostaje taman i u svetloj temi */
-html[data-theme="light"] .cs__screen {
-  --ink: 234 242 240;
-  --mint: 102 198 179;
-  --bg-rgb: 7 16 15;
-  --background: #07100f;
-  --foreground: #eaf2f0;
-  --card: #0b1615;
-  --primary: #66c6b3;
-  --muted-foreground: rgba(234, 242, 240, 0.64);
-  color: var(--foreground);
-}
-html[data-theme="light"] .cs__screen img[src="/logo.png"] {
-  filter: none;
 }
 
 /* ---------- mekan skrol (components/smooth-scroll.tsx) ---------- */
