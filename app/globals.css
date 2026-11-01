@@ -654,19 +654,20 @@
 
 /* ============================================================
    SEKTORI — „Tri sektora. Jedna organizacija.”
-   Sekcija je visoka 300vh, a unutar nje jedan sticky kadar od
-   100vh. JS upisuje napredak (--p, --lp) i etapu (data-stage),
-   a sve ostalo radi CSS ispod.
+   Ekrani (naslovni „layer” i tri sektora, naizmenično) se smenjuju u
+   jednom sticky kadru od 100vh. JS upisuje napredak (--p), trenutni
+   prelaz (data-stage) i napredak kruga unutar njega (--cp); sve ostalo
+   radi CSS ispod — trenutni ekran stoji pun, sledeći raste iz kruga.
 
    Tri sloja pravila, tim redom:
      1) osnovni raspored — mobilni, bez JS-a i uz „smanjeno
-        kretanje”: tri poglavlja jedno ispod drugog, sve vidljivo;
-     2) [data-anim="on"] — početna (skrivena) stanja i prelazi;
+        kretanje”: ekrani jedan ispod drugog, sve vidljivo;
+     2) [data-anim="on"] — početni ulazak naslova;
      3) [data-mode="scroll"] (sve širine, uži ekrani imaju doradu) —
-        sticky kadar i smenjivanje poglavlja.
+        sticky kadar i kružni prelaz između ekrana.
 
-   Ručke za podešavanje: --sc-pad (bočna margina), --sc-e (krivа
-   kretanja), granice etapa su u components/sectors-scroll.tsx.
+   Ručke za podešavanje: --sc-pad (bočna margina), --sc-e (kriva
+   kretanja), redosled ekrana je u components/sectors-scroll.tsx (STOPS).
    ============================================================ */
 
 .sc {
@@ -674,7 +675,7 @@
   --sc-pad: clamp(1.25rem, 5vw, 5.5rem);
   --sc-ink: rgb(var(--ink) / 0.62);
   --p: 0;
-  --lp: 0.5;
+  --cp: 0;
   position: relative;
   isolation: isolate;
   background: var(--background);
@@ -749,29 +750,31 @@
   );
 }
 
-/* ---------- osnovni raspored ---------- */
+/* ---------- osnovni raspored (bez JS-a / smanjeno kretanje): ekrani jedan
+   ispod drugog; ponovljeni naslovni „layer” se vidi samo jednom, na vrhu ---------- */
 .sc__stage {
   position: relative;
   z-index: 1;
   padding: clamp(5rem, 14vh, 9rem) var(--sc-pad) clamp(4rem, 10vh, 7rem);
 }
 
-.sc__head {
+.sc__stops {
   position: relative;
 }
-/* vrlo blag tamnozeleni veo, samo iza teksta */
-.sc__head::before {
-  content: "";
-  position: absolute;
-  inset: -4rem -2rem -2rem -3rem;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(
-    76% 106% at 16% 42%,
-    rgba(8, 24, 19, 0.7),
-    rgba(8, 24, 19, 0) 76%
-  );
-  transition: opacity 0.6s var(--sc-e);
+.sc__stop {
+  position: relative;
+  padding-block: clamp(3rem, 9vh, 5rem);
+}
+.sc__stop + .sc__stop {
+  border-top: 1px solid rgb(var(--ink) / 0.14);
+}
+.sc[data-mode="static"] .sc__stop[data-kind="layer"]:not(:first-child) {
+  display: none;
+}
+
+/* „layer”: isti naslov koji se vraća između sektora */
+.sc__layer {
+  max-width: 34rem;
 }
 .sc__kicker,
 .sc__title,
@@ -812,19 +815,13 @@
   color: rgba(255, 255, 255, 0.82);
 }
 
-.sc__chapters {
-  list-style: none;
-  margin: clamp(3.5rem, 9vh, 6rem) 0 0;
-  padding: 0;
-}
-.sc__chapter {
+/* sektor */
+.sc__sector {
   position: relative;
-  padding-block: clamp(2.75rem, 8vh, 4.5rem);
-  border-top: 1px solid rgb(var(--ink) / 0.14);
-}
-.sc__chapter:first-child {
-  border-top: 0;
-  padding-top: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: center;
+  column-gap: clamp(2rem, 5vw, 5rem);
 }
 .sc__num-wrap {
   display: none;
@@ -907,12 +904,11 @@
   stroke: none;
 }
 
-.sc__finale,
 .sc__meter {
   display: none;
 }
 
-/* ---------- 2) animirana stanja ---------- */
+/* ---------- 2) animirana stanja (ulazak naslova pri prvom pojavljivanju) ---------- */
 .sc[data-anim="on"] .sc__line > span {
   transform: translate3d(0, 108%, 0);
   transition: transform 0.95s var(--sc-e);
@@ -940,147 +936,98 @@
   transform: translate3d(0, 0, 0);
 }
 
-/* sadržaj poglavlja ulazi odozdo, jedan element za drugim */
-.sc[data-anim="on"] .sc__index,
-.sc[data-anim="on"] .sc__name,
-.sc[data-anim="on"] .sc__desc,
-.sc[data-anim="on"] .sc__keys li {
-  opacity: 0;
-  transform: translate3d(0, 22px, 0);
-  transition:
-    opacity 0.6s var(--sc-e),
-    transform 0.75s var(--sc-e);
-}
-.sc[data-anim="on"] .sc__chapter[data-active] .sc__index,
-.sc[data-anim="on"] .sc__chapter[data-active] .sc__name,
-.sc[data-anim="on"] .sc__chapter[data-active] .sc__desc,
-.sc[data-anim="on"] .sc__chapter[data-active] .sc__keys li {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-.sc[data-anim="on"] .sc__chapter[data-active] .sc__name {
-  transition-delay: 0.08s;
-}
-.sc[data-anim="on"] .sc__chapter[data-active] .sc__desc {
-  transition-delay: 0.24s;
-}
-.sc[data-anim="on"] .sc__chapter[data-active] .sc__keys li {
-  transition-delay: calc(0.4s + var(--k) * 0.09s);
-}
-
-/* linije ilustracije se iscrtavaju (pathLength="1") */
-.sc[data-anim="on"] .sc-illo__draw {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 1.05s var(--sc-e) var(--d, 0ms);
-}
-.sc[data-anim="on"] .sc__chapter[data-active] .sc-illo__draw {
-  stroke-dashoffset: 0;
-}
-.sc[data-anim="on"] .sc-illo__node {
-  opacity: 0;
-  transform: scale(0.35);
-  transform-box: fill-box;
-  transform-origin: center;
-  transition:
-    opacity 0.45s var(--sc-e) var(--d, 0ms),
-    transform 0.6s var(--sc-e) var(--d, 0ms);
-}
-.sc[data-anim="on"] .sc__chapter[data-active] .sc-illo__node {
-  opacity: 1;
-  transform: scale(1);
-}
-.sc[data-anim="on"] .sc-illo__frag {
-  opacity: 0;
-  transform: translateX(-14px);
-  transition:
-    opacity 0.5s var(--sc-e) var(--d, 0ms),
-    transform 0.7s var(--sc-e) var(--d, 0ms);
-}
-.sc[data-anim="on"] .sc__chapter[data-active] .sc-illo__frag {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-/* ---------- 3) sticky kadar (sve širine; telefon doteruje blok ispod) ---------- */
+/* ---------- 3) sticky kadar: „layer” i sektor se smenjuju kroz krug ----------
+   Trenutni ekran (data-stop === data-stage) stoji pun; sledeći
+   (data-stop === data-stage + 1) raste iz kruga u sredini, prateći --cp
+   (0 → 1) koje upisuje JS. Svi ostali ekrani ostaju skriveni. */
 @media all {
   .sc[data-mode="scroll"] {
-    min-height: 300vh;
+    /* šest prelaza (layer→sektor→layer→...), po jedan pun ekran skrola;
+       broj prelaza je STOPS.length - 1 u components/sectors-scroll.tsx */
+    min-height: 600vh;
   }
   .sc[data-mode="scroll"] .sc__stage {
     position: sticky;
     top: 0;
     height: 100vh;
     overflow: hidden;
-    padding: clamp(4.5rem, 10vh, 7rem) var(--sc-pad) clamp(2.5rem, 6vh, 4rem);
+    padding: 0;
   }
-
-  /* uvod: naslov stoji u sredini, pa se skupi u zaglavlje gore levo */
-  .sc[data-mode="scroll"] .sc__head {
-    position: absolute;
-    left: var(--sc-pad);
-    right: var(--sc-pad);
-    top: clamp(4.5rem, 10vh, 7rem);
-    max-width: none;
-    z-index: 3;
-    transform: translate3d(0, 21vh, 0);
-    transition: transform 1s var(--sc-e);
-  }
-  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__head {
-    transform: translate3d(0, 0, 0);
-  }
-  .sc[data-mode="scroll"] .sc__title {
-    max-width: none;
-    font-size: clamp(3.4rem, 6.6vw, 7.4rem);
-    transform-origin: left top;
-    transition: transform 1s var(--sc-e);
-  }
-  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__title {
-    transform: scale(0.3);
-  }
-  .sc[data-mode="scroll"] .sc__lead {
-    font-size: 1.05rem;
-  }
-  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__lead,
-  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__head::before {
-    opacity: 0;
-    transform: translate3d(0, -14px, 0);
-  }
-
-  /* poglavlja se smenjuju u istom kadru */
-  .sc[data-mode="scroll"] .sc__chapters {
+  .sc[data-mode="scroll"] .sc__stops {
     position: absolute;
     inset: 0;
-    margin: 0;
   }
-  .sc[data-mode="scroll"] .sc__chapter {
+  .sc[data-mode="scroll"] .sc__stop {
     position: absolute;
     inset: 0;
     display: grid;
-    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
-    align-items: center;
-    column-gap: clamp(2rem, 5vw, 5rem);
-    padding: clamp(9rem, 22vh, 13rem) var(--sc-pad) clamp(4rem, 10vh, 6rem);
-    border-top: 0;
+    place-items: center;
+    padding: clamp(5rem, 12vh, 7rem) var(--sc-pad);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.55s var(--sc-e);
+    clip-path: circle(0% at 50% 50%);
+    /* neprozirna (ali u istom tonu kao ambijent) — krug mora da sakrije
+       ono što je ispod, ne samo da otkrije svoj sopstveni tekst preko njega */
+    background:
+      radial-gradient(52% 58% at 18% 22%, rgb(var(--mint) / 0.22), transparent 64%),
+      radial-gradient(58% 64% at 86% 78%, rgba(47, 111, 99, 0.34), transparent 68%),
+      radial-gradient(38% 46% at 58% 96%, rgb(var(--mint) / 0.14), transparent 72%),
+      var(--background);
   }
-  .sc[data-mode="scroll"] .sc__chapter[data-active] {
-    opacity: 1;
-    pointer-events: auto;
+  .sc[data-mode="scroll"] .sc__stop[data-kind="sector"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+    align-items: center;
+    justify-items: stretch;
+    column-gap: clamp(2rem, 5vw, 5rem);
+    padding: clamp(7rem, 16vh, 9rem) var(--sc-pad);
+  }
+  .sc[data-mode="scroll"] .sc__sector {
+    display: contents;
+  }
+  .sc[data-mode="scroll"] .sc__layer {
+    max-width: 40rem;
+    text-align: center;
+  }
+  .sc[data-mode="scroll"] .sc__title {
+    max-width: none;
+    font-size: clamp(3rem, 6.2vw, 6.4rem);
   }
 
-  /* veliki broj kao pozadinski tipografski element, klizi suprotno tekstu */
+  /* ekran koji trenutno stoji pun */
+  .sc[data-stage="0"] .sc__stop[data-stop="0"],
+  .sc[data-stage="1"] .sc__stop[data-stop="1"],
+  .sc[data-stage="2"] .sc__stop[data-stop="2"],
+  .sc[data-stage="3"] .sc__stop[data-stop="3"],
+  .sc[data-stage="4"] .sc__stop[data-stop="4"],
+  .sc[data-stage="5"] .sc__stop[data-stop="5"] {
+    opacity: 1;
+    clip-path: none;
+    z-index: 1;
+  }
+  /* sledeći ekran raste iz kruga u sredini */
+  .sc[data-stage="0"] .sc__stop[data-stop="1"],
+  .sc[data-stage="1"] .sc__stop[data-stop="2"],
+  .sc[data-stage="2"] .sc__stop[data-stop="3"],
+  .sc[data-stage="3"] .sc__stop[data-stop="4"],
+  .sc[data-stage="4"] .sc__stop[data-stop="5"],
+  .sc[data-stage="5"] .sc__stop[data-stop="6"] {
+    opacity: 1;
+    pointer-events: auto;
+    clip-path: circle(calc(var(--cp) * 100%) at 50% 50%);
+    z-index: 2;
+  }
+
+  /* veliki broj kao pozadinski tipografski element, iza teksta sektora */
   .sc[data-mode="scroll"] .sc__num-wrap {
     display: block;
     position: absolute;
-    left: -0.18em;
-    top: 43%;
+    left: 50%;
+    top: 50%;
     z-index: 0;
     pointer-events: none;
-    font-size: clamp(15rem, 30vw, 32rem);
-    transform: translate3d(0, calc(-50% + (var(--lp) - 0.5) * 3.25rem), 0);
+    transform: translate3d(-46%, -54%, 0);
+    font-size: clamp(14rem, 26vw, 26rem);
   }
   /* samo kontura — pun broj bi iza opisa pravio tamnu ploču */
   .sc[data-mode="scroll"] .sc__num {
@@ -1100,10 +1047,9 @@
   .sc[data-mode="scroll"] .sc__body {
     position: relative;
     z-index: 1;
-    transform: translate3d(0, calc((var(--lp) - 0.5) * -1.5rem), 0);
   }
   .sc[data-mode="scroll"] .sc__name {
-    font-size: clamp(3.4rem, 6.6vw, 7.4rem);
+    font-size: clamp(3rem, 6vw, 6.4rem);
     line-height: 0.92;
     color: var(--foreground);
   }
@@ -1118,77 +1064,21 @@
     margin: 0;
     width: 100%;
     max-width: clamp(20rem, 30vw, 31rem);
-    transform: translate3d(0, calc((var(--lp) - 0.5) * 1rem), 0);
   }
 
-  /* zaključak: sva tri naziva zajedno */
-  .sc[data-mode="scroll"] .sc__finale {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(0.75rem, 2.2vh, 1.6rem);
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    padding: clamp(9rem, 22vh, 13rem) var(--sc-pad) clamp(4rem, 10vh, 6rem);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s var(--sc-e);
-  }
-  .sc[data-mode="scroll"][data-stage="4"] .sc__finale {
-    opacity: 1;
-  }
-  .sc__finale-row {
-    display: flex;
-    align-items: baseline;
-    gap: clamp(1rem, 3vw, 2.5rem);
-    margin: 0;
-    padding-bottom: clamp(0.5rem, 1.4vh, 1rem);
-    border-bottom: 1px solid rgb(var(--ink) / 0.16);
-    opacity: 0;
-    transform: translate3d(0, 20px, 0);
-    transition:
-      opacity 0.6s var(--sc-e),
-      transform 0.7s var(--sc-e);
-  }
-  .sc[data-stage="4"] .sc__finale-row {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-    transition-delay: calc(var(--k) * 0.11s);
-  }
-  .sc__finale-num {
-    font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-    font-size: 0.8rem;
-    letter-spacing: 0.22em;
-    color: var(--primary);
-  }
-  .sc__finale-name {
-    font-family: var(--font-bricolage), system-ui, sans-serif;
-    font-weight: 800;
-    font-size: clamp(2.2rem, 5vw, 4.4rem);
-    line-height: 1;
-    letter-spacing: -0.035em;
-    color: var(--foreground);
-  }
-
-  /* indikator napretka */
+  /* indikator napretka — pomeren ispod lepljivog zaglavlja sajta (4rem) */
   .sc[data-mode="scroll"] .sc__meter {
     display: flex;
     align-items: center;
     gap: 0.9rem;
     position: absolute;
-    top: clamp(4.5rem, 10vh, 7rem);
+    top: clamp(5.25rem, 10vh, 7rem);
     right: var(--sc-pad);
     z-index: 4;
     font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
     font-size: 0.72rem;
     letter-spacing: 0.2em;
     color: rgb(var(--ink) / 0.6);
-    opacity: 0;
-    transition: opacity 0.5s var(--sc-e);
-  }
-  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__meter {
-    opacity: 1;
   }
   .sc__meter-now {
     color: var(--primary);
@@ -1224,32 +1114,17 @@
 
 /* ---------- 3b) telefon i tablet: isti sticky kadar, složen u jednu kolonu ---------- */
 @media (max-width: 1023px) {
-  .sc[data-mode="scroll"] .sc__stage {
-    height: 100svh;
-    padding: 0 var(--sc-pad);
-  }
-  .sc[data-mode="scroll"] .sc__head {
-    top: clamp(4.25rem, 11svh, 5.5rem);
-    transform: translate3d(0, 16svh, 0);
-  }
-  .sc[data-mode="scroll"] .sc__title {
-    font-size: clamp(2.7rem, 12vw, 4.6rem);
-  }
-  .sc[data-mode="scroll"]:not([data-stage="0"]) .sc__title {
-    transform: scale(0.42);
-  }
-  .sc[data-mode="scroll"] .sc__lead {
-    font-size: 1rem;
-  }
-  .sc[data-mode="scroll"] .sc__chapter {
+  .sc[data-mode="scroll"] .sc__stop[data-kind="sector"] {
     grid-template-columns: minmax(0, 1fr);
     align-content: center;
     row-gap: clamp(1.25rem, 3.5svh, 2.25rem);
-    padding: clamp(7.5rem, 20svh, 10rem) var(--sc-pad) clamp(2rem, 6svh, 3.5rem);
+    padding: clamp(6rem, 16svh, 8rem) var(--sc-pad);
+  }
+  .sc[data-mode="scroll"] .sc__title {
+    font-size: clamp(2.6rem, 11vw, 4rem);
   }
   .sc[data-mode="scroll"] .sc__num-wrap {
-    top: 34%;
-    font-size: clamp(11rem, 52vw, 20rem);
+    font-size: clamp(10rem, 44vw, 17rem);
   }
   .sc[data-mode="scroll"] .sc__name {
     font-size: clamp(2.5rem, 11.5vw, 4.4rem);
@@ -1258,17 +1133,11 @@
     font-size: 0.98rem;
   }
   .sc[data-mode="scroll"] .sc__illo {
-    justify-self: start;
+    justify-self: center;
     width: min(100%, 15rem, 30svh);
   }
-  .sc[data-mode="scroll"] .sc__finale {
-    padding: clamp(7.5rem, 20svh, 10rem) var(--sc-pad) clamp(2rem, 6svh, 3.5rem);
-  }
-  .sc__finale-name {
-    font-size: clamp(1.9rem, 9vw, 3.2rem);
-  }
   .sc[data-mode="scroll"] .sc__meter {
-    top: clamp(4.4rem, 11.4svh, 5.6rem);
+    top: clamp(4.8rem, 11.4svh, 6rem);
     gap: 0.6rem;
   }
   .sc__meter-rail i {

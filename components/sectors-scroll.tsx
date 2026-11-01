@@ -4,22 +4,27 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Sekcija „Sektori” — tri poglavlja koja se smenjuju dok korisnik skroluje.
+ * Sekcija „Sektori” — naslovni „layer” i tri sektora se smenjuju dok
+ * korisnik skroluje, svaki prelaz je krug koji izraste iz sredine ekrana
+ * i otkrije sledeći ekran (ista ideja kao „kupola” u components/dome-reveal.tsx,
+ * samo pojednostavljena na čist clip-path krug, pošto se sve dešava unutar
+ * jednog sticky kadra).
  *
  * Kako radi:
- *  - Sekcija je visoka 300vh, a unutar nje jedan `sticky` kadar visine 100vh.
- *  - Slušalac skrola računa napredak kroz sekciju (0 → 1) i upisuje ga u CSS
- *    promenljivu `--p`, a redni broj trenutne etape u atribut `data-stage`.
- *  - Sve ostalo radi CSS: `data-stage` bira koje je poglavlje aktivno, a
- *    `--p` / `--lp` daju blago klizanje pozadine i velikog broja.
+ *  - Redosled ekrana je fiksan niz STOPS: layer, sektor, layer, sektor,
+ *    layer, sektor, layer — isti naslovni „layer” se vraća između svaka
+ *    dva sektora.
+ *  - Sekcija je visoka onoliko vh koliko ima prelaza (jedan pun ekran
+ *    skrola po prelazu), a unutar nje jedan `sticky` kadar od 100vh.
+ *  - Slušalac skrola računa napredak kroz sekciju (0 → 1), pretvara ga u
+ *    trenutni prelaz (`--stage`, 0…STOPS.length-2) i napredak kruga unutar
+ *    njega (`--cp`, 0 → 1, sa mirnim periodom na oba kraja da se sadržaj
+ *    stigne pročitati). Sve ostalo radi CSS: trenutni ekran stoji pun
+ *    (bez isecanja), sledeći raste iz kruga u sredini.
  *
- * Etape (data-stage): 0 uvod → 1, 2, 3 sektori → 4 zaključak.
- *
- * Sticky animacija radi na svim širinama (i na telefonu). Samo kad je
- * uključeno „smanjeno kretanje” poglavlja stoje jedno ispod drugog
- * (vidi `data-mode` u CSS-u).
- *
- * Sadržaj sektora se menja u nizu SECTORS ispod.
+ * Bez JS-a i uz „smanjeno kretanje” (data-mode="static") nema sticky kadra
+ * ni kruga — ekrani stoje jedan ispod drugog, a ponovljeni naslovni layer
+ * se prikazuje samo jednom, na vrhu.
  */
 
 type Sector = {
@@ -137,14 +142,28 @@ const SECTORS: Sector[] = [
   },
 ];
 
-/** Granice etapa u napretku kroz sekciju (0 = vrh, 1 = dno). */
-const STAGE_BOUNDS = [0, 0.17, 0.4, 0.62, 0.85, 1];
+/* ---------- redosled ekrana: layer, sektor, layer, sektor, layer, sektor, layer ---------- */
 
-function stageFor(p: number) {
-  for (let i = 1; i < STAGE_BOUNDS.length; i++) {
-    if (p < STAGE_BOUNDS[i]) return i - 1;
-  }
-  return STAGE_BOUNDS.length - 2;
+type Stop = { kind: "layer" } | { kind: "sector"; sector: Sector };
+
+const STOPS: Stop[] = [
+  { kind: "layer" },
+  { kind: "sector", sector: SECTORS[0] },
+  { kind: "layer" },
+  { kind: "sector", sector: SECTORS[1] },
+  { kind: "layer" },
+  { kind: "sector", sector: SECTORS[2] },
+  { kind: "layer" },
+];
+/** Broj prelaza (jedan manje od broja ekrana). */
+const UNITS = STOPS.length - 1;
+/** Ekran miruje na oba kraja prelaza — krug raste samo u sredini skrola. */
+const CIRCLE_FROM = 0.3;
+const CIRCLE_TO = 0.7;
+
+function sectorNumAt(i: number) {
+  const stop = STOPS[i];
+  return stop?.kind === "sector" ? stop.sector.num : null;
 }
 
 /* ---------- komponenta ---------- */
@@ -154,10 +173,9 @@ export function SectorsScroll() {
   const [stage, setStage] = useState(0);
   const [mode, setMode] = useState<"static" | "scroll">("static");
   const [animated, setAnimated] = useState(false);
-  const [seen, setSeen] = useState<boolean[]>([false, false, false]);
 
-  // uključi animacije tek posle montiranja — bez JS-a i uz „smanjeno kretanje”
-  // sadržaj ostaje odmah vidljiv i čitljiv
+  // uključi animacije tek posle montiranja — bez JS-a i uz „smanjeno
+  // kretanje” sadržaj ostaje odmah vidljiv i čitljiv
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
@@ -171,7 +189,8 @@ export function SectorsScroll() {
     return () => reduced.removeEventListener("change", sync);
   }, []);
 
-  // sticky režim: napredak kroz sekciju → --p, --lp i data-stage
+  // sticky režim: napredak kroz sekciju → trenutni prelaz (--stage) i
+  // napredak kruga unutar njega (--cp)
   useEffect(() => {
     const section = sectionRef.current;
     if (!section || mode !== "scroll") return;
@@ -179,22 +198,30 @@ export function SectorsScroll() {
     let frame = 0;
     let lastStage = -1;
 
+    const ease = (t: number) => t * t * (3 - 2 * t);
+
     const paint = () => {
       frame = 0;
       const rect = section.getBoundingClientRect();
       const travel = section.offsetHeight - window.innerHeight;
       const p = travel <= 0 ? 0 : Math.min(1, Math.max(0, -rect.top / travel));
 
-      const s = stageFor(p);
-      const from = STAGE_BOUNDS[s];
-      const to = STAGE_BOUNDS[s + 1];
-      const lp = to > from ? (p - from) / (to - from) : 0;
+      const raw = Math.min(UNITS - 1e-4, Math.max(0, p * UNITS));
+      const unit = Math.floor(raw);
+      const localT = raw - unit;
+      const cp = ease(
+        localT <= CIRCLE_FROM
+          ? 0
+          : localT >= CIRCLE_TO
+            ? 1
+            : (localT - CIRCLE_FROM) / (CIRCLE_TO - CIRCLE_FROM)
+      );
 
       section.style.setProperty("--p", p.toFixed(4));
-      section.style.setProperty("--lp", lp.toFixed(4));
-      if (s !== lastStage) {
-        lastStage = s;
-        setStage(s);
+      section.style.setProperty("--cp", cp.toFixed(4));
+      if (unit !== lastStage) {
+        lastStage = unit;
+        setStage(unit);
       }
     };
 
@@ -210,7 +237,7 @@ export function SectorsScroll() {
       window.removeEventListener("resize", request);
       if (frame) cancelAnimationFrame(frame);
       section.style.removeProperty("--p");
-      section.style.removeProperty("--lp");
+      section.style.removeProperty("--cp");
     };
   }, [mode]);
 
@@ -267,31 +294,6 @@ export function SectorsScroll() {
     };
   }, [mode]);
 
-  // statični režim (mobilni): poglavlje se otkriva kad uđe u vidno polje
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || mode !== "static" || !animated) return;
-
-    const chapters = Array.from(
-      section.querySelectorAll<HTMLElement>("[data-chapter]")
-    );
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const i = Number((entry.target as HTMLElement).dataset.chapter);
-          setSeen((prev) =>
-            prev[i] ? prev : prev.map((v, j) => (j === i ? true : v))
-          );
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.3 }
-    );
-    chapters.forEach((c) => observer.observe(c));
-    return () => observer.disconnect();
-  }, [mode, animated]);
-
   // uvodni naslov se otkriva liniju po liniju kad sekcija uđe u vidno polje
   const [headIn, setHeadIn] = useState(false);
   useEffect(() => {
@@ -310,8 +312,11 @@ export function SectorsScroll() {
     return () => observer.disconnect();
   }, [animated]);
 
-  const activeIndex = stage >= 1 && stage <= 3 ? stage - 1 : -1;
-  const meterNow = stage === 0 ? "00" : stage === 4 ? "03" : `0${stage}`;
+  // indikator napretka: broj sektora ka kome trenutni prelaz vodi (ili iz
+  // koga dolazi, kad smo na poslednjem naslovnom „layer”-u)
+  const meterNow = sectorNumAt(stage + 1) ?? sectorNumAt(stage) ?? "00";
+  const SECTOR_STOP_INDEX = [1, 3, 5];
+  const rail = SECTOR_STOP_INDEX.map((idx) => stage + 1 >= idx);
 
   return (
     <section
@@ -334,68 +339,55 @@ export function SectorsScroll() {
       </div>
 
       <div className="sc__stage">
-        <div className="sc__head">
-          <p className="sc__kicker">Sektori</p>
-          <h2 id="sektori-naslov" className="sc__title">
-            <span className="sc__line">
-              <span>Tri sektora.</span>
-            </span>
-            <span className="sc__line">
-              <span>Jedna organizacija.</span>
-            </span>
-          </h2>
-          <p className="sc__lead">
-            Različite uloge, znanja i ljudi povezani zajedničkim ciljem.
-          </p>
-        </div>
-
-        <ol className="sc__chapters">
-          {SECTORS.map((sector, i) => (
-            <li
-              key={sector.num}
-              className="sc__chapter"
-              data-chapter={i}
-              data-active={
-                (mode === "scroll" ? activeIndex === i : seen[i]) || undefined
-              }
-            >
-              <div className="sc__num-wrap" aria-hidden="true">
-                <span className="sc__num">{sector.num}</span>
+        <div className="sc__stops">
+          {STOPS.map((stop, i) =>
+            stop.kind === "layer" ? (
+              <div key={i} className="sc__stop" data-stop={i} data-kind="layer">
+                <div className="sc__layer">
+                  <p className="sc__kicker">Sektori</p>
+                  <h2
+                    {...(i === 0 ? { id: "sektori-naslov" } : {})}
+                    className="sc__title"
+                  >
+                    <span className="sc__line">
+                      <span>Tri sektora.</span>
+                    </span>
+                    <span className="sc__line">
+                      <span>Jedna organizacija.</span>
+                    </span>
+                  </h2>
+                  <p className="sc__lead">
+                    Različite uloge, znanja i ljudi povezani zajedničkim ciljem.
+                  </p>
+                </div>
               </div>
-
-              <div className="sc__body">
-                <p className="sc__index" aria-hidden="true">
-                  {sector.num}
-                </p>
-                <h3 className="sc__name">{sector.title}</h3>
-                <p className="sc__desc">{sector.description}</p>
-                <ul className="sc__keys">
-                  {sector.keywords.map((word, k) => (
-                    <li key={word} style={{ "--k": k } as React.CSSProperties}>
-                      {word}
-                    </li>
-                  ))}
-                </ul>
+            ) : (
+              <div key={i} className="sc__stop" data-stop={i} data-kind="sector">
+                <div className="sc__sector">
+                  <div className="sc__num-wrap" aria-hidden="true">
+                    <span className="sc__num">{stop.sector.num}</span>
+                  </div>
+                  <div className="sc__body">
+                    <p className="sc__index" aria-hidden="true">
+                      {stop.sector.num}
+                    </p>
+                    <h3 className="sc__name">{stop.sector.title}</h3>
+                    <p className="sc__desc">{stop.sector.description}</p>
+                    <ul className="sc__keys">
+                      {stop.sector.keywords.map((word, k) => (
+                        <li key={word} style={{ "--k": k } as React.CSSProperties}>
+                          {word}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="sc__illo">
+                    <stop.sector.Illustration />
+                  </div>
+                </div>
               </div>
-
-              <div className="sc__illo">
-                <sector.Illustration />
-              </div>
-            </li>
-          ))}
-        </ol>
-
-        <div className="sc__finale" aria-hidden="true">
-          {SECTORS.map((sector, i) => (
-            <p
-              key={sector.num}
-              className="sc__finale-row"
-              style={{ "--k": i } as React.CSSProperties}
-            >
-              <span className="sc__finale-num">{sector.num}</span>
-              <span className="sc__finale-name">{sector.title}</span>
-            </p>
-          ))}
+            )
+          )}
         </div>
 
         <div className="sc__meter" aria-hidden="true">
@@ -405,8 +397,8 @@ export function SectorsScroll() {
             <span>03</span>
           </span>
           <span className="sc__meter-rail">
-            {SECTORS.map((sector, i) => (
-              <i key={sector.num} data-on={activeIndex >= i || stage === 4 || undefined} />
+            {rail.map((on, i) => (
+              <i key={i} data-on={on || undefined} />
             ))}
           </span>
         </div>
