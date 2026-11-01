@@ -5,24 +5,27 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * Sekcija „Sektori” — naslovni „layer” se prikaže jednom, a zatim tri
- * sektora idu direktno jedan za drugim dok korisnik skroluje; svaki prelaz
- * je krug koji izraste iz sredine ekrana i otkrije sledeći ekran (ista
- * ideja kao „kupola” u components/dome-reveal.tsx, samo pojednostavljena
- * na čist clip-path krug, pošto se sve dešava unutar jednog sticky kadra).
+ * sektora idu direktno jedan za drugim dok korisnik skroluje. Ekrani klize
+ * jedan preko drugog kao traka filma, umesto da se smenjuju kružnim
+ * prelazom — direktna, 1:1 veza sa skrolom, bez odvojenih ulaz/izlaz
+ * animacija koje mogu da se razminu.
  *
  * Kako radi:
  *  - Redosled ekrana je fiksan niz STOPS: layer, pa sektor, sektor, sektor
- *    — bez vraćanja na layer između sektora.
+ *    — bez vraćanja na layer između sektora. Svaki ekran dobija svoje
+ *    mesto u traci kao CSS promenljiva `--stop` (0, 1, 2…).
  *  - Sekcija je visoka onoliko vh koliko ima prelaza (jedan pun ekran
  *    skrola po prelazu), a unutar nje jedan `sticky` kadar od 100vh.
- *  - Slušalac skrola računa napredak kroz sekciju (0 → 1), pretvara ga u
- *    trenutni prelaz (`--stage`, 0…STOPS.length-2) i napredak kruga unutar
- *    njega (`--cp`, 0 → 1, sa mirnim periodom na oba kraja da se sadržaj
- *    stigne pročitati). Sve ostalo radi CSS: trenutni ekran stoji pun
- *    (bez isecanja), sledeći raste iz kruga u sredini.
+ *  - Slušalac skrola računa napredak kroz sekciju (0 → 1) i pretvara ga u
+ *    `--raw`: kontinuiranu poziciju trake (0…STOPS.length-1), sa mirnim
+ *    periodom na oba kraja svakog prelaza da se sadržaj stigne pročitati.
+ *    CSS pomera svaki ekran za `(--stop - --raw) * 100%` — razlika je
+ *    uvek tačna, pa nema moguće neusklađenosti.
+ *  - `--stage` (ceo broj, trenutni prelaz) upisuje se posebno — koristi
+ *    ga brojač napretka i crtanje linije ilustracije sektora.
  *
  * Bez JS-a i uz „smanjeno kretanje” (data-mode="static") nema sticky kadra
- * ni kruga — ekrani stoje jedan ispod drugog.
+ * ni klizanja — ekrani stoje jedan ispod drugog.
  */
 
 type Sector = {
@@ -152,9 +155,9 @@ const STOPS: Stop[] = [
 ];
 /** Broj prelaza (jedan manje od broja ekrana). */
 const UNITS = STOPS.length - 1;
-/** Ekran miruje na oba kraja prelaza — krug raste samo u sredini skrola. */
-const CIRCLE_FROM = 0.3;
-const CIRCLE_TO = 0.7;
+/** Ekran miruje na oba kraja prelaza — klizanje se dešava samo u sredini skrola. */
+const SLIDE_FROM = 0.3;
+const SLIDE_TO = 0.7;
 
 function sectorNumAt(i: number) {
   const stop = STOPS[i];
@@ -185,8 +188,9 @@ export function SectorsScroll() {
     return () => reduced.removeEventListener("change", sync);
   }, []);
 
-  // sticky režim: napredak kroz sekciju → trenutni prelaz (--stage) i
-  // napredak kruga unutar njega (--cp)
+  // sticky režim: napredak kroz sekciju → --raw (kontinuirana pozicija
+  // klizanja, 0…STOPS.length-1) i trenutni prelaz (--stage, za brojač i
+  // crtanje ilustracije)
   useEffect(() => {
     const section = sectionRef.current;
     if (!section || mode !== "scroll") return;
@@ -206,22 +210,26 @@ export function SectorsScroll() {
       const raw = Math.min(UNITS - 1e-4, Math.max(0, p * UNITS));
       const unit = Math.floor(raw);
       const localT = raw - unit;
+      // ekran miruje na oba kraja prelaza (lakše se čita), klizi samo u
+      // sredini skrola — ista pauza kao ranije, sad pokreće translateX
+      // umesto kruga
       const cp = ease(
-        localT <= CIRCLE_FROM
+        localT <= SLIDE_FROM
           ? 0
-          : localT >= CIRCLE_TO
+          : localT >= SLIDE_TO
             ? 1
-            : (localT - CIRCLE_FROM) / (CIRCLE_TO - CIRCLE_FROM)
+            : (localT - SLIDE_FROM) / (SLIDE_TO - SLIDE_FROM)
       );
+      const visualRaw = unit + cp;
 
       section.style.setProperty("--p", p.toFixed(4));
-      section.style.setProperty("--cp", cp.toFixed(4));
+      section.style.setProperty("--raw", visualRaw.toFixed(4));
       if (unit !== lastStage) {
         lastStage = unit;
         setStage(unit);
       }
       // brojač prati koji je ekran trenutno DOMINANTAN na ekranu (posle
-      // pola kruga, to je onaj koji se otkriva), ne samo indeks prelaza —
+      // pola klizanja, to je onaj koji se otkriva), ne samo indeks prelaza —
       // inače bi ostao na prethodnom broju dok se poslednji sektor čita
       const meter =
         cp >= 0.5
@@ -245,7 +253,7 @@ export function SectorsScroll() {
       window.removeEventListener("resize", request);
       if (frame) cancelAnimationFrame(frame);
       section.style.removeProperty("--p");
-      section.style.removeProperty("--cp");
+      section.style.removeProperty("--raw");
     };
   }, [mode]);
 
@@ -349,7 +357,13 @@ export function SectorsScroll() {
         <div className="sc__stops">
           {STOPS.map((stop, i) =>
             stop.kind === "layer" ? (
-              <div key={i} className="sc__stop" data-stop={i} data-kind="layer">
+              <div
+                key={i}
+                className="sc__stop"
+                data-stop={i}
+                data-kind="layer"
+                style={{ "--stop": i } as React.CSSProperties}
+              >
                 <div className="sc__layer">
                   <p className="sc__kicker">Sektori</p>
                   <h2
@@ -369,7 +383,13 @@ export function SectorsScroll() {
                 </div>
               </div>
             ) : (
-              <div key={i} className="sc__stop" data-stop={i} data-kind="sector">
+              <div
+                key={i}
+                className="sc__stop"
+                data-stop={i}
+                data-kind="sector"
+                style={{ "--stop": i } as React.CSSProperties}
+              >
                 <div className="sc__sector">
                   <div className="sc__num-wrap" aria-hidden="true">
                     <span className="sc__num">{stop.sector.num}</span>

@@ -654,17 +654,22 @@
 
 /* ============================================================
    SEKTORI — „Tri sektora. Jedna organizacija.”
-   Ekrani (naslovni „layer” i tri sektora, naizmenično) se smenjuju u
-   jednom sticky kadru od 100vh. JS upisuje napredak (--p), trenutni
-   prelaz (data-stage) i napredak kruga unutar njega (--cp); sve ostalo
-   radi CSS ispod — trenutni ekran stoji pun, sledeći raste iz kruga.
+   Ekrani (naslovni „layer” i tri sektora, naizmenično) klize jedan
+   preko drugog u jednom sticky kadru od 100vh — kao traka filma koja se
+   pomera. JS upisuje jedinu promenljivu koja pokreće klizanje, --raw
+   (kontinuirana pozicija 0…STOPS.length-1), i trenutni prelaz
+   (data-stage, za brojač i crtanje ilustracije). Svaki ekran zna svoje
+   mesto u traci preko --stop (inline, po elementu); CSS samo oduzme
+   --raw od --stop i pomnoži sa 100% — pozicija je uvek tačno onolika
+   koliko kaže skrol, bez odvojenih „ulaz/izlaz” stanja koja mogu da se
+   razminu.
 
    Tri sloja pravila, tim redom:
      1) osnovni raspored — mobilni, bez JS-a i uz „smanjeno
         kretanje”: ekrani jedan ispod drugog, sve vidljivo;
      2) [data-anim="on"] — početni ulazak naslova;
      3) [data-mode="scroll"] (sve širine, uži ekrani imaju doradu) —
-        sticky kadar i kružni prelaz između ekrana.
+        sticky kadar i klizanje između ekrana.
 
    Ručke za podešavanje: --sc-pad (bočna margina), --sc-e (kriva
    kretanja), redosled ekrana je u components/sectors-scroll.tsx (STOPS).
@@ -675,7 +680,7 @@
   --sc-pad: clamp(1.25rem, 5vw, 5.5rem);
   --sc-ink: rgb(var(--ink) / 0.62);
   --p: 0;
-  --cp: 0;
+  --raw: 0;
   position: relative;
   isolation: isolate;
   background: var(--background);
@@ -961,10 +966,11 @@
     transform 0.7s var(--sc-e) var(--d, 0ms);
 }
 
-/* ---------- 3) sticky kadar: „layer” i sektor se smenjuju kroz krug ----------
-   Trenutni ekran (data-stop === data-stage) stoji pun; sledeći
-   (data-stop === data-stage + 1) raste iz kruga u sredini, prateći --cp
-   (0 → 1) koje upisuje JS. Svi ostali ekrani ostaju skriveni. */
+/* ---------- 3) sticky kadar: „layer” i sektori klize kao traka filma ----------
+   Svaki ekran ima svoju poziciju u traci (--stop, 0…STOPS.length-1,
+   inline po elementu) i translateX-om prati razliku prema --raw, koje
+   upisuje JS — kad su jednaki, ekran stoji tačno na sredini. Pozicija je
+   uvek direktna funkcija skrola, bez odvojenih ulaz/izlaz stanja. */
 @media all {
   .sc[data-mode="scroll"] {
     /* tri prelaza (layer→sektor→sektor→sektor), po jedan pun ekran skrola;
@@ -988,11 +994,10 @@
     display: grid;
     place-items: center;
     padding: clamp(5rem, 12vh, 7rem) var(--sc-pad);
-    opacity: 0;
-    pointer-events: none;
-    clip-path: circle(0% at 50% 50%);
-    /* neprozirna (ali u istom tonu kao ambijent) — krug mora da sakrije
-       ono što je ispod, ne samo da otkrije svoj sopstveni tekst preko njega */
+    will-change: transform;
+    transform: translate3d(calc((var(--stop, 0) - var(--raw, 0)) * 100%), 0, 0);
+    /* neprozirna (ali u istom tonu kao ambijent) — susedni ekran ne sme
+       da se nazre kroz onaj koji trenutno klizi preko njega */
     background:
       radial-gradient(52% 58% at 18% 22%, rgb(var(--mint) / 0.22), transparent 64%),
       radial-gradient(58% 64% at 86% 78%, rgba(47, 111, 99, 0.34), transparent 68%),
@@ -1020,24 +1025,6 @@
   .sc[data-mode="scroll"] .sc__title {
     max-width: none;
     font-size: clamp(3rem, 6.2vw, 6.4rem);
-  }
-
-  /* ekran koji trenutno stoji pun */
-  .sc[data-stage="0"] .sc__stop[data-stop="0"],
-  .sc[data-stage="1"] .sc__stop[data-stop="1"],
-  .sc[data-stage="2"] .sc__stop[data-stop="2"] {
-    opacity: 1;
-    clip-path: none;
-    z-index: 1;
-  }
-  /* sledeći ekran raste iz kruga u sredini */
-  .sc[data-stage="0"] .sc__stop[data-stop="1"],
-  .sc[data-stage="1"] .sc__stop[data-stop="2"],
-  .sc[data-stage="2"] .sc__stop[data-stop="3"] {
-    opacity: 1;
-    pointer-events: auto;
-    clip-path: circle(calc(var(--cp) * 100%) at 50% 50%);
-    z-index: 2;
   }
 
   /* ilustracija sektora je nacrtana čim ekran postane trenutni ili sledeći
