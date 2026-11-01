@@ -432,6 +432,10 @@
   height: calc(var(--dome-vh, 100svh) * 2);
   overflow: visible;
   pointer-events: none;
+  /* JS upisuje `d` svaki frejm; izdvoji sopstveni sloj da se taj crtež
+     (sa skupim drop-shadow filterom ispod) ne meša sa ostatkom stranice */
+  will-change: contents;
+  contain: paint;
 }
 .dome-edge path {
   fill: none;
@@ -444,6 +448,13 @@
   margin-top: calc(var(--dome-vh, 100svh) * -2);
   /* sadržaj kreće odmah posle prelaza (ne ceo ekran niže) */
   padding-top: calc(var(--dome-vh, 100svh) * 1.12);
+  /* JS upisuje clip-path na svaki skrol frejm — bez ovoga pretraživač
+     ume da ponovo iseca CEO (veoma visok) sadržaj sekcije pri svakom
+     frejmu, što seče/trza skrol. will-change izdvaja sloj za kompoziciju,
+     a contain ograničava preracunavanje na ovaj element, ne i na ono
+     što je ispod (statistika, sektori). */
+  will-change: clip-path;
+  contain: paint;
 }
 
 .living-bg {
