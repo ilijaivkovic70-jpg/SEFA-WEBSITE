@@ -400,6 +400,45 @@
   position: relative;
   isolation: isolate;
 }
+/* prelaz „kupolom” (components/dome-reveal.tsx): sekcija tima postaje dva
+   ekrana visoka sa lepljivim naslovom, a ova sekcija se podvlači preko nje
+   i iseca oblikom iz skrola (clip-path postavlja JS). */
+#team-hero-section[data-dome="on"] {
+  height: calc(var(--dome-vh, 100svh) * 2);
+  /* overflow: hidden bi sprečio lepljenje naslova; clip seče isto */
+  overflow: clip;
+}
+#team-hero-section[data-dome="on"] .team-hero__inner {
+  position: sticky;
+  top: 0;
+  height: var(--dome-vh, 100svh);
+}
+.dome-edge {
+  display: none;
+}
+.living-bg-wrap[data-dome="on"] .dome-edge {
+  display: block;
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 1;
+  width: 100%;
+  height: calc(var(--dome-vh, 100svh) * 2);
+  overflow: visible;
+  pointer-events: none;
+}
+.dome-edge path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--primary) 70%, transparent);
+  stroke-width: 3px;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--primary) 55%, transparent));
+}
+.living-bg-wrap[data-dome="on"] {
+  z-index: 2;
+  margin-top: calc(var(--dome-vh, 100svh) * -2);
+  /* sadržaj kreće odmah posle prelaza (ne ceo ekran niže) */
+  padding-top: calc(var(--dome-vh, 100svh) * 1.12);
+}
+
 .living-bg {
   position: absolute;
   inset: 0;

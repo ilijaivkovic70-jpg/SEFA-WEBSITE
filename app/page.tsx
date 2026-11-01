@@ -10,6 +10,7 @@ import { SectorsScroll } from "@/components/sectors-scroll";
 import { Reveal } from "@/components/reveal";
 import { LineReveal } from "@/components/line-reveal";
 import { TextMarker } from "@/components/text-marker";
+import { DomeReveal } from "@/components/dome-reveal";
 
 export default function Home() {
   return (
@@ -26,6 +27,8 @@ export default function Home() {
       <TeamHero />
 
       <div className="living-bg-wrap">
+        {/* sekcija izranja preko kolaža u obliku kupole (savor.it/process) */}
+        <DomeReveal />
         <div className="living-bg" aria-hidden="true">
           <div className="living-bg__blob living-bg__blob--a" />
           <div className="living-bg__blob living-bg__blob--b" />

@@ -10,7 +10,7 @@ export function TeamHero() {
       <TeamCollage />
       <div className="team__scrim absolute inset-0" aria-hidden="true" />
 
-      <div className="relative flex h-full flex-col items-center justify-center px-[5vw] text-center">
+      <div className="team-hero__inner relative flex h-full flex-col items-center justify-center px-[5vw] text-center">
         <p className="flex items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-primary before:h-px before:w-6 before:bg-primary before:opacity-70 before:content-['']">
           Ko smo mi
         </p>
