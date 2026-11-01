@@ -326,16 +326,10 @@ export function SectorsScroll() {
       <div className="sc__cont" aria-hidden="true">
         <div className="sc__cont-tilt">
           <div className="sc__cont-move">
-            <Image
-              src="/sektori-pozadina.jpg"
-              alt=""
-              fill
-              sizes="100vw"
-              className="sc__cont-img"
-            />
+            <div className="sc__cont-glow" />
+            <div className="sc__cont-grain" />
           </div>
         </div>
-        <div className="sc__cont-tint" />
         <div className="sc__cont-fade" />
       </div>
 
