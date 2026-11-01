@@ -162,8 +162,8 @@ export function HistoryRoad() {
         rot = targetRot;
         primed = true;
       } else {
-        len += (targetLen - len) * 0.17;
-        rot += (targetRot - rot) * 0.11;
+        len += (targetLen - len) * 0.1;
+        rot += (targetRot - rot) * 0.07;
       }
 
       const cam = pointAtLength(world, len);

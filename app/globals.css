@@ -49,6 +49,13 @@
 }
 
 :root {
+  /* kanali za boje koje se prozirno slažu preko pozadine:
+     `rgb(var(--ink) / 0.4)` = tekst/linija u boji teksta teme,
+     `rgb(var(--mint) / 0.2)` = naglasak u boji teme */
+  --ink: 234 242 240;
+  --mint: 102 198 179;
+  --bg-rgb: 7 16 15;
+  color-scheme: dark;
   --background: #07100f;
   --foreground: #eaf2f0;
   --card: #0b1615;
@@ -60,12 +67,12 @@
   --secondary: #0b1615;
   --secondary-foreground: #eaf2f0;
   --muted: #0b1615;
-  --muted-foreground: rgba(234, 242, 240, 0.64);
+  --muted-foreground: rgb(var(--ink) / 0.64);
   --accent: #2f6f63;
   --accent-foreground: #eaf2f0;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: rgba(234, 242, 240, 0.13);
-  --input: rgba(234, 242, 240, 0.13);
+  --border: rgb(var(--ink) / 0.13);
+  --input: rgb(var(--ink) / 0.13);
   --ring: #66c6b3;
   --chart-1: #66c6b3;
   --chart-2: #2f6f63;
@@ -79,8 +86,43 @@
   --sidebar-primary-foreground: #07100f;
   --sidebar-accent: #2f6f63;
   --sidebar-accent-foreground: #eaf2f0;
-  --sidebar-border: rgba(234, 242, 240, 0.13);
+  --sidebar-border: rgb(var(--ink) / 0.13);
   --sidebar-ring: #66c6b3;
+}
+
+/* ---------- svetla tema ----------
+   Bira se dugmetom u zaglavlju (components/theme-toggle.tsx); skripta u
+   app/layout.tsx postavlja `data-theme` pre iscrtavanja da ne bljesne. */
+html[data-theme="light"] {
+  --ink: 11 22 21;
+  --mint: 29 127 108;
+  --bg-rgb: 245 248 247;
+  color-scheme: light;
+  --background: #f5f8f7;
+  --foreground: #0b1615;
+  --card: #ffffff;
+  --card-foreground: #0b1615;
+  --popover: #ffffff;
+  --popover-foreground: #0b1615;
+  --primary: #1d7f6c;
+  --primary-foreground: #ffffff;
+  --secondary: #e8efed;
+  --secondary-foreground: #0b1615;
+  --muted: #e8efed;
+  --muted-foreground: rgba(11, 22, 21, 0.66);
+  --accent: #2f6f63;
+  --accent-foreground: #ffffff;
+  --border: rgba(11, 22, 21, 0.13);
+  --input: rgba(11, 22, 21, 0.13);
+  --ring: #1d7f6c;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0b1615;
+  --sidebar-primary: #1d7f6c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2f6f63;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(11, 22, 21, 0.13);
+  --sidebar-ring: #1d7f6c;
 }
 
 @layer base {
@@ -114,7 +156,7 @@
   position: absolute;
   inset: -25%;
   background:
-    radial-gradient(38% 34% at 22% 28%, rgba(102, 198, 179, 0.13), transparent 62%),
+    radial-gradient(38% 34% at 22% 28%, rgb(var(--mint) / 0.13), transparent 62%),
     radial-gradient(42% 38% at 80% 72%, rgba(47, 111, 99, 0.16), transparent 65%);
   animation: env-drift 96s cubic-bezier(0.22, 0.61, 0.36, 1) infinite alternate;
 }
@@ -384,9 +426,9 @@
     radial-gradient(60% 55% at 50% 46%, rgba(4, 10, 9, 0.62), transparent 72%),
     linear-gradient(
       180deg,
-      rgba(7, 16, 15, 0.8) 0%,
-      rgba(7, 16, 15, 0.42) 30%,
-      rgba(7, 16, 15, 0.5) 66%,
+      rgb(var(--bg-rgb) / 0.8) 0%,
+      rgb(var(--bg-rgb) / 0.42) 30%,
+      rgb(var(--bg-rgb) / 0.5) 66%,
       /* blago maslinasto-zeleno, kao trava u sumrak — nastavlja se
          u istoj boji na vrhu žive pozadine ispod, bez šava */
       rgba(14, 27, 15, 0.95) 100%
@@ -444,7 +486,7 @@
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  background: #07100f;
+  background: var(--background);
   pointer-events: none;
 }
 .living-bg__blob {
@@ -455,7 +497,7 @@
   background:
     radial-gradient(42% 38% at 22% 26%, rgba(47, 157, 122, 0.38), transparent 65%),
     radial-gradient(48% 44% at 78% 68%, rgba(20, 90, 70, 0.42), transparent 68%),
-    radial-gradient(32% 32% at 58% 12%, rgba(102, 198, 179, 0.2), transparent 60%);
+    radial-gradient(32% 32% at 58% 12%, rgb(var(--mint) / 0.2), transparent 60%);
   filter: blur(60px);
   animation: living-drift-a 24s ease-in-out infinite alternate;
 }
@@ -572,7 +614,7 @@
 }
 
 .stats-section__divider {
-  background: rgba(234, 242, 240, 0.18);
+  background: rgb(var(--ink) / 0.18);
   height: 1px;
   width: 100%;
   transform-origin: left center;
@@ -665,7 +707,7 @@
 .sc {
   --sc-e: cubic-bezier(0.22, 0.61, 0.36, 1);
   --sc-pad: clamp(1.25rem, 5vw, 5.5rem);
-  --sc-ink: rgba(234, 242, 240, 0.62);
+  --sc-ink: rgb(var(--ink) / 0.62);
   --p: 0;
   --lp: 0.5;
   position: relative;
@@ -718,7 +760,7 @@
 .sc__cont-tint {
   position: absolute;
   inset: 0;
-  background: rgba(7, 16, 15, 0.5);
+  background: rgb(var(--bg-rgb) / 0.5);
   mix-blend-mode: multiply;
 }
 .sc__cont-fade {
@@ -727,7 +769,7 @@
   background: linear-gradient(
     180deg,
     var(--background) 0%,
-    rgba(7, 16, 15, 0.4) 10%,
+    rgb(var(--bg-rgb) / 0.4) 10%,
     transparent 22%,
     transparent 68%,
     var(--background) 96%
@@ -781,7 +823,7 @@
   font-size: clamp(2.4rem, 7.6vw, 4.6rem);
   line-height: 0.94;
   letter-spacing: -0.035em;
-  color: #fff;
+  color: var(--foreground);
 }
 .sc__line {
   display: block;
@@ -805,7 +847,7 @@
 .sc__chapter {
   position: relative;
   padding-block: clamp(2.75rem, 8vh, 4.5rem);
-  border-top: 1px solid rgba(234, 242, 240, 0.14);
+  border-top: 1px solid rgb(var(--ink) / 0.14);
 }
 .sc__chapter:first-child {
   border-top: 0;
@@ -847,7 +889,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(234, 242, 240, 0.58);
+  color: rgb(var(--ink) / 0.58);
 }
 .sc__keys li + li::before {
   content: "/";
@@ -1076,7 +1118,7 @@
     line-height: 0.74;
     letter-spacing: -0.06em;
     color: transparent;
-    -webkit-text-stroke: 1.5px rgba(234, 242, 240, 0.16);
+    -webkit-text-stroke: 1.5px rgb(var(--ink) / 0.16);
   }
 
   .sc[data-mode="scroll"] .sc__index {
@@ -1090,7 +1132,7 @@
   .sc[data-mode="scroll"] .sc__name {
     font-size: clamp(3.4rem, 6.6vw, 7.4rem);
     line-height: 0.92;
-    color: #fff;
+    color: var(--foreground);
   }
   .sc[data-mode="scroll"] .sc__desc {
     font-size: 1.05rem;
@@ -1129,7 +1171,7 @@
     gap: clamp(1rem, 3vw, 2.5rem);
     margin: 0;
     padding-bottom: clamp(0.5rem, 1.4vh, 1rem);
-    border-bottom: 1px solid rgba(234, 242, 240, 0.16);
+    border-bottom: 1px solid rgb(var(--ink) / 0.16);
     opacity: 0;
     transform: translate3d(0, 20px, 0);
     transition:
@@ -1153,7 +1195,7 @@
     font-size: clamp(2.2rem, 5vw, 4.4rem);
     line-height: 1;
     letter-spacing: -0.035em;
-    color: #fff;
+    color: var(--foreground);
   }
 
   /* indikator napretka */
@@ -1168,7 +1210,7 @@
     font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
     font-size: 0.72rem;
     letter-spacing: 0.2em;
-    color: rgba(234, 242, 240, 0.6);
+    color: rgb(var(--ink) / 0.6);
     opacity: 0;
     transition: opacity 0.5s var(--sc-e);
   }
@@ -1191,7 +1233,7 @@
     display: block;
     width: 1.6rem;
     height: 1px;
-    background: rgba(234, 242, 240, 0.22);
+    background: rgb(var(--ink) / 0.22);
   }
   .sc__meter-rail i::after {
     content: "";
@@ -1268,7 +1310,7 @@
   position: absolute;
   inset: auto 0 0 0;
   height: clamp(8rem, 24vh, 18rem);
-  background: linear-gradient(180deg, rgba(7, 16, 15, 0) 0%, var(--background) 100%);
+  background: linear-gradient(180deg, rgb(var(--bg-rgb) / 0) 0%, var(--background) 100%);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1378,7 +1420,7 @@
   font-size: 0.68rem;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(234, 242, 240, 0.5);
+  color: rgb(var(--ink) / 0.5);
 }
 /* tanka linija umesto dugmeta — tirkizni potez klizi naniže */
 .road__hint-line {
@@ -1387,7 +1429,7 @@
   width: 1px;
   height: 2.6rem;
   overflow: hidden;
-  background: rgba(234, 242, 240, 0.16);
+  background: rgb(var(--ink) / 0.16);
 }
 .road__hint-line::after {
   content: "";
@@ -1437,7 +1479,7 @@
   vector-effect: non-scaling-stroke;
 }
 .road__trail-bed {
-  stroke: rgba(234, 242, 240, 0.12);
+  stroke: rgb(var(--ink) / 0.12);
   stroke-width: 14;
 }
 .road__trail-ink {
@@ -1484,7 +1526,7 @@
   font-size: 0.66rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: rgba(234, 242, 240, 0.52);
+  color: rgb(var(--ink) / 0.52);
 }
 
 .road__year {
@@ -1533,7 +1575,7 @@
   /* odnos stranica je unapred zadat — nema poskakivanja rasporeda */
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: #0b1615;
+  background: var(--card);
 }
 .road__photo {
   object-fit: cover;
@@ -1550,14 +1592,14 @@
   font-size: 0.7rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(234, 242, 240, 0.42);
-  background-color: #0e1a18;
+  color: rgb(var(--ink) / 0.42);
+  background-color: var(--secondary);
   background-image: repeating-linear-gradient(
     -45deg,
-    rgba(234, 242, 240, 0.045) 0 1px,
+    rgb(var(--ink) / 0.045) 0 1px,
     transparent 1px 11px
   );
-  box-shadow: inset 0 0 0 1px rgba(234, 242, 240, 0.1);
+  box-shadow: inset 0 0 0 1px rgb(var(--ink) / 0.1);
 }
 .road__caption {
   margin: 0.7rem 0 0;
@@ -1565,7 +1607,7 @@
   font-size: 0.64rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(234, 242, 240, 0.38);
+  color: rgb(var(--ink) / 0.38);
 }
 
 .road__outro {
@@ -1717,10 +1759,10 @@
     inset: 0;
     background: linear-gradient(
       180deg,
-      rgba(7, 16, 15, 0.55) 0%,
-      rgba(7, 16, 15, 0.3) 40%,
-      rgba(7, 16, 15, 0.3) 60%,
-      rgba(7, 16, 15, 0.65) 100%
+      rgb(var(--bg-rgb) / 0.55) 0%,
+      rgb(var(--bg-rgb) / 0.3) 40%,
+      rgb(var(--bg-rgb) / 0.3) 60%,
+      rgb(var(--bg-rgb) / 0.65) 100%
     );
   }
 
@@ -1748,12 +1790,12 @@
   }
   /* deo koji tek predstoji — jedva vidljiv */
   .road__bed {
-    stroke: rgba(234, 242, 240, 0.07);
+    stroke: rgb(var(--ink) / 0.07);
     stroke-width: 26;
   }
   /* pređeni deo — jasniji */
   .road__bed--lit {
-    stroke: rgba(234, 242, 240, 0.2);
+    stroke: rgb(var(--ink) / 0.2);
     stroke-dasharray: 1 1;
     stroke-dashoffset: calc(1 - var(--travel));
   }
@@ -1891,8 +1933,8 @@
     pointer-events: none;
     background: radial-gradient(
       72% 104% at 50% 50%,
-      rgba(7, 16, 15, 0.82),
-      rgba(7, 16, 15, 0) 74%
+      rgb(var(--bg-rgb) / 0.82),
+      rgb(var(--bg-rgb) / 0) 74%
     );
   }
   .road[data-mode="cinema"] .road__stop[data-align="left"] .road__body {
@@ -2049,7 +2091,7 @@
     display: block;
     width: 1px;
     height: 1.5rem;
-    background: rgba(234, 242, 240, 0.2);
+    background: rgb(var(--ink) / 0.2);
   }
   .road__meter-rail i::after {
     content: "";
@@ -2414,7 +2456,7 @@
   color: color-mix(in srgb, var(--primary) 85%, transparent);
 }
 .compass__kicker {
-  color: rgba(234, 242, 240, 0.42);
+  color: rgb(var(--ink) / 0.42);
 }
 
 .compass__mark {
@@ -2440,7 +2482,7 @@
 }
 .compass__mark-link,
 .compass__mark-steps {
-  stroke: rgba(234, 242, 240, 0.4);
+  stroke: rgb(var(--ink) / 0.4);
 }
 .compass__mark-b,
 .compass__mark-core {
@@ -3192,7 +3234,7 @@
   background-image: repeating-linear-gradient(
     135deg,
     transparent 0 11px,
-    rgba(234, 242, 240, 0.03) 11px 12px
+    rgb(var(--ink) / 0.03) 11px 12px
   );
 }
 .al-frame__corner {
@@ -4451,7 +4493,7 @@
   place-items: center;
   border: none;
   background: transparent;
-  color: rgba(234, 242, 240, 0.45);
+  color: rgb(var(--ink) / 0.45);
   font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
@@ -4637,7 +4679,7 @@
   font-size: 0.68rem;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: rgba(234, 242, 240, 0.34);
+  color: rgb(var(--ink) / 0.34);
 }
 .cs__hint-line {
   width: 1px;
@@ -4752,7 +4794,7 @@
   background:
     radial-gradient(
       115% 62% at 50% -8%,
-      rgba(102, 198, 179, 0.09),
+      rgb(var(--mint) / 0.09),
       transparent 62%
     ),
     #0a1413;
@@ -4860,9 +4902,9 @@
   align-items: center;
   margin-top: auto;
   padding: calc(9 * var(--phone-u));
-  border: 1px solid rgba(234, 242, 240, 0.07);
+  border: 1px solid rgb(var(--ink) / 0.07);
   border-radius: calc(30 * var(--phone-u));
-  background: rgba(234, 242, 240, 0.055);
+  background: rgb(var(--ink) / 0.055);
 }
 
 /* osnovno stanje je završno (vidljivo), pa ekran stoji i bez JS-a;
@@ -4911,7 +4953,7 @@
   font-size: calc(10.5 * var(--phone-u));
   letter-spacing: 0.005em;
   line-height: 1.2;
-  color: rgba(234, 242, 240, 0.86);
+  color: rgb(var(--ink) / 0.86);
   text-align: center;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
@@ -4962,7 +5004,7 @@
   height: calc(4.5 * var(--phone-u));
   margin-top: calc(14 * var(--phone-u));
   border-radius: 999px;
-  background: rgba(234, 242, 240, 0.3);
+  background: rgb(var(--ink) / 0.3);
   transition: opacity 0.45s ease;
 }
 .cs[data-mode="scroll"]:not([data-rows="in"]) .cs__home {
@@ -5052,4 +5094,75 @@
     clip-path: none;
     transform: none;
   }
+}
+
+/* ---------- dugme za temu: u tamnoj temi se nudi sunce, u svetloj mesec ---------- */
+.theme-toggle__moon { display: none; }
+html[data-theme="light"] .theme-toggle__sun { display: none; }
+html[data-theme="light"] .theme-toggle__moon { display: block; }
+
+/* ---------- svetla tema: fotografije u pozadini se „peru” ka beloj ---------- */
+html[data-theme="light"] .road__backdrop-img,
+html[data-theme="light"] .sc__cont-img {
+  filter: saturate(0.3) brightness(1.7) contrast(0.8);
+}
+html[data-theme="light"] .al-bg__img {
+  filter: saturate(0.3) brightness(1.8) contrast(0.75);
+}
+/* logotip je svetao (mint + belo) — na svetloj pozadini se zatamni */
+html[data-theme="light"] img[src="/logo.png"] {
+  filter: brightness(0.28) saturate(1.5);
+}
+
+html[data-theme="light"] .reminder-cloud__svg path {
+  fill: #ffffff;
+  stroke: rgb(var(--mint) / 0.4);
+}
+
+/* ---------- svetla tema: tamna ostrva ----------
+   Kolaž iza naslova tima je fotografski i uvek taman, pa sekcija zadržava
+   tamne boje teme i u svetlom režimu — bez ovoga tekst na njoj nestaje. */
+html[data-theme="light"] .window-frame {
+  --ink: 234 242 240;
+  --mint: 102 198 179;
+  --bg-rgb: 7 16 15;
+  --background: #07100f;
+  --foreground: #eaf2f0;
+  --card: #0b1615;
+  --primary: #66c6b3;
+  --primary-foreground: #07100f;
+  --muted-foreground: rgba(234, 242, 240, 0.64);
+  --border: rgba(234, 242, 240, 0.13);
+  color: var(--foreground);
+}
+html[data-theme="light"] .al-bg__img {
+  opacity: 0.22;
+}
+
+/* ekran telefona na Kontaktu je uvek taman — ostaje taman i u svetloj temi */
+html[data-theme="light"] .cs__screen {
+  --ink: 234 242 240;
+  --mint: 102 198 179;
+  --bg-rgb: 7 16 15;
+  --background: #07100f;
+  --foreground: #eaf2f0;
+  --card: #0b1615;
+  --primary: #66c6b3;
+  --muted-foreground: rgba(234, 242, 240, 0.64);
+  color: var(--foreground);
+}
+html[data-theme="light"] .cs__screen img[src="/logo.png"] {
+  filter: none;
+}
+
+/* ---------- mekan skrol (components/smooth-scroll.tsx) ---------- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }

@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { SmoothScroll } from "@/components/smooth-scroll";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -53,9 +54,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="sr"
+      data-theme="dark"
+      suppressHydrationWarning
       className={`dark ${bricolageGrotesque.variable} ${archivo.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
+      <head>
+        {/* tema se postavlja pre prvog iscrtavanja — bez bljeska pogrešne boje */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("sefa-theme");if(t==="light"){var r=document.documentElement;r.dataset.theme="light";r.classList.remove("dark")}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
+        <SmoothScroll />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
