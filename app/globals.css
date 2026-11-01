@@ -942,9 +942,9 @@
    (0 → 1) koje upisuje JS. Svi ostali ekrani ostaju skriveni. */
 @media all {
   .sc[data-mode="scroll"] {
-    /* šest prelaza (layer→sektor→layer→...), po jedan pun ekran skrola;
+    /* tri prelaza (layer→sektor→sektor→sektor), po jedan pun ekran skrola;
        broj prelaza je STOPS.length - 1 u components/sectors-scroll.tsx */
-    min-height: 600vh;
+    min-height: 300vh;
   }
   .sc[data-mode="scroll"] .sc__stage {
     position: sticky;
@@ -997,10 +997,7 @@
   /* ekran koji trenutno stoji pun */
   .sc[data-stage="0"] .sc__stop[data-stop="0"],
   .sc[data-stage="1"] .sc__stop[data-stop="1"],
-  .sc[data-stage="2"] .sc__stop[data-stop="2"],
-  .sc[data-stage="3"] .sc__stop[data-stop="3"],
-  .sc[data-stage="4"] .sc__stop[data-stop="4"],
-  .sc[data-stage="5"] .sc__stop[data-stop="5"] {
+  .sc[data-stage="2"] .sc__stop[data-stop="2"] {
     opacity: 1;
     clip-path: none;
     z-index: 1;
@@ -1008,10 +1005,7 @@
   /* sledeći ekran raste iz kruga u sredini */
   .sc[data-stage="0"] .sc__stop[data-stop="1"],
   .sc[data-stage="1"] .sc__stop[data-stop="2"],
-  .sc[data-stage="2"] .sc__stop[data-stop="3"],
-  .sc[data-stage="3"] .sc__stop[data-stop="4"],
-  .sc[data-stage="4"] .sc__stop[data-stop="5"],
-  .sc[data-stage="5"] .sc__stop[data-stop="6"] {
+  .sc[data-stage="2"] .sc__stop[data-stop="3"] {
     opacity: 1;
     pointer-events: auto;
     clip-path: circle(calc(var(--cp) * 100%) at 50% 50%);

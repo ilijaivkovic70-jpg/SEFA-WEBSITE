@@ -4,16 +4,15 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Sekcija „Sektori” — naslovni „layer” i tri sektora se smenjuju dok
- * korisnik skroluje, svaki prelaz je krug koji izraste iz sredine ekrana
- * i otkrije sledeći ekran (ista ideja kao „kupola” u components/dome-reveal.tsx,
- * samo pojednostavljena na čist clip-path krug, pošto se sve dešava unutar
- * jednog sticky kadra).
+ * Sekcija „Sektori” — naslovni „layer” se prikaže jednom, a zatim tri
+ * sektora idu direktno jedan za drugim dok korisnik skroluje; svaki prelaz
+ * je krug koji izraste iz sredine ekrana i otkrije sledeći ekran (ista
+ * ideja kao „kupola” u components/dome-reveal.tsx, samo pojednostavljena
+ * na čist clip-path krug, pošto se sve dešava unutar jednog sticky kadra).
  *
  * Kako radi:
- *  - Redosled ekrana je fiksan niz STOPS: layer, sektor, layer, sektor,
- *    layer, sektor, layer — isti naslovni „layer” se vraća između svaka
- *    dva sektora.
+ *  - Redosled ekrana je fiksan niz STOPS: layer, pa sektor, sektor, sektor
+ *    — bez vraćanja na layer između sektora.
  *  - Sekcija je visoka onoliko vh koliko ima prelaza (jedan pun ekran
  *    skrola po prelazu), a unutar nje jedan `sticky` kadar od 100vh.
  *  - Slušalac skrola računa napredak kroz sekciju (0 → 1), pretvara ga u
@@ -23,8 +22,7 @@ import { useEffect, useRef, useState } from "react";
  *    (bez isecanja), sledeći raste iz kruga u sredini.
  *
  * Bez JS-a i uz „smanjeno kretanje” (data-mode="static") nema sticky kadra
- * ni kruga — ekrani stoje jedan ispod drugog, a ponovljeni naslovni layer
- * se prikazuje samo jednom, na vrhu.
+ * ni kruga — ekrani stoje jedan ispod drugog.
  */
 
 type Sector = {
@@ -149,11 +147,8 @@ type Stop = { kind: "layer" } | { kind: "sector"; sector: Sector };
 const STOPS: Stop[] = [
   { kind: "layer" },
   { kind: "sector", sector: SECTORS[0] },
-  { kind: "layer" },
   { kind: "sector", sector: SECTORS[1] },
-  { kind: "layer" },
   { kind: "sector", sector: SECTORS[2] },
-  { kind: "layer" },
 ];
 /** Broj prelaza (jedan manje od broja ekrana). */
 const UNITS = STOPS.length - 1;
@@ -173,6 +168,7 @@ export function SectorsScroll() {
   const [stage, setStage] = useState(0);
   const [mode, setMode] = useState<"static" | "scroll">("static");
   const [animated, setAnimated] = useState(false);
+  const [meterNow, setMeterNow] = useState("00");
 
   // uključi animacije tek posle montiranja — bez JS-a i uz „smanjeno
   // kretanje” sadržaj ostaje odmah vidljiv i čitljiv
@@ -197,6 +193,7 @@ export function SectorsScroll() {
 
     let frame = 0;
     let lastStage = -1;
+    let lastMeter = "";
 
     const ease = (t: number) => t * t * (3 - 2 * t);
 
@@ -222,6 +219,17 @@ export function SectorsScroll() {
       if (unit !== lastStage) {
         lastStage = unit;
         setStage(unit);
+      }
+      // brojač prati koji je ekran trenutno DOMINANTAN na ekranu (posle
+      // pola kruga, to je onaj koji se otkriva), ne samo indeks prelaza —
+      // inače bi ostao na prethodnom broju dok se poslednji sektor čita
+      const meter =
+        cp >= 0.5
+          ? (sectorNumAt(unit + 1) ?? sectorNumAt(unit) ?? "00")
+          : (sectorNumAt(unit) ?? sectorNumAt(unit + 1) ?? "00");
+      if (meter !== lastMeter) {
+        lastMeter = meter;
+        setMeterNow(meter);
       }
     };
 
@@ -312,11 +320,10 @@ export function SectorsScroll() {
     return () => observer.disconnect();
   }, [animated]);
 
-  // indikator napretka: broj sektora ka kome trenutni prelaz vodi (ili iz
-  // koga dolazi, kad smo na poslednjem naslovnom „layer”-u)
-  const meterNow = sectorNumAt(stage + 1) ?? sectorNumAt(stage) ?? "00";
-  const SECTOR_STOP_INDEX = [1, 3, 5];
-  const rail = SECTOR_STOP_INDEX.map((idx) => stage + 1 >= idx);
+  // indikator napretka: koliko je sektora „otvoreno” prati isti broj koji
+  // upisuje efekat iznad (meterNow), pa rail ne zaostaje na kraju sekcije
+  const litCount = meterNow === "00" ? 0 : Number(meterNow);
+  const rail = [1, 2, 3].map((n) => n <= litCount);
 
   return (
     <section
