@@ -936,6 +936,31 @@
   transform: translate3d(0, 0, 0);
 }
 
+/* ilustracija sektora: linije se iscrtavaju, čvorovi iskaču — isti efekat
+   kao pre, samo sad okinut pojavljivanjem ekrana (ispod), a ne starim
+   [data-active] atributom koji je nestao sa prepravkom kruga */
+.sc[data-anim="on"] .sc-illo__draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.05s var(--sc-e) var(--d, 0ms);
+}
+.sc[data-anim="on"] .sc-illo__node {
+  opacity: 0;
+  transform: scale(0.35);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    opacity 0.45s var(--sc-e) var(--d, 0ms),
+    transform 0.6s var(--sc-e) var(--d, 0ms);
+}
+.sc[data-anim="on"] .sc-illo__frag {
+  opacity: 0;
+  transform: translateX(-14px);
+  transition:
+    opacity 0.5s var(--sc-e) var(--d, 0ms),
+    transform 0.7s var(--sc-e) var(--d, 0ms);
+}
+
 /* ---------- 3) sticky kadar: „layer” i sektor se smenjuju kroz krug ----------
    Trenutni ekran (data-stop === data-stage) stoji pun; sledeći
    (data-stop === data-stage + 1) raste iz kruga u sredini, prateći --cp
@@ -986,7 +1011,10 @@
     display: contents;
   }
   .sc[data-mode="scroll"] .sc__layer {
-    max-width: 40rem;
+    /* dovoljno široko da „Jedna organizacija.” stane u jedan red na svim
+       širinama — uzak kontejner bi prelomio liniju i pokvario efekat
+       izranjanja teksta (jedan red = jedan .sc__line) */
+    max-width: min(92vw, 70rem);
     text-align: center;
   }
   .sc[data-mode="scroll"] .sc__title {
@@ -1010,6 +1038,35 @@
     pointer-events: auto;
     clip-path: circle(calc(var(--cp) * 100%) at 50% 50%);
     z-index: 2;
+  }
+
+  /* ilustracija sektora je nacrtana čim ekran postane trenutni ili sledeći
+     (isti par selektora kao gore, samo za liniju/čvorove/fragmente) */
+  .sc[data-stage="0"] .sc__stop[data-stop="0"] .sc-illo__draw,
+  .sc[data-stage="1"] .sc__stop[data-stop="1"] .sc-illo__draw,
+  .sc[data-stage="2"] .sc__stop[data-stop="2"] .sc-illo__draw,
+  .sc[data-stage="0"] .sc__stop[data-stop="1"] .sc-illo__draw,
+  .sc[data-stage="1"] .sc__stop[data-stop="2"] .sc-illo__draw,
+  .sc[data-stage="2"] .sc__stop[data-stop="3"] .sc-illo__draw {
+    stroke-dashoffset: 0;
+  }
+  .sc[data-stage="0"] .sc__stop[data-stop="0"] .sc-illo__node,
+  .sc[data-stage="1"] .sc__stop[data-stop="1"] .sc-illo__node,
+  .sc[data-stage="2"] .sc__stop[data-stop="2"] .sc-illo__node,
+  .sc[data-stage="0"] .sc__stop[data-stop="1"] .sc-illo__node,
+  .sc[data-stage="1"] .sc__stop[data-stop="2"] .sc-illo__node,
+  .sc[data-stage="2"] .sc__stop[data-stop="3"] .sc-illo__node {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .sc[data-stage="0"] .sc__stop[data-stop="0"] .sc-illo__frag,
+  .sc[data-stage="1"] .sc__stop[data-stop="1"] .sc-illo__frag,
+  .sc[data-stage="2"] .sc__stop[data-stop="2"] .sc-illo__frag,
+  .sc[data-stage="0"] .sc__stop[data-stop="1"] .sc-illo__frag,
+  .sc[data-stage="1"] .sc__stop[data-stop="2"] .sc-illo__frag,
+  .sc[data-stage="2"] .sc__stop[data-stop="3"] .sc-illo__frag {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   /* veliki broj kao pozadinski tipografski element, iza teksta sektora */
