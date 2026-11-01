@@ -2941,7 +2941,8 @@
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--border);
-  padding-block: clamp(2.25rem, 4.5vw, 3.5rem);
+  /* malo više mesta po visini — linkovi se penju i spuštaju po talasu */
+  padding-block: clamp(2.75rem, 5.5vw, 4.25rem);
   /* tek malo svetlije od pozadine — traka se izdvoji a da ne vice */
   background: color-mix(in srgb, var(--card) 55%, var(--background));
   /* krajevi se gube u pozadinu umesto da se seku po ivici ekrana */
@@ -2955,6 +2956,7 @@
 }
 
 .marquee__track {
+  position: relative;
   display: flex;
   width: max-content;
   animation: marquee-slide var(--marquee-speed) linear infinite;
@@ -2996,6 +2998,7 @@
   color: var(--muted-foreground);
   white-space: nowrap;
   transition: color 0.28s ease;
+  will-change: transform;
 }
 
 .marquee__icon {
@@ -3014,8 +3017,40 @@
     transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 .marquee__icon svg {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+/* pravi logotipi u bojama brendova — kao ikonice aplikacija na telefonu */
+.marquee__icon[data-brand] {
+  border: 0;
+  border-radius: 0.7rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+}
+.marquee__icon[data-brand="instagram"] {
+  background:
+    radial-gradient(
+      120% 120% at 27% 107%,
+      #fdd76a 0%,
+      #f7803b 24%,
+      #e6396b 48%,
+      rgba(207, 46, 146, 0) 78%
+    ),
+    linear-gradient(155deg, #8a3ab9 0%, #4c5fd7 100%);
+}
+.marquee__icon[data-brand="linkedin"] {
+  background: #0a66c2;
+}
+.marquee__icon[data-brand="linkedin"] svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+.marquee__icon[data-brand="youtube"] {
+  background: #fff;
+}
+.marquee__icon[data-brand="youtube"] svg {
+  width: 1.55rem;
+  height: 1.55rem;
 }
 
 .marquee__label {
@@ -3043,9 +3078,7 @@
     color: var(--primary);
   }
   .marquee__link:hover .marquee__icon {
-    border-color: var(--primary);
-    background: color-mix(in srgb, var(--primary) 12%, transparent);
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.06);
   }
   .marquee__link:hover .marquee__arrow {
     opacity: 1;
