@@ -161,7 +161,7 @@ export const MEMORIES: Memory[] = [
   { src: "/komunikacije-glas.png", alt: "Sa projekta Sport Business Day", title: "Sport Business Day", year: null, description: null, shape: "kvadrat" },
   { src: "/put-pozadina.jpg", alt: "Sa ekskurzije EKOF u pokretu", title: "EKOF u pokretu", year: null, description: null, shape: "pejzaz" },
   { src: "/ljudski-resursi-glas.png", alt: "Sa humanitarne akcije Prava stvar", title: "Prava stvar", year: null, description: null, shape: "portret" },
-  { src: "/sektori-pozadina.jpg", alt: "Sa projekta Link to the Future", title: "Link to the Future", year: null, description: null, shape: "kvadrat" },
+  { src: "/komunikacije-glas.png", alt: "Sa projekta Link to the Future", title: "Link to the Future", year: null, description: null, shape: "kvadrat" },
   { src: "/projekti-pozadina.jpg", alt: "Sa projekta Greenfield", title: "Greenfield", year: null, description: null, shape: "pejzaz" },
   { src: "/tim-2.jpg", alt: "Sa tribine Bez straha", title: "Bez straha", year: null, description: null, shape: "portret" },
 ];
