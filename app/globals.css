@@ -1016,11 +1016,11 @@
     padding: clamp(5rem, 12vh, 7rem) var(--sc-pad);
     will-change: transform, opacity, filter;
     transform: translate3d(0, calc(var(--posT) * 100%), 0)
-      scale(calc(1 - var(--negT) * 0.14));
-    opacity: calc(1 - var(--negT) * 0.85);
-    filter: blur(calc(var(--negT) * 6px));
+      scale(calc(1 - var(--negT) * 0.08));
+    opacity: calc(1 - var(--negT) * 0.55);
+    filter: blur(calc(var(--negT) * 3px));
     z-index: calc(var(--stop, 0) * 10 + 100);
-    box-shadow: 0 24px 64px -16px rgb(4 10 8 / calc(var(--posT) * 0.4));
+    box-shadow: 0 24px 64px -16px rgb(4 10 8 / calc(var(--posT) * 0.3));
     /* neprozirna (ali u istom tonu kao ambijent) — susedni ekran ne sme
        da se nazre kroz onaj koji trenutno klizi preko njega */
     background:

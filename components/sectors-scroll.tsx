@@ -158,9 +158,16 @@ const STOPS: Stop[] = [
 ];
 /** Broj prelaza (jedan manje od broja ekrana). */
 const UNITS = STOPS.length - 1;
-/** Ekran miruje na oba kraja prelaza — stek-prelaz se dešava samo u sredini skrola. */
-const STACK_FROM = 0.3;
-const STACK_TO = 0.7;
+/** Kratak mir na oba kraja prelaza (da se pročita), a stek-prelaz se
+ * razvlači preko skoro cele sredine skrola — što je prelaz duži (u
+ * poređenju sa mirom), to je kretanje mekše, bez naglog "skoka". */
+const STACK_FROM = 0.12;
+const STACK_TO = 0.88;
+
+/** Glatkija kriva od obične smoothstep (t²(3-2t)) — brzina kreće i
+ * završava se na nuli još mekše, pa se prelaz oseća kao da "diše", a ne
+ * da naglo kreće/staje. */
+const smootherstep = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
 
 function sectorNumAt(i: number) {
   const stop = STOPS[i];
@@ -202,8 +209,6 @@ export function SectorsScroll() {
     let lastStage = -1;
     let lastMeter = "";
 
-    const ease = (t: number) => t * t * (3 - 2 * t);
-
     const paint = () => {
       frame = 0;
       const rect = section.getBoundingClientRect();
@@ -216,7 +221,7 @@ export function SectorsScroll() {
       // ekran miruje na oba kraja prelaza (lakše se čita), stek-prelaz se
       // dešava samo u sredini skrola — CSS ovo pretvara u posT/negT koji
       // pogone translateY/scale/opacity/blur
-      const cp = ease(
+      const cp = smootherstep(
         localT <= STACK_FROM
           ? 0
           : localT >= STACK_TO
