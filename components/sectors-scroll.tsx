@@ -5,21 +5,24 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * Sekcija „Sektori” — naslovni „layer” se prikaže jednom, a zatim tri
- * sektora idu direktno jedan za drugim dok korisnik skroluje. Ekrani klize
- * jedan preko drugog kao traka filma, umesto da se smenjuju kružnim
- * prelazom — direktna, 1:1 veza sa skrolom, bez odvojenih ulaz/izlaz
- * animacija koje mogu da se razminu.
+ * sektora idu direktno jedan za drugim dok korisnik skroluje. Ekrani se
+ * ređaju kao 3D stek kartica: sledeći ekran klizi odozdo i prekriva
+ * prethodni, koji u tom trenutku blago tone u dubinu (smanjuje se,
+ * zamagljuje i bledi) — direktna, 1:1 veza sa skrolom, bez odvojenih
+ * ulaz/izlaz animacija koje mogu da se razminu.
  *
  * Kako radi:
  *  - Redosled ekrana je fiksan niz STOPS: layer, pa sektor, sektor, sektor
  *    — bez vraćanja na layer između sektora. Svaki ekran dobija svoje
- *    mesto u traci kao CSS promenljiva `--stop` (0, 1, 2…).
+ *    mesto u steku kao CSS promenljiva `--stop` (0, 1, 2…).
  *  - Sekcija je visoka onoliko vh koliko ima prelaza (jedan pun ekran
  *    skrola po prelazu), a unutar nje jedan `sticky` kadar od 100vh.
  *  - Slušalac skrola računa napredak kroz sekciju (0 → 1) i pretvara ga u
- *    `--raw`: kontinuiranu poziciju trake (0…STOPS.length-1), sa mirnim
+ *    `--raw`: kontinuiranu poziciju steka (0…STOPS.length-1), sa mirnim
  *    periodom na oba kraja svakog prelaza da se sadržaj stigne pročitati.
- *    CSS pomera svaki ekran za `(--stop - --raw) * 100%` — razlika je
+ *    CSS iz razlike `--stop - --raw` (u globals.css: `--rel`) izvodi dva
+ *    broja 0→1 — `--posT` (ekran se penje odozdo) i `--negT` (ekran tone
+ *    u dubinu) — i njima pogoni translateY/scale/opacity/blur. Razlika je
  *    uvek tačna, pa nema moguće neusklađenosti.
  *  - `--stage` (ceo broj, trenutni prelaz) upisuje se posebno — koristi
  *    ga brojač napretka i crtanje linije ilustracije sektora.
@@ -155,9 +158,9 @@ const STOPS: Stop[] = [
 ];
 /** Broj prelaza (jedan manje od broja ekrana). */
 const UNITS = STOPS.length - 1;
-/** Ekran miruje na oba kraja prelaza — klizanje se dešava samo u sredini skrola. */
-const SLIDE_FROM = 0.3;
-const SLIDE_TO = 0.7;
+/** Ekran miruje na oba kraja prelaza — stek-prelaz se dešava samo u sredini skrola. */
+const STACK_FROM = 0.3;
+const STACK_TO = 0.7;
 
 function sectorNumAt(i: number) {
   const stop = STOPS[i];
@@ -210,15 +213,15 @@ export function SectorsScroll() {
       const raw = Math.min(UNITS - 1e-4, Math.max(0, p * UNITS));
       const unit = Math.floor(raw);
       const localT = raw - unit;
-      // ekran miruje na oba kraja prelaza (lakše se čita), klizi samo u
-      // sredini skrola — ista pauza kao ranije, sad pokreće translateX
-      // umesto kruga
+      // ekran miruje na oba kraja prelaza (lakše se čita), stek-prelaz se
+      // dešava samo u sredini skrola — CSS ovo pretvara u posT/negT koji
+      // pogone translateY/scale/opacity/blur
       const cp = ease(
-        localT <= SLIDE_FROM
+        localT <= STACK_FROM
           ? 0
-          : localT >= SLIDE_TO
+          : localT >= STACK_TO
             ? 1
-            : (localT - SLIDE_FROM) / (SLIDE_TO - SLIDE_FROM)
+            : (localT - STACK_FROM) / (STACK_TO - STACK_FROM)
       );
       const visualRaw = unit + cp;
 

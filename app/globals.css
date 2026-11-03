@@ -1000,13 +1000,27 @@
     inset: 0;
   }
   .sc[data-mode="scroll"] .sc__stop {
+    /* --rel: razlika između mesta ovog ekrana u steku i trenutnog skrola.
+       Pozitivno = ekran još čeka ispod i penje se uvoz (--posT, 0→1).
+       Negativno = ekran je već prošao i tone u dubinu steka — smanjuje se,
+       zamagljuje i bledi (--negT, 0→1). Isti princip kao skica koju je
+       korisnik odabrao: nova kartica klizi odozdo preko prethodne, a
+       prethodna „potone” iza nje umesto da nestane naglo. */
+    --rel: calc(var(--stop, 0) - var(--raw, 0));
+    --posT: clamp(0, var(--rel), 1);
+    --negT: clamp(0, calc(-1 * var(--rel)), 1);
     position: absolute;
     inset: 0;
     display: grid;
     place-items: center;
     padding: clamp(5rem, 12vh, 7rem) var(--sc-pad);
-    will-change: transform;
-    transform: translate3d(calc((var(--stop, 0) - var(--raw, 0)) * 100%), 0, 0);
+    will-change: transform, opacity, filter;
+    transform: translate3d(0, calc(var(--posT) * 100%), 0)
+      scale(calc(1 - var(--negT) * 0.14));
+    opacity: calc(1 - var(--negT) * 0.85);
+    filter: blur(calc(var(--negT) * 6px));
+    z-index: calc(var(--stop, 0) * 10 + 100);
+    box-shadow: 0 24px 64px -16px rgb(4 10 8 / calc(var(--posT) * 0.4));
     /* neprozirna (ali u istom tonu kao ambijent) — susedni ekran ne sme
        da se nazre kroz onaj koji trenutno klizi preko njega */
     background:
