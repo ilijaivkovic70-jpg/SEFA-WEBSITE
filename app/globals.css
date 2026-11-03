@@ -299,7 +299,10 @@
   pointer-events: none;
   z-index: 40;
   opacity: 0;
-  will-change: transform, font-size, color;
+  /* font-size se više ne menja svaki frejm (videti logo-drop.tsx) —
+     veličina ide kroz scale() unutar transform, pa je font-size
+     izbačen iz will-change jer bi ga ponovo tretirao kao layout-osetljiv */
+  will-change: transform, color;
   transform-origin: top left;
   text-shadow:
     0 1px 0 rgba(0, 0, 0, 0.5),

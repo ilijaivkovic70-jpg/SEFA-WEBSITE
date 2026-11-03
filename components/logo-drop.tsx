@@ -124,6 +124,13 @@ export function LogoDrop() {
           rig.tTop = tRect.top + scrollY;
           rig.tLeft = tRect.left;
           rig.tSize = parseFloat(getComputedStyle(rig.target).fontSize);
+
+          // font-size je fiksiran JEDNOM na početnu (izvornu) veličinu —
+          // rast/smanjivanje ide kroz transform: scale() u paint() ispod,
+          // jer promena font-size svaki frejm tera ponovno slaganje
+          // layouta (reflow) na svakom skrolu, dok je scale() besplatan
+          // za kompozitor (samo GPU transformacija, bez reflow-a)
+          rig.clone.style.fontSize = `${rig.sSize}px`;
         }
       };
 
@@ -158,8 +165,11 @@ export function LogoDrop() {
             `scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`;
 
           // debljina: naslagane senke u pravcu okreta daju slovu telo
+          // (manje slojeva nego ranije — text-shadow se ne kompozituje,
+          // pa svaki dodatni sloj poskupljuje ponovno iscrtavanje na
+          // svakom skrol-frejmu dok slovo leti)
           if (b > 0.02) {
-            const layers = 9;
+            const layers = 5;
             const dx = -Math.sin(ry * deg) * 0.013 * b;
             const dy = Math.sin(rx * deg) * 0.013 * b + 0.006 * b;
             const depth: string[] = [];
@@ -180,9 +190,11 @@ export function LogoDrop() {
           const top = lerp(rig.sTop, rig.tTop, p) - scrollY;
           const left = lerp(rig.sLeft, rig.tLeft, p);
           const size = lerp(rig.sSize, rig.tSize, p);
+          // rig.clone sad drži font-size fiksiran na rig.sSize (iz
+          // measure()) — ovde samo skaliramo transformom umesto layout-a
+          const scale = rig.sSize > 0 ? size / rig.sSize : 1;
 
-          rig.clone.style.transform = `translate3d(${left.toFixed(2)}px, ${top.toFixed(2)}px, 0)`;
-          rig.clone.style.fontSize = `${size.toFixed(2)}px`;
+          rig.clone.style.transform = `translate3d(${left.toFixed(2)}px, ${top.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
           rig.clone.style.color = color;
           rig.clone.style.opacity = justStarted || landed ? "0" : "1";
 
