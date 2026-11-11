@@ -65,7 +65,7 @@ export default async function ProjekatPage({
             <LineReveal text={projekat.naziv} />
           </h1>
 
-          <ImageReveal className="mx-auto mt-6 flex aspect-video items-center justify-center rounded-xl bg-gradient-to-br from-accent/40 to-primary/20 ring-1 ring-border">
+          <ImageReveal className={`mx-auto mt-6 flex aspect-video items-center justify-center rounded-xl ring-1 ring-border bg-gradient-to-br from-accent/40 to-primary/20`}>
             {projekat.slika && (
               <Image
                 src={projekat.slika}
@@ -73,7 +73,7 @@ export default async function ProjekatPage({
                 width={400}
                 height={100}
                 unoptimized
-                className="w-1/2 object-contain"
+                className="h-4/5 w-1/2 object-contain"
               />
             )}
           </ImageReveal>

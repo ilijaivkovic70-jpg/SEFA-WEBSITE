@@ -52,7 +52,7 @@ export default function ProjektiPage() {
             {PROJEKTI.map((projekat) => (
               <Link key={projekat.slug} href={`/projekti/${projekat.slug}`}>
                 <Card className="ring-border h-full hover:-translate-y-1 hover:bg-card/70 hover:shadow-lg max-sm:grid max-sm:grid-cols-[5.5rem_minmax(0,1fr)] max-sm:gap-x-3 max-sm:gap-y-1.5 max-sm:p-3">
-                  <ImageReveal className="mx-4 flex aspect-video items-center justify-center rounded-lg bg-zinc-800 ring-1 ring-border max-sm:row-span-2 max-sm:mx-0 max-sm:aspect-square max-sm:self-center">
+                  <ImageReveal className={`mx-4 flex aspect-video items-center justify-center rounded-lg bg-zinc-800 ring-1 ring-border max-sm:row-span-2 max-sm:mx-0 max-sm:aspect-square max-sm:self-center`}>
                     {projekat.slika && (
                       <Image
                         src={projekat.slika}
@@ -60,7 +60,7 @@ export default function ProjektiPage() {
                         width={200}
                         height={50}
                         unoptimized
-                        className="w-2/3 object-contain"
+                        className="h-4/5 w-2/3 object-contain"
                       />
                     )}
                   </ImageReveal>

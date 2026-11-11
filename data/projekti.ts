@@ -66,6 +66,7 @@ export const PROJEKTI: Projekat[] = [
   {
     slug: "sefa-talks",
     naziv: "SEFA Talks",
+    slika: "/projekti/sefa-talks.png",
     kratakOpis:
 
       "Podkast u kom gosti iz sveta biznisa i preduzetništva dele svoja iskustva i savete sa studentima.",
@@ -91,6 +92,7 @@ export const PROJEKTI: Projekat[] = [
   {
     slug: "prava-stvar",
     naziv: "Prava stvar",
+    slika: "/projekti/prava-stvar.png",
     kratakOpis:
 
       "Humanitarni projekat kroz koji članovi SEFA-e pomažu lokalnoj zajednici i razvijaju osećaj društvene odgovornosti.",
@@ -112,6 +114,7 @@ export const PROJEKTI: Projekat[] = [
   {
     slug: "bez-straha",
     naziv: "Bez straha",
+    slika: "/projekti/bez-straha.png",
     kratakOpis:
 
       "Projekat posvećen podizanju svesti o mentalnom zdravlju i podršci studentima u prevazilaženju izazova.",
@@ -144,6 +147,7 @@ export const PROJEKTI: Projekat[] = [
     // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
     slug: "greenfield",
     naziv: "Greenfield",
+    slika: "/projekti/greenfield.png",
     kratakOpis:
 
       "Projekat posvećen ulaganjima i održivom razvoju, kroz koji studenti prate put od ideje do poslovnog poduhvata.",
@@ -154,6 +158,7 @@ export const PROJEKTI: Projekat[] = [
   {
     slug: "sport-business-day",
     naziv: "Sport Business Day",
+    slika: "/projekti/sport-business-day.svg",
     kratakOpis:
 
       "Konferencija koja povezuje svet sporta i biznisa, sa stručnjacima iz sportske industrije kao govornicima.",
@@ -168,6 +173,7 @@ export const PROJEKTI: Projekat[] = [
     // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
     slug: "link-to-the-future",
     naziv: "Link to the Future",
+    slika: "/projekti/link-to-the-future.png",
     kratakOpis:
 
       "Projekat koji povezuje studente sa kompanijama i ljudima iz struke, od prvog kontakta do prve prilike.",
