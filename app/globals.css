@@ -2546,18 +2546,8 @@
 .marquee__item {
   display: flex;
   align-items: center;
-  gap: var(--marquee-gap);
-  padding-inline-end: var(--marquee-gap);
-}
-
-/* romb kao razdelnik između dva naloga */
-.marquee__sep {
-  width: 6px;
-  height: 6px;
-  flex: none;
-  rotate: 45deg;
-  background: var(--primary);
-  opacity: 0.45;
+  /* razmak između dva naloga (bez razdelnika) */
+  padding-inline-end: calc(var(--marquee-gap) * 2);
 }
 
 .marquee__link {
@@ -2631,27 +2621,12 @@
   transition: color 0.28s ease;
 }
 
-/* strelica stoji prigušeno i oživi tek kad se pređe preko linka */
-.marquee__arrow {
-  font-size: 0.95rem;
-  line-height: 1;
-  color: var(--primary);
-  opacity: 0.35;
-  transition:
-    opacity 0.28s ease,
-    transform 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
 @media (hover: hover) {
   .marquee__link:hover .marquee__label {
     color: var(--primary);
   }
   .marquee__link:hover .marquee__icon {
     transform: translateY(-2px) scale(1.06);
-  }
-  .marquee__link:hover .marquee__arrow {
-    opacity: 1;
-    transform: translate(2px, -2px);
   }
 }
 
@@ -2672,8 +2647,7 @@
   }
   .marquee__link,
   .marquee__icon,
-  .marquee__label,
-  .marquee__arrow {
+  .marquee__label {
     transition: none;
   }
 }

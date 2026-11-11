@@ -33,7 +33,7 @@ const SOCIAL_LINKS = [
 const MARQUEE_GROUP = [...SOCIAL_LINKS, ...SOCIAL_LINKS, ...SOCIAL_LINKS];
 
 /* ---------- talas ----------
-   Traka ne ide ravno: linkovi i rombovi „jašu” po nevidljivom sinusnom
+   Traka ne ide ravno: linkovi „jašu” po nevidljivom sinusnom
    talasu koji i sam polako putuje. Talas je vezan za ekran, ne za linkove, pa se svaki
    link penje i spušta dok prolazi kroz brežuljke i doline. */
 /** Dužina jednog talasa, u pikselima; kraća na telefonu da se vidi bar jedan ceo. */
@@ -62,11 +62,7 @@ function MarqueeGroup({ hidden }: { hidden?: boolean }) {
               <link.icon />
             </span>
             <span className="marquee__label">{link.label}</span>
-            <span aria-hidden="true" className="marquee__arrow">
-              ↗
-            </span>
           </a>
-          <span aria-hidden="true" className="marquee__sep" data-wave />
         </li>
       ))}
     </ul>
