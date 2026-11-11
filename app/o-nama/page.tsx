@@ -4,7 +4,6 @@ import { Reveal } from "@/components/reveal";
 import { ImageReveal } from "@/components/image-reveal";
 import { MarkerHeading } from "@/components/marker-heading";
 import { HistoryRoad } from "@/components/history-road";
-import { MemberCompass } from "@/components/member-compass";
 
 export const metadata: Metadata = {
   title: "O nama",
@@ -56,9 +55,6 @@ export default function ONamaPage() {
 
       {/* HistoryRoad ima sopstveni sticky kadar — ne sme u <Reveal> */}
       <HistoryRoad />
-
-      {/* MemberCompass sam vodi svoje otkrivanje — ne sme u <Reveal> */}
-      <MemberCompass />
     </div>
   );
 }

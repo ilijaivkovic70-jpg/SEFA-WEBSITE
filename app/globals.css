@@ -1283,9 +1283,7 @@
 }
 
 /* desktop kadar sa putem stoji samo u „cinema” režimu */
-.road__world,
-.road__car,
-.road__backdrop {
+.road__scene {
   display: none;
 }
 
@@ -1649,98 +1647,196 @@
     overflow: hidden;
   }
 
-  /* pozadinska tekstura iza puta — utapa se preko --intro/--outro, koje JS
-     već računa za tekst uvoda i završetka, pa nema posebne animacije ovde:
-     ista kriva, isti trenutak, bez šava na ulazu i izlazu iz sekcije */
-  .road[data-mode="cinema"] .road__backdrop {
+  /* ---------- 3D scena (JS upisuje --rz, --tilt, --k-top, --k-chase, --hy,
+     --hx; pri promeni veličine --u, --u-chase, --persp, --persp-y) ----------
+     Jedan „ground” sloj nosi ceo svet: pločice podloge, delove puta, trag
+     rute, oznake stanica i zelenilo. Kamera = transform tog sloja. */
+  .road[data-mode="cinema"] .road__scene {
     display: block;
     position: absolute;
     inset: 0;
-    z-index: -1;
-    opacity: calc(1 - var(--intro) - var(--outro));
+    z-index: 0;
+    overflow: hidden;
     pointer-events: none;
+    background: var(--background);
+    /* utapa se u ravnu pozadinu na ulazu i izlazu iz sekcije */
+    opacity: calc(1 - var(--intro) - var(--outro));
+    --rz: 0;
+    --tilt: 0;
+    --k-top: 1;
+    --k-chase: 0;
+    --hy: -200vh;
+    --hx: 0px;
+    --u: 1;
+    --u-chase: 3;
+    --car-len: 64;
+    --car-back-w: 46;
+    --persp: 1000px;
+    --persp-y: 80%;
   }
-  .road__backdrop-img {
-    object-fit: cover;
-    object-position: center;
-    /* vivid žuto-zelena tekstura ublažena ka tamnoj, prigušenoj paleti sajta */
-    filter: saturate(0.5) brightness(0.6) contrast(1.08);
-  }
-  .road__backdrop-tint {
+  .road__defs {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      180deg,
-      rgb(var(--bg-rgb) / 0.55) 0%,
-      rgb(var(--bg-rgb) / 0.3) 40%,
-      rgb(var(--bg-rgb) / 0.3) 60%,
-      rgb(var(--bg-rgb) / 0.65) 100%
-    );
+    width: 0;
+    height: 0;
+    overflow: hidden;
   }
 
-  /* svet sa putem; kadar se blago naginje u smeru krivine */
-  .road[data-mode="cinema"] .road__world {
-    display: block;
+  /* nebo iznad horizonta i panorama šume u magli (samo u pogledu iza auta) */
+  .road__sky {
     position: absolute;
-    /* prepust, da nagib kadra ne otkrije prazne uglove */
-    inset: -10%;
-    z-index: 0;
-    pointer-events: none;
-    transform: rotate(calc(var(--rot) * 1deg));
+    inset: 0;
+    background: linear-gradient(180deg, #030908 0%, var(--background) 55%);
+    opacity: var(--k-chase);
+  }
+  .road__horizon {
+    position: absolute;
+    top: 0;
+    left: -15%;
+    width: 130%;
+    height: max(56vw, 44vh);
+    /* svetla linija iza brda je na ~45% visine slike — ide tačno na horizont */
+    transform: translate3d(var(--hx), calc(var(--hy) - 50%), 0);
+    -webkit-mask-image: linear-gradient(180deg, transparent 4%, #000 34%, #000 78%, transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 4%, #000 34%, #000 78%, transparent 100%);
     will-change: transform;
   }
-  .road__map {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-  .road__bed,
-  .road__spine {
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  /* deo koji tek predstoji — jedva vidljiv */
-  .road__bed {
-    stroke: rgb(var(--ink) / 0.07);
-    stroke-width: 26;
-  }
-  /* pređeni deo — jasniji */
-  .road__bed--lit {
-    stroke: rgb(var(--ink) / 0.2);
-    stroke-dasharray: 1 1;
-    stroke-dashoffset: calc(1 - var(--travel));
-  }
-  .road__spine {
-    stroke: var(--primary);
-    stroke-width: 2.4;
-    stroke-dasharray: 1 1;
-    stroke-dashoffset: calc(1 - var(--travel));
-    opacity: 0.9;
-  }
-  /* isto zrno kao na ostatku sajta */
-  .road__grain {
+  /* daleko tlo: od horizonta naniže, boje prosečne teksture zemlje; pločice
+     podloge ga pokrivaju gde postoje, a magla krije prelaz */
+  .road__land {
     position: absolute;
-    inset: 0;
-    opacity: 0.24;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    transform: translate3d(0, calc(var(--hy) + 1.5vh), 0);
+    background: linear-gradient(
+      180deg,
+      rgb(8 22 16 / 0) 0%,
+      rgb(8 22 16 / 0.85) 5vh,
+      rgb(6 19 11) 12vh
+    );
+    will-change: transform;
+  }
+  .road__horizon-img {
+    object-fit: cover;
+    object-position: 50% 45%;
+    filter: saturate(0.78) brightness(0.82);
   }
 
-  .road__pin-ring {
+  .road__view {
+    position: absolute;
+    inset: 0;
+    perspective: var(--persp);
+    perspective-origin: 50% var(--persp-y);
+  }
+  .road__ground {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    transform-origin: 0 0;
+    transform-style: preserve-3d;
+  }
+  .road__tile,
+  .road__chunk,
+  .road__pin,
+  .road__plant {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  /* svaki 3D sloj se rasterizuje jednom, ne pri svakoj promeni zuma kamere —
+     bez ovoga bliski slojevi traže ogromnu rezoluciju i grafička kartica
+     ostane bez memorije (nestaju auto, horizont, delovi puta) */
+  .road__tile,
+  .road__chunk,
+  .road__pin,
+  .road__plant,
+  .road__plant-stand {
+    will-change: transform;
+  }
+  .road__tile {
+    background-repeat: repeat;
+    background-position: 0 0;
+    backface-visibility: hidden;
+  }
+
+  /* put: senka uz ivice, asfalt, ivične linije (blago istrošene), središnja
+     isprekidana linija */
+  .road__chunk {
+    overflow: visible;
     fill: none;
+    stroke-linejoin: round;
+  }
+  .road__shoulder {
+    stroke: #020605;
+    stroke-opacity: 0.24;
+  }
+  .road__asphalt {
+    stroke: url(#road-asphalt);
+  }
+  .road__edge {
+    stroke: rgb(206 202 186);
+    stroke-opacity: 0.4;
+    stroke-dasharray: 46 1.2 30 0.8 64 1.6;
+  }
+  /* blagi ton preko asfalta — da bude iste nijanse kao ostatak stranice */
+  .road__wear {
+    stroke: rgb(var(--bg-rgb));
+    stroke-opacity: 0.14;
+  }
+  .road__center {
+    stroke: rgb(214 208 190);
+    stroke-opacity: 0.46;
+    stroke-width: 1.8;
+    stroke-dasharray: 16 14;
+  }
+
+  /* tirkizni trag rute: tanak, blago svetli */
+  .road__route-line,
+  .road__route-glow {
     stroke: var(--primary);
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: calc(1 - var(--f));
+  }
+  .road__route-line {
     stroke-width: 1.6;
+    stroke-opacity: 0.62;
+  }
+  .road__route-glow {
+    stroke-width: 6;
+    stroke-opacity: 0.1;
+  }
+
+  /* oznake stanica na putu */
+  .road__pin {
+    width: 0;
+    height: 0;
+  }
+  .road__pin-ring,
+  .road__pin-dot {
+    position: absolute;
+    border-radius: 50%;
+  }
+  .road__pin-ring {
+    width: 34px;
+    height: 34px;
+    left: -17px;
+    top: -17px;
+    border: 1.6px solid var(--primary);
     opacity: 0;
     transform: scale(0.35);
-    transform-box: fill-box;
-    transform-origin: center;
     transition:
       opacity 0.5s var(--road-e),
       transform 0.75s var(--road-e);
   }
   .road__pin-dot {
-    fill: var(--primary);
+    width: 9px;
+    height: 9px;
+    left: -4.5px;
+    top: -4.5px;
+    background: var(--primary);
     opacity: 0.22;
     transition: opacity 0.5s var(--road-e);
   }
@@ -1755,6 +1851,99 @@
   .road__pin[data-phase="in"] .road__pin-dot,
   .road__pin[data-phase="after"] .road__pin-dot {
     opacity: 1;
+  }
+
+  /* zelenilo: odozgo leži na tlu; sa strane stoji uspravno (kontra-rotacija
+     oko podnožja), pa ga perspektiva sama skalira po udaljenosti */
+  .road__plant {
+    width: 0;
+    height: 0;
+    transform-style: preserve-3d;
+  }
+  .road__plant-shadow {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      rgb(0 0 0 / 0.55),
+      rgb(0 0 0 / 0.3) 58%,
+      rgb(0 0 0 / 0)
+    );
+  }
+  .road__plant-top,
+  .road__plant-side {
+    position: absolute;
+    max-width: none;
+    user-select: none;
+  }
+  .road__plant-top {
+    opacity: var(--k-top);
+  }
+  .road__plant-stand {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    transform-origin: 0 0;
+    transform: rotateZ(calc(var(--rz) * -1deg)) rotateX(calc(var(--tilt) * -1deg));
+  }
+  .road__scene[data-view="top"] .road__plant-stand,
+  .road__scene[data-view="chase"] .road__plant-top {
+    display: none;
+  }
+
+  /* magla: raste ka horizontu, pa se kraj podloge nikad ne vidi */
+  .road__fog {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 70vh;
+    transform: translate3d(0, calc(var(--hy) - 12vh), 0);
+    background: linear-gradient(
+      180deg,
+      rgb(17 40 37 / 0) 0%,
+      rgb(17 40 37 / 0.45) 9%,
+      rgb(14 34 31 / 0.9) 16%,
+      rgb(12 30 28 / 0.94) 22%,
+      rgb(10 25 23 / 0.82) 30%,
+      rgb(8 20 19 / 0.5) 42%,
+      rgb(7 16 15 / 0.18) 58%,
+      rgb(7 16 15 / 0) 76%
+    );
+    opacity: var(--k-chase);
+    will-change: transform;
+  }
+  /* vinjeta i ton — isti na svim slojevima */
+  .road__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        125% 95% at 50% 56%,
+        rgb(var(--bg-rgb) / 0) 42%,
+        rgb(var(--bg-rgb) / 0.78) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgb(var(--bg-rgb) / 0.32) 0%,
+        rgb(var(--bg-rgb) / 0.06) 32%,
+        rgb(var(--bg-rgb) / 0.06) 68%,
+        rgb(var(--bg-rgb) / 0.5) 100%
+      );
+  }
+  /* isto zrno kao na ostatku sajta */
+  .road__grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.22;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  }
+  .road[data-compact] .road__grain {
+    display: none;
   }
 
   /* mobilna linija i tačke ne postoje u ovom režimu */
@@ -1936,45 +2125,139 @@
     transform: translate3d(0, 58px, 0) rotate(var(--road-tilt));
   }
 
-  /* auto koji prati kameru na putu — okreće se u pravcu vožnje, blago
-     poskakuje srazmerno pređenoj dužini (kao ovešeni oslonac na neravnom putu) */
-  .road[data-mode="cinema"] .road__car {
-    display: block;
+  /* auto — JS ga drži na tački puta (desna traka). Odozgo se okreće u pravcu
+     vožnje; odostrag je „billboard” koji uvek gleda u kameru. Veličine su u
+     jedinicama sveta × --u (px po jedinici). */
+  .road__car {
     position: absolute;
-    left: 50%;
-    top: 52%;
+    left: 0;
+    top: 0;
     z-index: 2;
-    width: 26px;
-    height: 44px;
-    margin: -22px 0 0 -13px;
-    opacity: calc(1 - var(--intro) - var(--outro));
-    pointer-events: none;
-    transform-origin: 50% 50%;
-    transform: translateY(calc(var(--bob, 0) * -1px))
-      rotate(calc(var(--drive-rot, 0) * 1deg));
-    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+    width: 0;
+    height: 0;
+    will-change: transform;
   }
-  .road__car-svg {
+  .road__car-top,
+  .road__car-shadow {
+    position: absolute;
+    /* slika 360 × 478; dužina auta = CAR_LEN (u history-road.tsx) */
+    width: calc(var(--u) * var(--car-len) * 0.7531px);
+    height: calc(var(--u) * var(--car-len) * 1px);
+    left: calc(var(--u) * var(--car-len) * -0.3766px);
+    top: calc(var(--u) * var(--car-len) * -0.5px);
+    will-change: transform, opacity;
+  }
+  .road__car-shadow::before {
+    content: "";
+    position: absolute;
+    inset: 6% 16%;
+    border-radius: 38% / 22%;
+    background: rgb(0 0 0 / 0.62);
+    filter: blur(calc(var(--u) * 4px));
+  }
+  .road__car-img {
+    position: relative;
     display: block;
     width: 100%;
     height: 100%;
-    overflow: visible;
+    user-select: none;
   }
-  .road__car-body {
-    fill: var(--background);
-    stroke: var(--primary);
-    stroke-width: 2.2;
+  /* farovi: nos slike je dole, pa svetlo ide ispod */
+  .road__car-beam {
+    position: absolute;
+    left: -30%;
+    width: 160%;
+    top: 90%;
+    height: 115%;
+    background: radial-gradient(
+      58% 60% at 50% 0%,
+      rgb(255 244 214 / 0.2),
+      rgb(255 244 214 / 0.07) 45%,
+      rgb(255 244 214 / 0) 75%
+    );
   }
-  .road__car-windshield {
-    stroke: var(--primary);
-    stroke-width: 2;
-    stroke-linecap: round;
-    opacity: 0.65;
-  }
-  .road__car-wheel {
-    fill: var(--primary);
+  .road__car-tail {
+    position: absolute;
+    left: 4%;
+    width: 92%;
+    top: -14%;
+    height: 26%;
+    background: radial-gradient(
+      50% 50% at 50% 70%,
+      rgb(255 46 40 / 0.3),
+      rgb(255 46 40 / 0) 72%
+    );
   }
 
+  .road__car-back {
+    position: absolute;
+    /* slika 640 × 482; širina = CAR_BACK_W, točkovi na ~98% visine */
+    width: calc(var(--u-chase) * var(--car-back-w) * 1px);
+    height: calc(var(--u-chase) * var(--car-back-w) * 0.7531px);
+    left: calc(var(--u-chase) * var(--car-back-w) * -0.5px);
+    top: calc(var(--u-chase) * var(--car-back-w) * -0.738px);
+    transform-origin: 50% 98%;
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+  .road__car-back-shadow {
+    position: absolute;
+    left: -7%;
+    right: -7%;
+    bottom: -4%;
+    height: 24%;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      rgb(0 0 0 / 0.78),
+      rgb(0 0 0 / 0.42) 58%,
+      rgb(0 0 0 / 0)
+    );
+  }
+  /* zadnja svetla blago sijaju */
+  .road__car-lamp {
+    position: absolute;
+    top: 29%;
+    width: 30%;
+    height: 20%;
+    border-radius: 50%;
+    background: radial-gradient(
+      closest-side,
+      rgb(255 64 52 / 0.5),
+      rgb(255 34 30 / 0.16) 55%,
+      rgb(255 34 30 / 0)
+    );
+    mix-blend-mode: screen;
+    animation: road-lamp 2.8s ease-in-out infinite alternate;
+  }
+  .road__car-lamp--l {
+    left: 9%;
+  }
+  .road__car-lamp--r {
+    right: 9%;
+  }
+  .road[data-compact] .road__car-lamp {
+    animation: none;
+  }
+
+  /* svet u WebGL-u (Three.js): tlo, put, trag, drveće i 3D auto u jednom
+     platnu. Dok se ne učita, vidi se isti svet u CSS 3D (rezerva). */
+  .road__gl {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+  }
+  .road__scene[data-gl="on"] .road__gl {
+    opacity: 1;
+  }
+  /* WebGL tlo ide do horizonta — ravno „daleko tlo” iz CSS-a ne treba */
+  .road__scene[data-gl="on"] .road__land {
+    display: none;
+  }
   /* indikator napretka */
   .road[data-mode="cinema"] .road__meter {
     display: flex;
@@ -2108,6 +2391,15 @@
   }
 }
 
+@keyframes road-lamp {
+  from {
+    opacity: 0.78;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* ---------- smanjeno kretanje: obična statična vremenska linija ---------- */
 @media (prefers-reduced-motion: reduce) {
   .road,
@@ -2118,10 +2410,8 @@
   .road {
     --travel: 1;
   }
-  .road__world,
-  .road__car,
-  .road__meter,
-  .road__backdrop {
+  .road__scene,
+  .road__meter {
     display: none !important;
   }
   .road__stop,
@@ -2139,681 +2429,6 @@
   }
   .road__frame {
     clip-path: none !important;
-  }
-}
-
-/* ============================================================
-   BRIGA O ČLANOVIMA — „Članski kompas”
-
-   Informativna mapa: u sredini član, iz njega tri organske linije
-   ka onome što članstvo donosi. Ništa nije link ni dugme.
-
-   Tri sloja pravila, tim redom:
-     1) osnovni raspored — vertikalna putanja uz tanku liniju
-        levo; ovo je i završno stanje animacije, pa sadržaj stoji
-        bez JS-a i uz „smanjeno kretanje”;
-     2) [data-anim="on"] — početna stanja, a [data-in] ih pušta;
-     3) @media (min-width: 1024px) — asimetrična kompozicija.
-
-   Pozornica na desktopu ima fiksan odnos stranica 10 : 7, pa se
-   procentualni položaji blokova poklapaju sa SVG putanjama koje
-   dele isti koordinatni sistem (viewBox 1000 × 700).
-   Tempo animacije je u --c-d-* promenljivama ispod.
-   ============================================================ */
-
-.compass {
-  --c-e: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --c-pad: clamp(1.1rem, 5vw, 4rem);
-  --c-node: clamp(6.5rem, 22vw, 9rem);
-  /* osa vertikalne putanje (mobilni i tablet): tačno kroz sredinu čvora */
-  --c-lane: calc(var(--c-node) / 2);
-  /* razmak od linije do teksta */
-  --c-rail: 1.5rem;
-
-  /* tempo otkrivanja — ukupno ≈1,75s */
-  --c-d-eyebrow: 0s;
-  --c-d-title: 0.1s;
-  --c-d-lead: 0.26s;
-  --c-d-node: 0.38s;
-  --c-d-line: 0.62s;
-  --c-d-block: 0.92s;
-  --c-d-spark: 1.2s;
-  /* razmak između pravaca 01 → 02 → 03 */
-  --c-step: 0.12s;
-
-  position: relative;
-  cursor: default;
-  border-top: 1px solid var(--border);
-  background: color-mix(in srgb, var(--card) 40%, transparent);
-}
-
-.compass__inner {
-  margin-inline: auto;
-  max-width: 74rem;
-  padding: clamp(4rem, 11vh, 7rem) var(--c-pad) clamp(4.5rem, 12vh, 8rem);
-}
-
-/* ---------- 1) zaglavlje ---------- */
-
-.compass__eyebrow {
-  margin: 0;
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--primary);
-}
-
-.compass__title {
-  margin: 0.85rem 0 0;
-  max-width: 18ch;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.9rem, 5.2vw, 3rem);
-  line-height: 1.04;
-  letter-spacing: -0.03em;
-  color: var(--foreground);
-}
-/* maska za otkrivanje odozdo nagore */
-.compass__title-mask {
-  display: block;
-  overflow: hidden;
-  /* rep slova (j, p) ne sme da se odseče dok stoji */
-  padding-bottom: 0.12em;
-  margin-bottom: -0.12em;
-}
-.compass__title-mask > span {
-  display: block;
-}
-
-.compass__lead {
-  margin: 1.1rem 0 0;
-  max-width: 52ch;
-  color: var(--muted-foreground);
-}
-
-/* ---------- 2) pozornica: vertikalna putanja ---------- */
-
-.compass__stage {
-  position: relative;
-  margin-top: clamp(2.75rem, 7vh, 4.25rem);
-}
-
-/* desktop mreža linija ne postoji u ovom rasporedu */
-.compass__web {
-  display: none;
-}
-
-/* tanka linija koja povezuje čvor i sve blokove */
-.compass__rail {
-  position: absolute;
-  /* kreće tik ispod čvora i spušta se kroz sve tačke */
-  top: calc(var(--c-node) + 0.4rem);
-  bottom: 0.75rem;
-  left: var(--c-lane);
-  width: 1px;
-  overflow: hidden;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--primary) 55%, transparent),
-    var(--border) 22%,
-    var(--border) 84%,
-    transparent
-  );
-  transform-origin: 50% 0;
-}
-/* tirkizni potez koji jednom prođe kroz liniju */
-.compass__rail-spark {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 14%;
-  opacity: 0;
-  background: linear-gradient(180deg, transparent, var(--primary), transparent);
-}
-
-/* centralni čvor */
-.compass__node {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: var(--c-node);
-  aspect-ratio: 1;
-  /* čvor stoji na vrhu putanje; linija ispod izlazi iz njegove sredine */
-  margin: 0;
-}
-.compass__dial {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.compass__ring {
-  fill: none;
-  stroke: color-mix(in srgb, var(--primary) 62%, transparent);
-  stroke-width: 1.4;
-}
-.compass__ticks line {
-  stroke: var(--border);
-  stroke-width: 1.4;
-  stroke-linecap: round;
-}
-.compass__ticks line[data-long] {
-  stroke: color-mix(in srgb, var(--primary) 48%, transparent);
-}
-.compass__needle line {
-  stroke: color-mix(in srgb, var(--primary) 70%, transparent);
-  stroke-width: 1.4;
-  stroke-linecap: round;
-}
-.compass__needle circle {
-  fill: var(--primary);
-}
-.compass__node-text {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  display: grid;
-  gap: 0.2rem;
-  justify-items: center;
-  text-align: center;
-  text-transform: uppercase;
-}
-.compass__node-small {
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.3em;
-  /* razmak slova gura tekst udesno — vrati ga u osu */
-  text-indent: 0.3em;
-  color: var(--muted-foreground);
-}
-.compass__node-name {
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 800;
-  font-size: clamp(0.95rem, 3.4vw, 1.15rem);
-  letter-spacing: -0.01em;
-  color: var(--foreground);
-}
-
-/* jedan pravac */
-.compass__dir {
-  position: relative;
-  margin-top: clamp(2.25rem, 5.5vh, 3rem);
-  /* tekst stoji desno od linije */
-  padding-left: calc(var(--c-lane) + var(--c-rail));
-  max-width: 52ch;
-}
-/* tačka na liniji, u visini oznake 01/02/03 */
-.compass__dir::before {
-  content: "";
-  position: absolute;
-  top: 0.42rem;
-  left: calc(var(--c-lane) - 2.5px);
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--primary);
-}
-
-.compass__meta {
-  display: flex;
-  align-items: baseline;
-  gap: 0.7rem;
-  margin: 0;
-  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-}
-.compass__n {
-  color: color-mix(in srgb, var(--primary) 85%, transparent);
-}
-.compass__kicker {
-  color: rgb(var(--ink) / 0.42);
-}
-
-.compass__mark {
-  display: block;
-  width: 2.5rem;
-  height: 2.5rem;
-  margin-top: 1.1rem;
-  overflow: visible;
-}
-.compass__mark circle,
-.compass__mark path {
-  fill: none;
-  stroke: var(--primary);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.compass__mark-a,
-.compass__mark-c1,
-.compass__mark-c2,
-.compass__mark-c3 {
-  stroke: color-mix(in srgb, var(--primary) 72%, transparent);
-}
-.compass__mark-link,
-.compass__mark-steps {
-  stroke: rgb(var(--ink) / 0.4);
-}
-.compass__mark-b,
-.compass__mark-core {
-  fill: var(--primary);
-  stroke: none;
-}
-
-.compass__dir-title {
-  margin: 0.85rem 0 0;
-  font-family: var(--font-bricolage), system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 1.3rem;
-  letter-spacing: -0.015em;
-  color: var(--foreground);
-}
-.compass__desc {
-  margin: 0.5rem 0 0;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--muted-foreground);
-}
-
-/* ---------- 3) početna stanja i otkrivanje ---------- */
-
-.compass[data-anim="on"] .compass__eyebrow,
-.compass[data-anim="on"] .compass__lead,
-.compass[data-anim="on"] .compass__dir {
-  opacity: 0;
-}
-.compass[data-anim="on"] .compass__lead {
-  transform: translate3d(0, 6px, 0);
-}
-.compass[data-anim="on"] .compass__dir {
-  transform: translate3d(0, 10px, 0);
-}
-.compass[data-anim="on"] .compass__title-mask > span {
-  transform: translate3d(0, 105%, 0);
-}
-.compass[data-anim="on"] .compass__node {
-  opacity: 0;
-  transform: scale(0.94);
-}
-.compass[data-anim="on"] .compass__ring {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-.compass[data-anim="on"] .compass__ticks,
-.compass[data-anim="on"] .compass__needle {
-  opacity: 0;
-}
-.compass[data-anim="on"] .compass__line {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-}
-.compass[data-anim="on"] .compass__pin {
-  opacity: 0;
-  transform: scale(0.4);
-  transform-box: fill-box;
-  transform-origin: center;
-}
-.compass[data-anim="on"] .compass__rail {
-  transform: scaleY(0);
-}
-
-/* prelazi */
-.compass[data-anim="on"] .compass__eyebrow,
-.compass[data-anim="on"] .compass__lead,
-.compass[data-anim="on"] .compass__dir,
-.compass[data-anim="on"] .compass__node,
-.compass[data-anim="on"] .compass__ticks,
-.compass[data-anim="on"] .compass__needle,
-.compass[data-anim="on"] .compass__pin {
-  transition:
-    opacity 0.55s var(--c-e),
-    transform 0.65s var(--c-e);
-}
-.compass[data-anim="on"] .compass__title-mask > span {
-  transition: transform 0.7s var(--c-e);
-}
-.compass[data-anim="on"] .compass__ring,
-.compass[data-anim="on"] .compass__line {
-  transition: stroke-dashoffset 0.6s var(--c-e);
-}
-.compass[data-anim="on"] .compass__rail {
-  transition: transform 0.75s var(--c-e);
-}
-
-/* kašnjenja */
-.compass[data-anim="on"] .compass__eyebrow {
-  transition-delay: var(--c-d-eyebrow);
-}
-.compass[data-anim="on"] .compass__title-mask > span {
-  transition-delay: var(--c-d-title);
-}
-.compass[data-anim="on"] .compass__lead {
-  transition-delay: var(--c-d-lead);
-}
-.compass[data-anim="on"] .compass__node,
-.compass[data-anim="on"] .compass__ring,
-.compass[data-anim="on"] .compass__rail {
-  transition-delay: var(--c-d-node);
-}
-.compass[data-anim="on"] .compass__ticks {
-  transition-delay: calc(var(--c-d-node) + 0.22s);
-}
-.compass[data-anim="on"] .compass__needle {
-  transition-delay: calc(var(--c-d-node) + 0.3s);
-}
-.compass[data-anim="on"] .compass__thread[data-i="1"] .compass__line,
-.compass[data-anim="on"] .compass__thread[data-i="1"] .compass__pin {
-  transition-delay: var(--c-d-line);
-}
-.compass[data-anim="on"] .compass__thread[data-i="2"] .compass__line,
-.compass[data-anim="on"] .compass__thread[data-i="2"] .compass__pin {
-  transition-delay: calc(var(--c-d-line) + var(--c-step));
-}
-.compass[data-anim="on"] .compass__thread[data-i="3"] .compass__line,
-.compass[data-anim="on"] .compass__thread[data-i="3"] .compass__pin {
-  transition-delay: calc(var(--c-d-line) + var(--c-step) * 2);
-}
-/* tačka na kraju linije stiže tek pošto se linija iscrta */
-.compass[data-anim="on"] .compass__pin {
-  transition-delay: calc(var(--c-d-line) + 0.34s);
-}
-.compass[data-anim="on"] .compass__thread[data-i="2"] .compass__pin {
-  transition-delay: calc(var(--c-d-line) + var(--c-step) + 0.34s);
-}
-.compass[data-anim="on"] .compass__thread[data-i="3"] .compass__pin {
-  transition-delay: calc(var(--c-d-line) + var(--c-step) * 2 + 0.34s);
-}
-.compass[data-anim="on"] .compass__dir[data-i="1"] {
-  transition-delay: var(--c-d-block);
-}
-.compass[data-anim="on"] .compass__dir[data-i="2"] {
-  transition-delay: calc(var(--c-d-block) + var(--c-step));
-}
-.compass[data-anim="on"] .compass__dir[data-i="3"] {
-  transition-delay: calc(var(--c-d-block) + var(--c-step) * 2);
-}
-
-/* završna stanja */
-.compass[data-anim="on"][data-in="true"] .compass__eyebrow,
-.compass[data-anim="on"][data-in="true"] .compass__lead,
-.compass[data-anim="on"][data-in="true"] .compass__dir,
-.compass[data-anim="on"][data-in="true"] .compass__node,
-.compass[data-anim="on"][data-in="true"] .compass__ticks,
-.compass[data-anim="on"][data-in="true"] .compass__needle,
-.compass[data-anim="on"][data-in="true"] .compass__pin {
-  opacity: 1;
-}
-.compass[data-anim="on"][data-in="true"] .compass__lead,
-.compass[data-anim="on"][data-in="true"] .compass__dir,
-.compass[data-anim="on"][data-in="true"] .compass__title-mask > span {
-  transform: translate3d(0, 0, 0);
-}
-.compass[data-anim="on"][data-in="true"] .compass__node {
-  transform: scale(1);
-}
-.compass[data-anim="on"][data-in="true"] .compass__pin {
-  transform: scale(1);
-}
-.compass[data-anim="on"][data-in="true"] .compass__ring,
-.compass[data-anim="on"][data-in="true"] .compass__line {
-  stroke-dashoffset: 0;
-}
-.compass[data-anim="on"][data-in="true"] .compass__rail {
-  transform: scaleY(1);
-}
-
-/* veoma suptilno pulsiranje prstena, tek pošto se sve slegne */
-.compass[data-anim="on"][data-in="true"] .compass__ring {
-  animation: compass-pulse 5.5s ease-in-out 2s infinite;
-}
-@keyframes compass-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.62;
-  }
-}
-/* oznaka koja veoma sporo obilazi krug */
-.compass[data-anim="on"][data-in="true"] .compass__needle {
-  transform-origin: 50% 50%;
-  animation: compass-spin 28s linear 1.2s infinite;
-}
-@keyframes compass-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* tirkizna tačka jednom prođe kroz linije i poveže kompoziciju */
-.compass__spark {
-  stroke: var(--primary);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-dasharray: 0.07 0.93;
-  stroke-dashoffset: 0.07;
-  opacity: 0;
-}
-.compass[data-anim="on"][data-in="true"] .compass__spark {
-  animation: compass-spark 0.62s var(--c-e) forwards;
-}
-.compass[data-anim="on"][data-in="true"]
-  .compass__thread[data-i="1"]
-  .compass__spark {
-  animation-delay: var(--c-d-spark);
-}
-.compass[data-anim="on"][data-in="true"]
-  .compass__thread[data-i="2"]
-  .compass__spark {
-  animation-delay: calc(var(--c-d-spark) + 0.08s);
-}
-.compass[data-anim="on"][data-in="true"]
-  .compass__thread[data-i="3"]
-  .compass__spark {
-  animation-delay: calc(var(--c-d-spark) + 0.16s);
-}
-@keyframes compass-spark {
-  0% {
-    opacity: 0;
-    stroke-dashoffset: 0.07;
-  }
-  18%,
-  76% {
-    opacity: 0.9;
-  }
-  100% {
-    opacity: 0;
-    stroke-dashoffset: -1;
-  }
-}
-.compass[data-anim="on"][data-in="true"] .compass__rail-spark {
-  animation: compass-rail-spark 0.85s var(--c-e) var(--c-d-spark) forwards;
-}
-@keyframes compass-rail-spark {
-  0% {
-    opacity: 0;
-    transform: translateY(0);
-  }
-  20%,
-  75% {
-    opacity: 0.85;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(calc(100vh * 6));
-  }
-}
-
-/* ---------- hover: nema klika, samo tiho isticanje ---------- */
-
-@media (hover: hover) {
-  .compass__dir-title,
-  .compass__n,
-  .compass__mark circle,
-  .compass__mark path,
-  .compass__dir {
-    transition:
-      color 0.35s var(--c-e),
-      opacity 0.35s var(--c-e),
-      stroke 0.35s var(--c-e),
-      transform 0.35s var(--c-e);
-  }
-  .compass__dir:hover .compass__dir-title {
-    transform: translateX(3px);
-  }
-  .compass__dir:hover .compass__n {
-    color: var(--primary);
-  }
-  /* ostali pravci se jedva zatamne — tekst mora ostati čitljiv */
-  .compass__stage:has(.compass__dir:hover) .compass__dir:not(:hover) {
-    opacity: 0.86;
-  }
-  /* linija pravca preko kog je pokazivač postaje izraženija */
-  .compass__stage:has(.compass__dir[data-i="1"]:hover)
-    .compass__thread[data-i="1"]
-    .compass__line,
-  .compass__stage:has(.compass__dir[data-i="2"]:hover)
-    .compass__thread[data-i="2"]
-    .compass__line,
-  .compass__stage:has(.compass__dir[data-i="3"]:hover)
-    .compass__thread[data-i="3"]
-    .compass__line {
-    stroke: color-mix(in srgb, var(--primary) 88%, transparent);
-  }
-
-  /* diskretan pokret oznaka */
-  .compass__dir:hover .compass__mark-b {
-    transform: translate(-1.4px, -1.4px);
-  }
-  .compass__dir[data-i="2"]:hover .compass__mark-b {
-    transform: translateY(-2px);
-  }
-  .compass__dir:hover .compass__mark-c1 {
-    transform: translate(-0.9px, -0.7px);
-  }
-  .compass__dir:hover .compass__mark-c2 {
-    transform: translate(0.9px, -0.5px);
-  }
-  .compass__dir:hover .compass__mark-c3 {
-    transform: translate(0, 1px);
-  }
-  .compass__mark-b,
-  .compass__mark-c1,
-  .compass__mark-c2,
-  .compass__mark-c3 {
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-}
-
-/* ---------- 4) desktop: asimetrična kompozicija ---------- */
-
-@media (min-width: 1024px) {
-  .compass__stage {
-    /* isti odnos kao viewBox 1000 × 700 — bez toga se linije i blokovi razilaze */
-    aspect-ratio: 10 / 7;
-    margin-top: clamp(2rem, 5vh, 3.25rem);
-  }
-
-  /* vertikalna putanja ne postoji u ovom rasporedu */
-  .compass__rail,
-  .compass__dir::before {
-    display: none;
-  }
-
-  .compass__web {
-    display: block;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-  }
-  .compass__line {
-    stroke: color-mix(in srgb, var(--primary) 42%, transparent);
-    stroke-width: 1.3;
-    stroke-linecap: round;
-  }
-  .compass__pin {
-    fill: var(--primary);
-  }
-
-  .compass__node {
-    position: absolute;
-    left: 47%;
-    top: 42.86%;
-    /* veoma tiho uporište iza čvora — bez izraženog sjaja */
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--primary) 6%, transparent) 0%,
-      transparent 68%
-    );
-    --c-node: 10.5rem;
-    margin: 0;
-    transform: translate(-50%, -50%);
-  }
-  /* pomeranje mora da preživi i uvećanje pri otkrivanju */
-  .compass[data-anim="on"] .compass__node {
-    transform: translate(-50%, -50%) scale(0.94);
-  }
-  .compass[data-anim="on"][data-in="true"] .compass__node {
-    transform: translate(-50%, -50%) scale(1);
-  }
-
-  .compass__dir {
-    position: absolute;
-    margin: 0;
-    max-width: 21rem;
-    /* tačka na kraju linije stoji tik iznad oznake 01/02/03 */
-    padding: 0.9rem 0 0;
-  }
-  /* 01 — levo i malo iznad centra, tekst uz liniju sa desne strane */
-  .compass__dir[data-i="1"] {
-    right: 62%;
-    top: 13.7%;
-    text-align: right;
-  }
-  .compass__dir[data-i="1"] .compass__meta {
-    flex-direction: row-reverse;
-  }
-  .compass__dir[data-i="1"] .compass__mark {
-    margin-left: auto;
-  }
-  /* 02 — desno i malo iznad centra */
-  .compass__dir[data-i="2"] {
-    left: 61.4%;
-    top: 10.3%;
-  }
-  /* 03 — ispod centra, blago udesno */
-  .compass__dir[data-i="3"] {
-    left: 55.6%;
-    top: 71.4%;
-  }
-
-  @media (hover: hover) {
-    .compass__dir[data-i="1"]:hover .compass__dir-title {
-      transform: translateX(-3px);
-    }
-  }
-}
-
-/* ---------- smanjeno kretanje: sve odmah, bez otkrivanja ---------- */
-
-@media (prefers-reduced-motion: reduce) {
-  .compass,
-  .compass * {
-    transition: none !important;
-    animation: none !important;
-  }
-  .compass__rail {
-    transform: none !important;
-  }
-  .compass__spark,
-  .compass__rail-spark {
-    display: none !important;
   }
 }
 
