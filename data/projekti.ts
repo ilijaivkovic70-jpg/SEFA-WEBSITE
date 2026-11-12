@@ -12,6 +12,8 @@ export type Projekat = {
   lokacije?: string[];
   sekcije?: ProjekatSekcija[];
   galerija?: string[];
+  /** Promo video koji se na stranici projekta uvećava i sam pušta. */
+  video?: { src: string; poster: string };
 };
 
 /**
@@ -34,34 +36,10 @@ export const PROJEKTI: Projekat[] = [
       "Crowne Plaza (2017)",
       "Ekonomski fakultet (2018, 2019)",
     ],
-    sekcije: [
-      {
-        naslov: "Izbor tema i govornika kroz godine",
-        stavke: [
-          "Rade Jokimović: dostupnosti i kako doći do fondova stranog kapitala",
-          "Vladimir Nikolić (Limundo/Kupindo): razvoj online trgovine u Srbiji",
-          "Milenko Škorić (Sky Music Corporation): Moj put do uspeha",
-          "Zoran Petrović (Raiffeisen): investiciono bankarstvo, upravljanje rizikom i kapitalom",
-          "Telenor i Sberbanka: budućnost bankarskog sektora",
-          "Hasan Hanić: inovacije u obrazovanju, preduzetništvo i privreda",
-          "StartUp Srbija: Seeder, Evoke, Miracle Dojo",
-          "Tomislav Momirović (Mona): male tajne našeg uspeha",
-          "Srđan Janićijević (Mokrogorska škola menadžmenta): obrazovanjem do uspešne karijere",
-          "Aleksandar Marušić (KEA): karijera iz mitologije",
-          "Kosara Dangić Melentijević (Kabinet Brewery): put do najuspešnijeg startup-a",
-          "Ovation BBDO: advertajzing, čemu učiti i kako radi",
-        ],
-      },
-      {
-        naslov: "Partneri konferencije kroz godine",
-        stavke: [
-          "2016: Eversa, Jaffa, Chips Way, Na Bis, Chr, Dunav osiguranje, Sky Music, EXIT",
-          "2017: Tuborg, Neft, Jaffa, Logo, Koronijum, Suprema Lab, Rosa, Banca Intesa, Crowne Plaza",
-          "2018: Ekonomski fakultet, Neftz, Jaffa, Espinbono",
-          "2019: Ekonomski fakultet, Bel, Sibo, Frikom, Nectar, Booster, Heba, Muschmalow, GDi",
-        ],
-      },
-    ],
+    video: {
+      src: "/projekti/repsus-promo.mp4",
+      poster: "/projekti/repsus-promo-poster.jpg",
+    },
   },
   {
     slug: "sefa-talks",

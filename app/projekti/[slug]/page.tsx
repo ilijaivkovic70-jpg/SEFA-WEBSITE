@@ -8,6 +8,7 @@ import { Reveal } from "@/components/reveal";
 import { ImageReveal } from "@/components/image-reveal";
 import { LineReveal } from "@/components/line-reveal";
 import { ProjectGallery } from "@/components/project-gallery";
+import { ProjectVideo } from "@/components/project-video";
 import { PROJEKTI, getProjekatBySlug } from "@/data/projekti";
 
 export function generateStaticParams() {
@@ -65,19 +66,29 @@ export default async function ProjekatPage({
             <LineReveal text={projekat.naziv} />
           </h1>
 
-          <ImageReveal className={`mx-auto mt-6 flex aspect-video items-center justify-center rounded-xl ring-1 ring-border bg-gradient-to-br from-accent/40 to-primary/20`}>
-            {projekat.slika && (
-              <Image
-                src={projekat.slika}
-                alt={projekat.naziv}
-                width={400}
-                height={100}
-                unoptimized
-                className="h-4/5 w-1/2 object-contain"
-              />
-            )}
-          </ImageReveal>
+          {projekat.video ? (
+            <ProjectVideo
+              src={projekat.video.src}
+              poster={projekat.video.poster}
+              label={`${projekat.naziv}: promo video`}
+              textId="projekat-tekst"
+            />
+          ) : (
+            <ImageReveal className={`mx-auto mt-6 flex aspect-video items-center justify-center rounded-xl ring-1 ring-border bg-gradient-to-br from-accent/40 to-primary/20`}>
+              {projekat.slika && (
+                <Image
+                  src={projekat.slika}
+                  alt={projekat.naziv}
+                  width={400}
+                  height={100}
+                  unoptimized
+                  className="h-4/5 w-1/2 object-contain"
+                />
+              )}
+            </ImageReveal>
+          )}
 
+          <div id="projekat-tekst" className="scroll-mt-24">
           {projekat.lokacije && (
             <div className="mt-6 flex flex-wrap gap-2">
               {projekat.lokacije.map((lokacija) => (
@@ -97,6 +108,7 @@ export default async function ProjekatPage({
                 {pasus}
               </p>
             ))}
+          </div>
           </div>
 
           {projekat.sekcije?.map((sekcija) => (
