@@ -31,11 +31,6 @@ export const PROJEKTI: Projekat[] = [
     opis: [
       "REPSUS, Regionalni privredni susreti studenata, simbol je SEFA-e od samog osnivanja. Na konferenciji učestvuju eminentne ličnosti iz sveta ekonomije, a cilj je da studenti steknu nova znanja i prate aktuelne trendove u privredi.",
     ],
-    lokacije: [
-      "Zlatibor (2016)",
-      "Crowne Plaza (2017)",
-      "Ekonomski fakultet (2018, 2019)",
-    ],
     video: {
       src: "/projekti/repsus-promo.mp4",
       poster: "/projekti/repsus-promo-poster.jpg",
