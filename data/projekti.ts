@@ -41,8 +41,8 @@ export const PROJEKTI: Projekat[] = [
     naziv: "SEFA Talks",
     slika: "/projekti/sefa-talks.png",
     video: {
-      src: "/projekti/sefa-talks-promo.mp4",
-      poster: "/projekti/sefa-talks-promo-poster.jpg",
+      src: "/projekti/sefa-talks-promo-v2.mp4",
+      poster: "/projekti/sefa-talks-promo-v2-poster.jpg",
     },
     kratakOpis:
 
