@@ -40,6 +40,10 @@ export const PROJEKTI: Projekat[] = [
     slug: "sefa-talks",
     naziv: "SEFA Talks",
     slika: "/projekti/sefa-talks.png",
+    video: {
+      src: "/projekti/sefa-talks-promo.mp4",
+      poster: "/projekti/sefa-talks-promo-poster.jpg",
+    },
     kratakOpis:
 
       "Podkast u kom gosti iz sveta biznisa i preduzetništva dele svoja iskustva i savete sa studentima.",
