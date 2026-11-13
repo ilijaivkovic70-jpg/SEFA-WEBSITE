@@ -52,19 +52,6 @@ export const PROJEKTI: Projekat[] = [
       "U podkastu gostuju ljudi koji imaju mnogo toga da nauče: preduzetnici, direktori i stručnjaci iz kompanija, ali i profesori Ekonomskog fakulteta, koji sa studentima dele svoja iskustva i savete za početak karijere. Autori sami biraju sagovornike i teme, na osnovu interesovanja i pregleda slušalaca.",
       "Podkast je dostupan na YouTube-u, Spotify-ju, Deezer-u i Amazon Music-u, kao i na povezanom Instagram nalogu (@sefatalks).",
     ],
-    sekcije: [
-      {
-        naslov: "Dosadašnji gosti i teme (izbor)",
-        stavke: [
-          "Nikola Marković: CFO kompanije Gomex, alumnista Ekonomskog fakulteta, osnivač EKOF Case Study Cluba i programa EKOF Mentorship, o radu u „Big four” kompanijama i iskustvu mentorstva",
-          "Anđelka Balrinović: šef odeljenja za planiranje i analizu prodaje, Delta Sport",
-          "Aleksandar Gradić: bivši asistent na predmetima Osnovi ekonomije i Osnovi statističke analize",
-          "Branislav Borić: bivši dekan i profesor Ekonomskog fakulteta, o ekonomskim, društvenim i političkim temama",
-          "Nenad Atanacković: suvlasnik Thyme street food restorana",
-          "Nikola Stamenić: direktor sektora za reviziju u kompaniji PwC",
-        ],
-      },
-    ],
   },
   {
     slug: "prava-stvar",
