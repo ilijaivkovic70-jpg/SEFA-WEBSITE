@@ -57,6 +57,10 @@ export const PROJEKTI: Projekat[] = [
     slug: "prava-stvar",
     naziv: "Prava stvar",
     slika: "/projekti/prava-stvar.png",
+    video: {
+      src: "/projekti/prava-stvar-promo.mp4",
+      poster: "/projekti/prava-stvar-promo-poster.jpg",
+    },
     kratakOpis:
 
       "Humanitarni projekat kroz koji članovi SEFA-e pomažu lokalnoj zajednici i razvijaju osećaj društvene odgovornosti.",
