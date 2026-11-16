@@ -340,42 +340,32 @@
 /* ---------- kolaž iza naslova tima (components/team-collage.tsx) ---------- */
 .team-collage {
   background: #08110f;
+  overflow: hidden;
 }
-.team-collage__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(7, 1fr);
-  gap: 4px;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 4px;
-  list-style: none;
-}
-@media (min-width: 768px) {
-  .team-collage__grid {
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    gap: 6px;
-    padding: 6px;
-  }
-  /* prva fotografija je veća (2 × 2), malo levo od sredine */
-  .team-collage__tile[data-i="1"] {
-    grid-column: 2 / span 2;
-    grid-row: 2 / span 2;
-  }
-}
-.team-collage__tile {
-  min-width: 0;
-  min-height: 0;
-}
-.team-collage__tile .al-frame {
-  border-radius: 6px;
-  /* prazni okviri: blago različite nijanse da se mreža čita kao kolaž */
-  background: hsl(165 22% calc(7% + var(--tone, 0) * 0.9%));
-}
-.team-collage__tile .al-frame__img {
+.team-collage__img {
   object-fit: cover;
+  object-position: center 40%;
+  /* fotografija je već zatamnjena; malo je podižemo i hladimo ka
+     zeleno-tirkiznoj paleti sajta da ne deluje kao strani komad */
+  filter: saturate(0.85) contrast(1.06) brightness(1.08);
+  transform-origin: 50% 45%;
+  animation: team-collage-drift 28s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.team-collage__tint {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 50%, transparent 40%, rgb(var(--bg-rgb) / 0.7) 100%),
+    color-mix(in srgb, var(--primary) 14%, transparent);
+  mix-blend-mode: normal;
+}
+@keyframes team-collage-drift {
+  from { transform: scale(1.04) translate3d(0, 0, 0); }
+  to   { transform: scale(1.12) translate3d(-1.2%, -1%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .team-collage__img { animation: none; transform: scale(1.04); }
 }
 
 /* ---------- tim: fotografija sa natpisom preko ---------- */
@@ -391,12 +381,12 @@
 }
 .team__scrim {
   background:
-    radial-gradient(60% 55% at 50% 46%, rgba(4, 10, 9, 0.62), transparent 72%),
+    radial-gradient(60% 55% at 50% 46%, rgba(4, 10, 9, 0.5), transparent 72%),
     linear-gradient(
       180deg,
-      rgb(var(--bg-rgb) / 0.8) 0%,
-      rgb(var(--bg-rgb) / 0.42) 30%,
-      rgb(var(--bg-rgb) / 0.5) 66%,
+      rgb(var(--bg-rgb) / 0.78) 0%,
+      rgb(var(--bg-rgb) / 0.18) 26%,
+      rgb(var(--bg-rgb) / 0.28) 66%,
       /* blago maslinasto-zeleno, kao trava u sumrak — nastavlja se
          u istoj boji na vrhu žive pozadine ispod, bez šava */
       rgba(14, 27, 15, 0.95) 100%
