@@ -17,8 +17,52 @@
  */
 
 /* ============================================================
-   HERO — mali isečci fotografija oko broja „50+”
-   Tačno pet komada; raspored po putanji zadaje sama komponenta.
+   HERO — naslov, uvodni tekst i broj članova
+   Reč „SEFA” / „SEFA-E” se u naslovu i tekstu sama oboji u mint.
+   ============================================================ */
+
+export const ALUMNI_HERO = {
+  eyebrow: "Alumni klub",
+  /** naslov u dva reda — razmak na kraju prvog reda ostaje (zbog čitača ekrana) */
+  titleLines: ["Zajednica koja traje ", "i posle SEFA-E"],
+  lead:
+    "Alumni klub okuplja bivše članove SEFA-E koji su svoje iskustvo iz organizacije preneli dalje u profesionalni svet, ostajući deo naše zajednice i podrška generacijama koje dolaze.",
+  /** broj članova alumni kluba — menja se samo ovde */
+  count: 50,
+  /** znak posle broja; staviti "" ako je broj tačan, a ne „više od” */
+  countSuffix: "+",
+  countLabel: "Članova u alumni klubu",
+  /** dugme ispod uvodnog teksta (isto kao na kraju stranice) */
+  cta: { label: "Poveži se sa alumni zajednicom", href: "/kontakt" },
+  /** sitan natpis koji kaže da akreditacija može da se uhvati */
+  hint: "Uhvati akreditaciju i zavrti je",
+};
+
+/* ============================================================
+   ALUMNI AKREDITACIJA — velika mint kartica u heroju
+   Štampa na kartici; „SEFA” i broj članova dolaze iz ALUMNI_HERO.
+   ============================================================ */
+
+export const ALUMNI_PASS = {
+  /** natpis gore levo na kartici */
+  label: "Alumni klub",
+  /** veliki natpis preko kartice */
+  title: "ALUMNI",
+  /** prazno polje za ime (namerno ostaje prazno — kartica je „tvoja”) */
+  nameField: "Ime i prezime",
+  sinceField: "Član od",
+  sinceValue: "20__",
+  validField: "Važi",
+  validValue: "Uvek",
+  /** tamna traka na dnu kartice i poleđina */
+  footer: "Jednom deo SEFA-E · Uvek deo priče",
+  /** natpis koji se ponavlja na traci (lanyard) */
+  strap: "SEFA alumni",
+};
+
+/* ============================================================
+   HERO — isečci fotografija ispod naslova (traka kao sa izložbe)
+   Tačno pet komada; oblik i položaj svakog okvira zadaje komponenta.
    ============================================================ */
 
 export type AlumniSnapshot = {
@@ -36,10 +80,24 @@ export const ALUMNI_SNAPSHOTS: AlumniSnapshot[] = [
 ];
 
 /* ============================================================
-   MAPA KARIJERNIH PUTEVA — „Put nakon SEFA-E”
-   `count` ostaviti `null` dok ne postoji tačan broj; ne prikazuje se
-   dok je prazan, da se ne bi objavljivala izmišljena statistika.
+   KARIJERNI PUTEVI — „Put nakon SEFA-E”
+   Tri akreditacije vise sa jedne šipke — po jedna za svaki karijerni
+   put iz `CAREER_PATHS` ispod. `eyebrow` se štampa na karticama.
    ============================================================ */
+
+export const CAREER_PATHS_INTRO = {
+  eyebrow: "Gde su danas",
+  title: "Put nakon SEFA-E",
+  lead:
+    "Iskustvo stečeno kroz rad u sektorima SEFA-E otvara vrata ka različitim karijernim putevima.",
+  /** natpis u kosoj traci preko svake akreditacije pravca */
+  band: "Jedno iskustvo · tri pravca",
+  /** reč posle broja kod karijernog puta, npr. „12 alumnista” */
+  countUnit: "alumnista",
+};
+
+/* `count` ostaviti `null` dok ne postoji tačan broj; ne prikazuje se
+   dok je prazan, da se ne bi objavljivala izmišljena statistika. */
 
 export type CareerPath = {
   id: string;
@@ -65,7 +123,8 @@ export const CAREER_PATHS: CareerPath[] = [
   },
   {
     id: "preduzetnistvo",
-    title: "Preduzetništvo",
+    /** \u00AD = mesto gde sme da se prelomi na kartici */
+    title: "Preduzet\u00ADništvo",
     description:
       "Deo alumni zajednice je pokrenuo sopstvene poslovne poduhvate i danas su mladi preduzetnici.",
     count: null,

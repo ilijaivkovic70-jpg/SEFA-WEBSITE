@@ -281,7 +281,6 @@ export function AlumniMemories() {
   return (
     <section className="al-memories" aria-labelledby="uspomene-naslov">
       <div className="al-memories__intro">
-        <p className="al-eyebrow">Uspomene</p>
         <h2 id="uspomene-naslov" className="al-memories__title">
           Trenuci koji ostaju
         </h2>

@@ -1,44 +1,22 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { ALUMNI_HERO } from "@/data/alumni";
 import { AlumniBrand } from "@/components/alumni-brand";
 
 /**
- * Završna poruka Alumni stranice. Jedna tanka linija se izvlači odozgo i
- * vraća pogled na početak alumni priče, a ispod nje stoji poruka i diskretan
- * link ka kontakt stranici. Bez kartice i bez pozadine.
+ * Završna poruka Alumni stranice: kraj trake koja se provlači kroz celu
+ * stranicu, poruka i dugme ka kontakt stranici (isto kao u heroju).
  */
 export function AlumniOutro() {
-  const ref = useRef<HTMLElement>(null);
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setRevealed(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.4 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
   return (
-    <section ref={ref} className="al-outro" data-in={revealed || undefined}>
-      <span className="al-outro__thread" aria-hidden="true" />
-      <p className="al-outro__line">
+    <section className="ak-outro" aria-label="Poveži se">
+      <span className="ak-outro__strap" aria-hidden="true" />
+      <p className="ak-outro__line">
         <AlumniBrand>Jednom deo SEFA-E. Uvek deo priče.</AlumniBrand>
       </p>
-      <Link href="/kontakt" className="al-outro__link">
-        Poveži se sa alumni zajednicom
-        <span aria-hidden="true">→</span>
+      <Link href={ALUMNI_HERO.cta.href} className="ak-btn">
+        {ALUMNI_HERO.cta.label}
+        <ArrowRight className="ak-btn__icon" aria-hidden="true" />
       </Link>
     </section>
   );

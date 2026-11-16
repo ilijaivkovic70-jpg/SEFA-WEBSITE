@@ -1,182 +1,109 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ALUMNI_SNAPSHOTS } from "@/data/alumni";
-import { AlumniFrame } from "@/components/alumni-frame";
+import Link from "next/link";
+import { useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { ALUMNI_HERO, ALUMNI_PASS } from "@/data/alumni";
 import { AlumniBrand } from "@/components/alumni-brand";
+import { AlumniRack, type RackBadge, type RackLayout } from "@/components/alumni-rack";
+import { COLORS, drawHeroBack, drawHeroFront } from "@/lib/alumni-badges/draw";
 
 /**
- * Hero Alumni stranice — asimetrična kompozicija: tekst levo, broj „50+”
- * desno kao dominantan tipografski element, a oko njega tanka putanja
- * na kojoj stoji pet isečaka fotografija, kao stranica iz godišnjaka.
+ * Hero Alumni stranice: naslov i uvod levo, a desno sa vrha ekrana visi
+ * velika mint alumni akreditacija na traci (3D, components/alumni-rack.tsx).
+ * Kartica uleti sa strane, ljulja se i može da se uhvati i zavrti.
  *
- * Sve se pokreće jednom, kad sekcija uđe u vidno polje:
- *   naslov  — red po red ispod maske (overflow + pomeraj naviše)
- *   broj    — broji od 0 do 50 (rAF, upis direktno u DOM, bez re-rendera)
- *   putanja — iscrtava se preko stroke-dashoffset
- *   isečci  — pojavljuju se jedan po jedan, uz vrlo blag pomeraj
- *
- * Bez skrola: kad je `prefers-reduced-motion` uključen, sve stoji odmah
- * na svom mestu. Broj je i u HTML-u upisan kao „50”, pa je tačan i ako se
- * JavaScript nikada ne izvrši.
+ * Na telefonu kartica visi na sredini iznad teksta.
+ * Sav tekst je u `data/alumni.ts` (ALUMNI_HERO, ALUMNI_PASS).
  */
 
-const TARGET = 50;
-const DURATION = 1700;
-
-/**
- * Položaj isečaka u koordinatama putanje (viewBox 0 0 100 100, u procentima).
- * `w` je širina u procentima okvira, `ratio` proporcija stranica, `tilt` blagi
- * nagib u stepenima — namerno različiti, da ne izgleda kao mreža avatara.
- */
-const SLOTS = [
-  { x: 11, y: 38, w: 17, ratio: "3 / 4", tilt: -3 },
-  { x: 41, y: 11, w: 23, ratio: "4 / 3", tilt: 2 },
-  { x: 89, y: 47, w: 19, ratio: "3 / 4", tilt: -1.5 },
-  { x: 68, y: 88, w: 16, ratio: "1 / 1", tilt: 3 },
-  { x: 22, y: 84, w: 21, ratio: "3 / 2", tilt: -2.5 },
+const BADGES: RackBadge[] = [
+  {
+    id: "alumni",
+    stock: COLORS.mint,
+    edge: "#d6efe9",
+    front: (ctx, w, h, f) =>
+      drawHeroFront(ctx, w, h, f, {
+        label: ALUMNI_PASS.label,
+        title: ALUMNI_PASS.title,
+        count: ALUMNI_HERO.count,
+        countSuffix: ALUMNI_HERO.countSuffix,
+        countLabel: ALUMNI_HERO.countLabel,
+        nameField: ALUMNI_PASS.nameField,
+        sinceField: ALUMNI_PASS.sinceField,
+        sinceValue: ALUMNI_PASS.sinceValue,
+        validField: ALUMNI_PASS.validField,
+        validValue: ALUMNI_PASS.validValue,
+        footer: ALUMNI_PASS.footer,
+      }),
+    back: (ctx, w, h, f) =>
+      drawHeroBack(ctx, w, h, f, {
+        label: `${ALUMNI_PASS.label} · ${ALUMNI_HERO.count}${ALUMNI_HERO.countSuffix}`,
+        line: ALUMNI_PASS.footer.replace(" · ", ". ") + ".",
+      }),
+  },
 ];
 
-/** Zatvorena petlja koja prolazi kroz svih pet položaja — „krug zajednice”. */
-const TRACE =
-  "M 11 38 C 14 20, 26 11, 41 11 C 62 11, 85 26, 89 47 C 92 65, 82 82, 68 88 C 52 95, 32 93, 22 84 C 14 76, 9 58, 11 38";
+/** Granica telefon / računar — ista kao u globals.css (48rem). */
+const MOBILE = 768;
 
-/* Razmak na kraju prvog reda ostaje namerno — vizuelno se ne vidi (blok
-   element ga saseca), ali bez njega bi čitač ekrana pročitao „trajei”. */
-const TITLE_LINES = ["Zajednica koja traje ", "i posle SEFA-E"];
-
-function easeOutCubic(t: number) {
-  return 1 - Math.pow(1 - t, 3);
-}
+const layout: RackLayout = (w, h) => {
+  if (w < MOBILE) {
+    const width = Math.min(190, w * 0.46);
+    return { width, slots: [{ x: w * 0.5, y: -40, length: 110 }] };
+  }
+  const width = Math.min(340, Math.max(220, w * 0.21));
+  const bh = width * 1.42;
+  return {
+    width,
+    slots: [{ x: w * 0.76, y: -40, length: Math.max(120, h * 0.56 - bh * 0.5) }],
+  };
+};
 
 export function AlumniHero() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const numberRef = useRef<HTMLSpanElement>(null);
-  const reducedRef = useRef(false);
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    const node = sectionRef.current;
-    if (!node) return;
-
-    // brojanje je jedina animacija koju vodi JS, pa se samo ona ovde gasi;
-    // otkrivanje ostalog gasi CSS blok `prefers-reduced-motion` na dnu stilova
-    reducedRef.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setRevealed(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const el = numberRef.current;
-    if (!revealed || reducedRef.current || !el) return;
-
-    el.textContent = "0";
-    let frame = 0;
-    const start = performance.now() + 260;
-
-    const tick = (now: number) => {
-      const elapsed = now - start;
-      if (elapsed < 0) {
-        frame = requestAnimationFrame(tick);
-        return;
-      }
-      const t = Math.min(1, elapsed / DURATION);
-      el.textContent = String(Math.round(easeOutCubic(t) * TARGET));
-      if (t < 1) frame = requestAnimationFrame(tick);
-    };
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [revealed]);
+  const [gl, setGl] = useState<"on" | "off">("on");
 
   return (
-    <section
-      ref={sectionRef}
-      className="al-hero"
-      data-in={revealed || undefined}
-      aria-labelledby="alumni-naslov"
-    >
-      <div className="al-grain" aria-hidden="true" />
+    <section className="ak-hero" aria-labelledby="alumni-naslov" data-gl={gl}>
+      <AlumniRack
+        className="ak-hero__rack"
+        badges={BADGES}
+        layout={layout}
+        strapText={ALUMNI_PASS.strap}
+        strapWidth={0.12}
+        onGl={(ok) => setGl(ok ? "on" : "off")}
+      />
 
-      <div className="al-hero__inner">
-        <div className="al-hero__text">
-          <p className="al-hero__eyebrow">Alumni</p>
+      <div className="ak-hero__inner">
+        <h1 id="alumni-naslov" className="ak-hero__title">
+          {ALUMNI_HERO.titleLines.map((line) => (
+            <span key={line} className="ak-hero__line">
+              <AlumniBrand>{line}</AlumniBrand>
+            </span>
+          ))}
+        </h1>
 
-          <h1 id="alumni-naslov" className="al-hero__title">
-            {TITLE_LINES.map((line, i) => (
-              <span key={line} className="al-hero__line">
-                <span style={{ transitionDelay: `${120 + i * 130}ms` }}>
-                  <AlumniBrand>{line}</AlumniBrand>
-                </span>
-              </span>
-            ))}
-          </h1>
+        <p className="ak-hero__lead">
+          <AlumniBrand>{ALUMNI_HERO.lead}</AlumniBrand>
+        </p>
 
-          <p className="al-hero__lead">
-            <AlumniBrand>
-              Alumni klub okuplja bivše članove SEFA-E koji su svoje iskustvo iz
-              organizacije preneli dalje u profesionalni svet, ostajući deo naše
-              zajednice i podrška generacijama koje dolaze.
-            </AlumniBrand>
+        <div className="ak-hero__foot">
+          <Link href={ALUMNI_HERO.cta.href} className="ak-btn">
+            {ALUMNI_HERO.cta.label}
+            <ArrowRight className="ak-btn__icon" aria-hidden="true" />
+          </Link>
+          <p className="ak-hero__count">
+            <strong>
+              {ALUMNI_HERO.count}
+              {ALUMNI_HERO.countSuffix}
+            </strong>{" "}
+            {ALUMNI_HERO.countLabel.toLowerCase()}
           </p>
         </div>
 
-        <div className="al-hero__figure">
-          <svg
-            className="al-hero__trace"
-            viewBox="0 0 100 100"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path className="al-hero__trace-line" d={TRACE} pathLength={1} />
-          </svg>
-
-          <div className="al-hero__count-wrap">
-            <p className="al-hero__count">
-              <span ref={numberRef}>{TARGET}</span>
-              <span className="al-hero__plus" aria-hidden="true">
-                +
-              </span>
-            </p>
-            <p className="al-hero__count-label">Članova u alumni klubu</p>
-          </div>
-
-          {ALUMNI_SNAPSHOTS.slice(0, SLOTS.length).map((shot, i) => {
-            const slot = SLOTS[i];
-            return (
-              <figure
-                key={shot.alt}
-                className="al-hero__shot"
-                style={
-                  {
-                    "--x": `${slot.x}%`,
-                    "--y": `${slot.y}%`,
-                    "--w": `${slot.w}%`,
-                    "--ratio": slot.ratio,
-                    "--tilt": `${slot.tilt}deg`,
-                    transitionDelay: `${700 + i * 150}ms`,
-                  } as React.CSSProperties
-                }
-              >
-                <AlumniFrame
-                  src={shot.src}
-                  alt={shot.alt}
-                  sizes="(min-width: 1024px) 10vw, 22vw"
-                />
-              </figure>
-            );
-          })}
-        </div>
+        <p className="ak-hint" aria-hidden="true">
+          {ALUMNI_HERO.hint}
+        </p>
       </div>
     </section>
   );

@@ -2675,13 +2675,9 @@
 }
 
 /* zajednička širina svih sekcija — isti levi rub kroz celu stranicu */
-.al-hero__inner,
-.al-map__intro,
-.al-map__stage,
 .al-stories__intro,
 .al-stories__list,
-.al-memories__intro,
-.al-outro {
+.al-memories__intro {
   margin-inline: auto;
   width: 100%;
   max-width: var(--al-max);
@@ -2767,461 +2763,6 @@
   left: 7px;
   border-right: 0;
   border-top: 0;
-}
-
-/* ============================================================
-   HERO — tekst levo, „50+” desno, isečci na tankoj petlji oko broja
-   ============================================================ */
-
-.al-hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding-block: clamp(7rem, 13vw, 10.5rem) clamp(3.5rem, 8vw, 6rem);
-}
-
-.al-hero__inner {
-  display: grid;
-  gap: clamp(3rem, 8vw, 4.5rem);
-}
-@media (min-width: 1024px) {
-  .al-hero__inner {
-    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    align-items: center;
-    gap: clamp(2.5rem, 5vw, 4.5rem);
-  }
-}
-
-.al-hero__eyebrow {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--primary);
-}
-
-.al-hero__title {
-  margin-top: clamp(1rem, 2vw, 1.5rem);
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 800;
-  font-size: clamp(2.4rem, 6.4vw, 4.4rem);
-  line-height: 1.02;
-  letter-spacing: -0.035em;
-}
-/* svaki red se otkriva ispod maske — okvir seče, unutrašnji red klizi naviše */
-.al-hero__line {
-  display: block;
-  overflow: hidden;
-  padding-bottom: 0.08em;
-}
-.al-hero__line > span {
-  display: block;
-  transform: translateY(108%);
-  transition: transform 0.95s var(--al-e);
-}
-.al-hero[data-in] .al-hero__line > span {
-  transform: translateY(0);
-}
-/* "SEFA"/"SEFA-E" u mint boji loga, svuda gde se ime pominje u naslovu ili pasusu */
-.al-brand {
-  color: var(--primary);
-}
-
-.al-hero__lead {
-  margin-top: clamp(1.5rem, 3vw, 2rem);
-  max-width: 34rem;
-  color: var(--muted-foreground);
-  line-height: 1.65;
-  opacity: 0;
-  transform: translateY(12px);
-  transition:
-    opacity 0.8s ease 0.42s,
-    transform 0.8s var(--al-e) 0.42s;
-}
-.al-hero[data-in] .al-hero__lead {
-  opacity: 1;
-  transform: none;
-}
-
-/* ---------- desna strana: broj u petlji ---------- */
-
-.al-hero__figure {
-  position: relative;
-  width: 100%;
-  max-width: min(100%, 31rem);
-  margin-inline: auto;
-  aspect-ratio: 1 / 1;
-}
-
-.al-hero__trace {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.al-hero__trace-line {
-  fill: none;
-  stroke: var(--primary);
-  stroke-width: 0.32;
-  stroke-linecap: round;
-  opacity: 0.45;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  transition: stroke-dashoffset 2.4s var(--al-draw) 0.1s;
-}
-.al-hero[data-in] .al-hero__trace-line {
-  stroke-dashoffset: 0;
-}
-
-.al-hero__count-wrap {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: grid;
-  justify-items: center;
-  gap: 0.4rem;
-  width: 100%;
-  text-align: center;
-}
-.al-hero__count {
-  display: flex;
-  align-items: flex-start;
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 800;
-  font-size: clamp(4.2rem, 17vw, 8.5rem);
-  line-height: 0.86;
-  letter-spacing: -0.055em;
-  /* mesto za tri znaka se drži unapred, pa brojanje ne pomera raspored */
-  font-variant-numeric: tabular-nums;
-}
-.al-hero__plus {
-  font-size: 0.5em;
-  line-height: 1;
-  margin-top: 0.16em;
-  color: var(--primary);
-}
-.al-hero__count-label {
-  font-family: var(--font-mono), monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-}
-
-/* isečci — različitih proporcija i blago nakrivljeni, kao iz godišnjaka */
-.al-hero__shot {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: calc(var(--w) * var(--shot-scale, 1));
-  aspect-ratio: var(--ratio);
-  margin: 0;
-  opacity: 0;
-  transform: translate(-50%, -50%) rotate(var(--tilt)) translateY(12px);
-  transition:
-    opacity 0.85s ease,
-    transform 0.85s var(--al-e);
-}
-.al-hero[data-in] .al-hero__shot {
-  opacity: 1;
-  transform: translate(-50%, -50%) rotate(var(--tilt));
-}
-.al-hero__shot .al-frame {
-  box-shadow: 0 12px 30px -18px rgba(0, 0, 0, 0.9);
-}
-
-@media (max-width: 1023px) {
-  /* na užem ekranu je okvir manji, pa isečci moraju malo da porastu */
-  .al-hero__figure {
-    --shot-scale: 1.1;
-    max-width: min(100%, 25rem);
-  }
-  .al-hero__count {
-    font-size: clamp(3.6rem, 15vw, 6rem);
-  }
-}
-
-/* ============================================================
-   MAPA KARIJERNIH PUTEVA — „Put nakon SEFA-e”
-   ============================================================ */
-
-.al-map {
-  padding-block: clamp(4.5rem, 10vw, 8rem);
-}
-
-.al-map__title {
-  margin-top: 0.75rem;
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.9rem, 4.6vw, 3rem);
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-}
-.al-map__lead {
-  margin-top: 1rem;
-  max-width: 34rem;
-  color: var(--muted-foreground);
-  line-height: 1.65;
-}
-
-.al-map__stage {
-  position: relative;
-  margin-top: clamp(2.5rem, 5vw, 3.5rem);
-}
-
-.al-map__origin {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--primary);
-}
-.al-map__origin-dot {
-  width: 8px;
-  height: 8px;
-  flex: none;
-  rotate: 45deg;
-  background: var(--primary);
-}
-
-/* ---------- do 1024px: uspravna putanja koja se prati skrolovanjem ---------- */
-
-.al-map__fan {
-  display: none;
-}
-
-.al-map__spine {
-  position: absolute;
-  left: calc(var(--al-pad) + 3.5px);
-  top: 2.1rem;
-  bottom: 1rem;
-  width: 1px;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--primary) 55%, transparent),
-    var(--border)
-  );
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 1.5s var(--al-draw);
-}
-.al-map[data-in] .al-map__spine {
-  transform: scaleY(1);
-}
-
-.al-map__list {
-  list-style: none;
-  margin: 1.75rem 0 0;
-  padding: 0 0 0 2rem;
-  display: grid;
-  gap: clamp(2.25rem, 6vw, 2.75rem);
-}
-
-.al-map__stop {
-  position: relative;
-  opacity: 0;
-  transform: translateY(10px);
-  transition:
-    opacity 0.75s ease var(--stop-delay, 0ms),
-    transform 0.75s var(--al-e) var(--stop-delay, 0ms);
-  /* na uskom ekranu sadržaj prati izvlačenje niti, ne dužinu krive */
-  --stop-delay: calc(var(--i) * 260ms + 320ms);
-}
-.al-map[data-in] .al-map__stop {
-  opacity: 1;
-  transform: none;
-}
-
-.al-map__bead {
-  position: absolute;
-  left: -2rem;
-  top: 0.42em;
-  width: 8px;
-  height: 8px;
-  rotate: 45deg;
-  background: var(--background);
-  border: 1px solid var(--primary);
-}
-
-.al-map__stop-title {
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 700;
-  font-size: clamp(1.15rem, 2.6vw, 1.5rem);
-  letter-spacing: -0.02em;
-  transition: color 0.3s ease;
-}
-.al-map__stop-count {
-  margin-top: 0.35rem;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--primary);
-}
-.al-map__stop-desc {
-  margin-top: 0.6rem;
-  max-width: 28rem;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: var(--muted-foreground);
-}
-
-/* ---------- od 1024px: tri krive koje se razdvajaju iz jedne tačke ---------- */
-
-@media (min-width: 1024px) {
-  .al-map__stage {
-    aspect-ratio: 1000 / 560;
-  }
-
-  .al-map__fan {
-    display: block;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-  .al-map__spine {
-    display: none;
-  }
-
-  .al-map__curve {
-    fill: none;
-    stroke: var(--primary);
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    opacity: 0.5;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    /* kašnjenje je kumulativno (v. START u alumni-paths.tsx) — svaka sledeća
-       linija kreće tačno kad prethodna stigne do svog čvora, ne sve odjednom */
-    transition:
-      stroke-dashoffset var(--dur) var(--al-draw) var(--delay),
-      opacity 0.35s ease;
-  }
-  .al-map[data-in] .al-map__curve {
-    stroke-dashoffset: 0;
-  }
-
-  /* rasute tačke u pozadini — teksturu "zvezdane mape", samo zajednički fade-in */
-  .al-map__spark {
-    fill: var(--primary);
-    opacity: 0;
-    transition: opacity 0.6s ease var(--spark-delay, 0ms);
-  }
-  .al-map[data-in] .al-map__spark {
-    opacity: 1;
-  }
-
-  /* polazni čvor "SEFA" — prsten + blaga ispuna, isto mesto gde kreću linije */
-  .al-map__hub-ring,
-  .al-map__hub-fill {
-    opacity: 0;
-    transition: opacity 0.7s ease 0.1s;
-  }
-  .al-map__hub-ring {
-    fill: none;
-    stroke: var(--primary);
-    stroke-opacity: 0.3;
-  }
-  .al-map__hub-fill {
-    fill: var(--primary);
-    fill-opacity: 0.08;
-  }
-  .al-map[data-in] .al-map__hub-ring,
-  .al-map[data-in] .al-map__hub-fill {
-    opacity: 1;
-  }
-
-  /* čvor na kraju svake linije — pojavljuje se tačno kad linija stigne */
-  .al-map__node {
-    opacity: 0;
-    transform: scale(0.5);
-    transform-box: fill-box;
-    transform-origin: center;
-    transition:
-      opacity 0.4s ease var(--node-delay),
-      transform 0.5s var(--al-e) var(--node-delay);
-  }
-  .al-map[data-in] .al-map__node {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .al-map__node-dot {
-    fill: var(--primary);
-  }
-  .al-map__node-ring {
-    fill: none;
-    stroke: var(--primary);
-    stroke-opacity: 0.3;
-  }
-
-  /* prelaz mišem: izabrana kriva malo svetlija, ostale tiše — bez sjaja */
-  .al-map[data-active] .al-map__curve,
-  .al-map[data-active] .al-map__node {
-    opacity: 0.2;
-  }
-  .al-map[data-active="institucije"] .al-map__curve[data-path="institucije"],
-  .al-map[data-active="korporacije"] .al-map__curve[data-path="korporacije"],
-  .al-map[data-active="preduzetnistvo"] .al-map__curve[data-path="preduzetnistvo"],
-  .al-map[data-active="institucije"] .al-map__node[data-path="institucije"],
-  .al-map[data-active="korporacije"] .al-map__node[data-path="korporacije"],
-  .al-map[data-active="preduzetnistvo"] .al-map__node[data-path="preduzetnistvo"] {
-    opacity: 0.9;
-  }
-  .al-map[data-active] .al-map__node[data-path] {
-    transform: scale(1);
-  }
-  .al-map[data-active="institucije"] .al-map__stop[data-path="institucije"] .al-map__stop-title,
-  .al-map[data-active="korporacije"] .al-map__stop[data-path="korporacije"] .al-map__stop-title,
-  .al-map[data-active="preduzetnistvo"]
-    .al-map__stop[data-path="preduzetnistvo"]
-    .al-map__stop-title {
-    color: var(--primary);
-  }
-
-  /* polazna tačka: tekst levo, romb tačno na mestu gde krive kreću (9,2%) */
-  .al-map__origin {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: calc(9.2% + 4px);
-    flex-direction: row-reverse;
-    justify-content: flex-start;
-    transform: translateY(-50%);
-  }
-
-  .al-map__list {
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    padding: 0;
-    display: block;
-  }
-  .al-map__bead {
-    display: none;
-  }
-
-  .al-map__stop {
-    position: absolute;
-    left: var(--left);
-    top: var(--top);
-    width: min(30%, 21rem);
-    margin-left: 1.4rem;
-    transform: translateY(calc(-50% + 10px));
-    /* tekst se pojavljuje tek kad njegova kriva stigne do kraja */
-    --stop-delay: var(--delay);
-  }
-  .al-map[data-in] .al-map__stop {
-    transform: translateY(-50%);
-  }
-  .al-map__stop-desc {
-    font-size: 0.9rem;
-  }
 }
 
 /* ============================================================
@@ -3682,116 +3223,13 @@
   color: var(--muted-foreground);
 }
 
-/* ============================================================
-   ZAVRŠNA PORUKA
-   ============================================================ */
-
-.al-outro {
-  display: grid;
-  justify-items: center;
-  gap: clamp(1.25rem, 3vw, 1.75rem);
-  padding-block: clamp(1rem, 3vw, 2rem) clamp(5rem, 11vw, 8rem);
-  text-align: center;
-}
-
-.al-outro__thread {
-  width: 1px;
-  height: clamp(3.5rem, 9vw, 6rem);
-  background: linear-gradient(to bottom, transparent, var(--primary));
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 1.2s var(--al-draw);
-}
-.al-outro[data-in] .al-outro__thread {
-  transform: scaleY(1);
-}
-
-.al-outro__line,
-.al-outro__link {
-  opacity: 0;
-  transform: translateY(10px);
-  transition:
-    opacity 0.8s ease var(--d, 0ms),
-    transform 0.8s var(--al-e) var(--d, 0ms);
-}
-.al-outro__line {
-  --d: 520ms;
-  font-family: var(--font-heading), sans-serif;
-  font-weight: 800;
-  font-size: clamp(1.6rem, 4.6vw, 2.9rem);
-  letter-spacing: -0.035em;
-  line-height: 1.08;
-  text-wrap: balance;
-}
-.al-outro__link {
-  --d: 700ms;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--primary);
-  transition:
-    opacity 0.8s ease var(--d),
-    transform 0.8s var(--al-e) var(--d),
-    color 0.25s ease;
-}
-.al-outro[data-in] .al-outro__line,
-.al-outro[data-in] .al-outro__link {
-  opacity: 1;
-  transform: none;
-}
-.al-outro__link span {
-  transition: transform 0.25s ease;
-}
-.al-outro__link:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
-}
-@media (hover: hover) {
-  .al-outro__link:hover {
-    color: var(--foreground);
-  }
-  .al-outro__link:hover span {
-    transform: translateX(3px);
-  }
-}
-
-/* ---------- bez JavaScripta: sve stoji odmah na svom mestu ---------- */
-
+/* priče: bez JavaScripta i uz smanjeno kretanje sve stoji odmah */
 @media (scripting: none) {
-  .al-hero__line > span,
-  .al-hero__lead,
-  .al-hero__shot,
-  .al-map__stop,
   .al-story__index,
   .al-story__name,
   .al-story__role,
   .al-story__meta,
-  .al-story__word,
-  .al-outro__line,
-  .al-outro__link {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .al-hero__shot {
-    transform: translate(-50%, -50%) rotate(var(--tilt)) !important;
-  }
-  .al-map__stop {
-    transform: translateY(-50%) !important;
-  }
-  .al-map__spine,
-  .al-outro__thread {
-    transform: scaleY(1) !important;
-  }
-  .al-hero__trace-line,
-  .al-map__curve {
-    stroke-dashoffset: 0 !important;
-  }
-  .al-map__spark,
-  .al-map__hub-ring,
-  .al-map__hub-fill,
-  .al-map__node {
+  .al-story__word {
     opacity: 1 !important;
     transform: none !important;
   }
@@ -3799,69 +3237,363 @@
     clip-path: none !important;
   }
 }
-@media (scripting: none) and (max-width: 1023px) {
-  .al-map__stop {
-    transform: none !important;
-  }
-}
-
-/* ---------- smanjeno kretanje: sve odmah, bez otkrivanja ----------
-   Isti spisak kao gore: sadržaj se ne krije i ne čeka `data-in`, pa je
-   stranica potpuno pročitana i kad je kretanje isključeno u sistemu. */
-
 @media (prefers-reduced-motion: reduce) {
-  .al-hero *,
-  .al-map *,
-  .al-stories *,
-  .al-memories *,
-  .al-outro * {
+  .al-stories * {
     transition: none !important;
     animation: none !important;
   }
-  .al-hero__line > span,
-  .al-hero__lead,
-  .al-hero__shot,
-  .al-map__stop,
   .al-story__index,
   .al-story__name,
   .al-story__role,
   .al-story__meta,
-  .al-story__word,
-  .al-outro__line,
-  .al-outro__link {
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .al-hero__shot {
-    transform: translate(-50%, -50%) rotate(var(--tilt)) !important;
-  }
-  .al-map__spine,
-  .al-outro__thread {
-    transform: scaleY(1) !important;
-  }
-  .al-hero__trace-line,
-  .al-map__curve {
-    stroke-dashoffset: 0 !important;
-  }
-  .al-map__spark,
-  .al-map__hub-ring,
-  .al-map__hub-fill,
-  .al-map__node {
+  .al-story__word {
     opacity: 1 !important;
     transform: none !important;
   }
   .al-story__media .al-frame {
     clip-path: none !important;
+  }
+}
+
+/* ---------- smanjeno kretanje: galerija bez glatkog klizanja ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .al-memories * {
+    transition: none !important;
+    animation: none !important;
   }
   .al-strip {
     scroll-behavior: auto;
   }
 }
-@media (prefers-reduced-motion: reduce) and (min-width: 1024px) {
-  .al-map__stop {
-    transform: translateY(-50%) !important;
+
+/* ============================================================
+   ALUMNI — AKREDITACIJE (redizajn, novembar 2026)
+
+   Stranica je stalak sa akreditacijama: hero, karijerni putevi i priče
+   alumnista su 3D kartice koje vise na mint traci
+   (components/alumni-rack.tsx). Ovde je samo HTML deo oko njih.
+   Granica telefon / računar: 48rem (768px) — ista je u komponentama.
+   ============================================================ */
+
+.al-page ::selection {
+  background: rgb(var(--mint) / 0.32);
+  color: var(--foreground);
+}
+
+.ak-wrap {
+  width: 100%;
+  max-width: 82.5rem;
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4vw, 3rem);
+}
+
+/* ---------- 3D platno ---------- */
+.ak-rack {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+.ak-rack__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- dugme ---------- */
+.ak-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3rem;
+  padding: 0.8rem 1.4rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.2;
+  transition: background-color 0.25s var(--al-e), transform 0.25s var(--al-e);
+}
+.ak-btn__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  transition: transform 0.3s var(--al-e);
+}
+.ak-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+@media (hover: hover) {
+  .ak-btn:hover {
+    background: #86d6c6;
+  }
+  .ak-btn:hover .ak-btn__icon {
+    transform: translateX(4px);
   }
 }
+.ak-btn:active {
+  transform: scale(0.98);
+}
+
+/* ---------- hero ---------- */
+.ak-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: min(calc(100svh - 4rem), 61.25rem);
+  overflow: clip;
+}
+.ak-hero__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 82.5rem;
+  margin-inline: auto;
+  padding: clamp(3rem, 8vh, 6rem) clamp(1rem, 4vw, 3rem);
+}
+.ak-hero__title,
+.ak-hero__lead,
+.ak-hero__foot,
+.ak-hint {
+  max-width: 62%;
+}
+.ak-hero__title {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.6rem, 5.4vw, 5.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.ak-hero__line {
+  display: block;
+}
+.ak-hero__line + .ak-hero__line {
+  padding-left: 0.9em;
+}
+.ak-hero__lead {
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  padding-top: clamp(1.5rem, 3vw, 2.25rem);
+  border-top: 1px solid rgb(var(--ink) / 0.16);
+  max-width: min(62%, 36rem);
+  font-size: clamp(1.02rem, 1.25vw, 1.2rem);
+  line-height: 1.6;
+  color: rgb(var(--ink) / 0.74);
+}
+.ak-hero__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.75rem;
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+.ak-hero__count {
+  color: rgb(var(--ink) / 0.74);
+}
+.ak-hero__count strong {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.15rem;
+}
+.ak-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: clamp(2.5rem, 6vh, 4rem);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--ink) / 0.5);
+}
+.ak-hint::before {
+  content: "";
+  width: 2rem;
+  height: 1px;
+  background: var(--primary);
+}
+.ak-hero[data-gl="off"] .ak-hint {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ak-hint {
+    display: none;
+  }
+}
+
+/* ---------- sekcije sa stalkom ---------- */
+.ak-section {
+  position: relative;
+  padding-block: clamp(5rem, 11vw, 10rem) 0;
+}
+.ak-head {
+  display: grid;
+  gap: 1.25rem;
+  align-items: end;
+}
+.ak-h2 {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.25rem, 4.6vw, 4.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.ak-lead {
+  max-width: 34rem;
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  line-height: 1.6;
+  color: rgb(var(--ink) / 0.72);
+}
+.ak-stand {
+  position: relative;
+  height: clamp(32.5rem, 50vw, 47.5rem);
+  margin-top: clamp(2.5rem, 5vw, 4.5rem);
+}
+.ak-stand__bar {
+  position: absolute;
+  inset-inline: 0;
+  top: 17px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(rgb(var(--ink) / 0.4), rgb(var(--ink) / 0.18));
+}
+.ak-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 3vw, 2.5rem);
+  margin-top: 1.5rem;
+  text-align: center;
+}
+.ak-cols__item {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+}
+.ak-cols__name {
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+}
+.ak-cols__count,
+.ak-cols__meta {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+}
+.ak-cols__text,
+.ak-cols__quote {
+  max-width: 30ch;
+  line-height: 1.6;
+  color: rgb(var(--ink) / 0.72);
+}
+.ak-cols__quote {
+  font-size: 1.05rem;
+  color: rgb(var(--ink) / 0.86);
+}
+
+/* bez WebGL-a: nema stalka, ostaje tekst */
+.ak-section[data-gl="off"] .ak-stand {
+  display: none;
+}
+
+/* ---------- kraj ---------- */
+.ak-outro {
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.5rem, 3vw, 2rem);
+  padding: 0 1rem clamp(6rem, 12vw, 9rem);
+  text-align: center;
+}
+.al-page .al-brand {
+  white-space: nowrap;
+}
+.ak-outro__strap {
+  width: 18px;
+  height: clamp(5rem, 12vw, 8rem);
+  border-radius: 0 0 3px 3px;
+  background:
+    repeating-linear-gradient(90deg, rgb(var(--bg-rgb) / 0.08) 0 2px, transparent 2px 6px),
+    linear-gradient(transparent, var(--primary) 70%);
+}
+.ak-outro__line {
+  max-width: 18ch;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 4.4vw, 3.75rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+/* ---------- računar ---------- */
+@media (min-width: 48rem) {
+  .ak-head {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 3rem;
+  }
+  .ak-lead {
+    justify-self: end;
+  }
+  /* naziv pravca/ime je odštampan na kartici iznad — ovde ga čita samo čitač ekrana */
+  .ak-section[data-gl="on"] .ak-cols__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* ---------- telefon ---------- */
+@media (max-width: 47.99rem) {
+  .ak-hero {
+    align-items: flex-start;
+    min-height: 0;
+  }
+  .ak-hero__inner {
+    padding-top: calc(5.5rem + 1.48 * min(190px, 46vw));
+    padding-bottom: 3.5rem;
+  }
+  .ak-hero[data-gl="off"] .ak-hero__inner {
+    padding-top: 3rem;
+  }
+  .ak-hero__title,
+  .ak-hero__lead,
+  .ak-hero__foot,
+  .ak-hint {
+    max-width: none;
+  }
+  .ak-hint {
+    margin-top: 2rem;
+  }
+  .ak-stand {
+    height: 22.5rem;
+  }
+  .ak-cols {
+    grid-template-columns: 1fr;
+    gap: 0;
+    text-align: left;
+  }
+  .ak-cols__item {
+    justify-items: start;
+    padding-block: 1.25rem;
+    border-top: 1px solid rgb(var(--ink) / 0.13);
+  }
+  .ak-cols__text,
+  .ak-cols__quote {
+    max-width: 60ch;
+  }
+}
+
 
 /* ============================================================
    FLOATING SECTOR REMINDER — mali oblačić koji s vremena na vreme
