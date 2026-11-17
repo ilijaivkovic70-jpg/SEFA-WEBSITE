@@ -136,6 +136,10 @@ export const PROJEKTI: Projekat[] = [
     slug: "sport-business-day",
     naziv: "Sport Business Day",
     slika: "/projekti/sport-business-day.svg",
+    video: {
+      src: "/projekti/sport-business-day-promo.mp4",
+      poster: "/projekti/sport-business-day-promo-poster.jpg",
+    },
     kratakOpis:
 
       "Konferencija koja povezuje svet sporta i biznisa, sa stručnjacima iz sportske industrije kao govornicima.",
