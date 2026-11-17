@@ -111,16 +111,21 @@ export const PROJEKTI: Projekat[] = [
     ],
   },
   {
-    // TODO(SEFA): dopuniti pravim sadržajem, tekst ispod je privremen,
-    // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
     slug: "greenfield",
     naziv: "Greenfield",
     slika: "/projekti/greenfield.png",
+    video: {
+      src: "/projekti/greenfield-promo.mp4",
+      poster: "/projekti/greenfield-promo-poster.jpg",
+    },
     kratakOpis:
-
-      "Projekat posvećen ulaganjima i održivom razvoju, kroz koji studenti prate put od ideje do poslovnog poduhvata.",
+      "Ekološki projekat pokrenut 2022. godine, kojim mladi uče o zaštiti životne sredine kroz akcije čišćenja, reciklažu i humanitarni rad.",
     opis: [
-      "Projekat posvećen investicijama i održivom razvoju, od prve ideje do poslovnog poduhvata koji stoji na svojim nogama. Kroz predavanja i rad na konkretnim primerima studenti se upoznaju sa načinom na koji se ulaganja planiraju, procenjuju i sprovode.",
+      "Greenfield je ekološki projekat studentske organizacije SEFA, pokrenut 2022. godine sa ciljem podizanja svesti mladih o značaju zaštite životne sredine, održivog razvoja i odgovornog odnosa prema prirodi. Kroz edukativne sadržaje, volonterske aktivnosti i konkretne ekološke inicijative, projekat podstiče studente da aktivno doprinesu očuvanju prirodnih resursa i stvaranju zdravijeg životnog okruženja.",
+      "Projekat je započet panel-diskusijom pod nazivom „Što bi neko bio eko”, nakon čega je organizovana akcija čišćenja na Divčibarama. Tokom narednih godina aktivnosti su proširene na različite lokacije širom Srbije, uključujući Ovčar Banju, Suboticu i Avalu. Posebno se izdvaja akcija čišćenja Ovčar Banje, tokom koje je prikupljeno više od 100 džakova otpada, čime je ostvaren značajan doprinos očuvanju lokalnog prirodnog okruženja.",
+      "Pored terenskih aktivnosti, Greenfield organizuje i akcije prikupljanja reciklažnog materijala na Ekonomskom fakultetu u Beogradu, povezujući ekološku odgovornost sa humanitarnim radom. U okviru izdanja iz 2024. godine realizovana je reciklažna akcija u saradnji sa organizacijom „Čepom do osmeha”, uz podršku kompanije Procter & Gamble (P&G), koja je učestvovala i u organizaciji ekoloških aktivnosti u Subotici. Prikupljena sredstva usmeravana su u humanitarne svrhe, čime je projekat dobio dodatnu društvenu vrednost.",
+      "Tokom 2026. godine projekat je nastavio da razvija humanitarno-ekološke inicijative kroz prikupljanje ambalažnog otpada namenjenog udruženju „Naša kuća”, koje pruža podršku osobama sa smetnjama u razvoju. Na taj način Greenfield nastoji da poveže principe reciklaže, društvene solidarnosti i aktivnog učešća mladih u rešavanju problema zajednice.",
+      "Kroz saradnju sa kompanijama, organizacijama i volonterima, Greenfield kontinuirano promoviše značaj ekološke svesti i pokazuje kako zajedničkim angažovanjem mogu nastati konkretne i dugoročne pozitivne promene. Projekat pruža studentima priliku da razvijaju organizacione i timske veštine, istovremeno ih podstičući da odgovornost prema životnoj sredini postane sastavni deo njihove svakodnevice.",
     ],
   },
   {
