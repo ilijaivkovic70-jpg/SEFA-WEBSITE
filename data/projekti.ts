@@ -83,6 +83,10 @@ export const PROJEKTI: Projekat[] = [
     slug: "bez-straha",
     naziv: "Bez straha",
     slika: "/projekti/bez-straha.png",
+    video: {
+      src: "/projekti/bez-straha-promo.mp4",
+      poster: "/projekti/bez-straha-promo-poster.jpg",
+    },
     kratakOpis:
 
       "Projekat posvećen podizanju svesti o mentalnom zdravlju i podršci studentima u prevazilaženju izazova.",
