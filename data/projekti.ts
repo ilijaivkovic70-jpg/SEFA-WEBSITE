@@ -151,6 +151,10 @@ export const PROJEKTI: Projekat[] = [
     slug: "link-to-the-future",
     naziv: "Link to the Future",
     slika: "/projekti/link-to-the-future.png",
+    video: {
+      src: "/projekti/link-to-the-future-promo.mp4",
+      poster: "/projekti/link-to-the-future-promo-poster.jpg",
+    },
     kratakOpis:
 
       "Projekat koji povezuje studente sa kompanijama i ljudima iz struke, od prvog kontakta do prve prilike.",
