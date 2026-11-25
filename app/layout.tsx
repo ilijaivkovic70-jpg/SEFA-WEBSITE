@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Archivo, JetBrains_Mono } from "next/font/google";
+import { Bricolage_Grotesque, Archivo, JetBrains_Mono, Caveat } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Header } from "@/components/header";
@@ -20,6 +20,13 @@ const archivo = Archivo({
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin", "latin-ext"],
+});
+
+/** rukopis — samo za beleške ispod fotografija u alumni galeriji */
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin", "latin-ext"],
+  weight: ["500", "700"],
 });
 
 const siteUrl = process.env.VERCEL_URL
@@ -55,7 +62,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="sr"
       data-theme="dark"
-      className={`dark ${bricolageGrotesque.variable} ${archivo.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`dark ${bricolageGrotesque.variable} ${archivo.variable} ${jetbrainsMono.variable} ${caveat.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <SmoothScroll />

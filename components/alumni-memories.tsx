@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { MEMORIES } from "@/data/alumni";
+import { X, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { MEMORIES, type Memory } from "@/data/alumni";
 import { AlumniFrame } from "@/components/alumni-frame";
 import { AlumniBrand } from "@/components/alumni-brand";
 
@@ -17,7 +17,7 @@ import { AlumniBrand } from "@/components/alumni-brand";
  */
 const CHAIN_QUERY = "(prefers-reduced-motion: no-preference)";
 /** koliko px skrola nadole po px pomeranja trake ulevo (veće = sporije) */
-const CHAIN_PACE = 1.35;
+const CHAIN_PACE = 0.85;
 /** najveće pomeranje gore/dole, u delovima visine ekrana */
 const CHAIN_WAVE = 0.13;
 
@@ -42,6 +42,61 @@ const smoothstep = (e0: number, e1: number, v: number) => {
  *
  * Fotografije se dodaju u `data/alumni.ts` (niz `MEMORIES`).
  */
+
+/**
+ * Medij u traci: fotografija, ili snimak koji se sam pušta (bez zvuka, u petlji)
+ * dok je na ekranu, a stoji kao sličica kad je van ekrana ili uz „smanjeno
+ * kretanje”.
+ */
+function StripMedia({ memory }: { memory: Memory }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = true;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) video.play().catch(() => {});
+        else video.pause();
+      },
+      { threshold: 0.3 }
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
+
+  if (!memory.video) {
+    return (
+      <AlumniFrame
+        src={memory.src}
+        alt={memory.alt}
+        sizes="(min-width: 1024px) 40vw, 80vw"
+      />
+    );
+  }
+
+  return (
+    <div className="al-frame">
+      <video
+        ref={videoRef}
+        className="al-frame__video"
+        src={memory.video}
+        poster={memory.src ?? undefined}
+        muted
+        loop
+        playsInline
+        preload="none"
+        aria-label={memory.alt}
+      />
+      <span className="al-frame__play" aria-hidden="true">
+        <Play className="size-3.5" fill="currentColor" />
+      </span>
+    </div>
+  );
+}
 
 /** Preko koliko piksela prevlačenja se klik više ne računa kao klik. */
 const DRAG_SLOP = 6;
@@ -109,6 +164,9 @@ export function AlumniMemories() {
     const movers = items.map((li) => li.querySelector<HTMLElement>(".al-strip__move")!);
     const clips = items.map((li) => li.querySelector<HTMLElement>(".al-strip__clip")!);
 
+    // blagi, uvek isti nagib svake slike (kao uspomene nasumice poređane na stolu)
+    const tilts = items.map((_, i) => ((i * 5 + 2) % 7 - 3) * 0.85);
+
     let on = false;
     let travel = 0;
     let railLeft = 0;
@@ -145,9 +203,13 @@ export function AlumniMemories() {
         // 0 na sredini (malo levo od centra), 1 na ivicama ekrana
         const d = Math.abs(cx - vw * 0.45) / (vw * 0.55);
         const inset = 30 * smoothstep(0.3, 1, d);
+        // koliko je slika blizu sredine: tamo se ispravi, dobije boju i traku
+        const f = 1 - smoothstep(0.05, 0.85, d);
+        const rot = tilts[i] * (1 - 0.8 * f);
         // talas: visina zavisi od mesta na ekranu, pa se menja dok slika putuje
         const y = amp * Math.sin((cx / vw) * Math.PI * 1.7 + i * 1.25);
-        movers[i].style.transform = `translate3d(0, ${y.toFixed(1)}px, 0)`;
+        movers[i].style.transform = `translate3d(0, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg)`;
+        movers[i].style.setProperty("--f", f.toFixed(3));
         clips[i].style.clipPath = `inset(${inset.toFixed(2)}% -1px)`;
       });
     };
@@ -195,7 +257,10 @@ export function AlumniMemories() {
       delete chain.dataset.chain;
       chain.style.height = "";
       rail.style.transform = "";
-      movers.forEach((m) => (m.style.transform = ""));
+      movers.forEach((m) => {
+        m.style.transform = "";
+        m.style.removeProperty("--f");
+      });
       clips.forEach((c) => (c.style.clipPath = ""));
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
@@ -307,19 +372,11 @@ export function AlumniMemories() {
                 openerRef.current = e.currentTarget;
                 setOpen(i);
               }}
-              aria-label={`Uvećaj: ${memory.alt}`}
+              aria-label={`${memory.video ? "Pusti" : "Uvećaj"}: ${memory.alt}`}
             >
-              <AlumniFrame
-                src={memory.src}
-                alt={memory.alt}
-                sizes="(min-width: 1024px) 26vw, 60vw"
-              />
+              <StripMedia memory={memory} />
             </button>
             </div>
-            <p className="al-strip__note">
-              <span className="al-strip__note-title">{memory.title}</span>
-              {memory.year && <span className="al-strip__note-year">{memory.year}</span>}
-            </p>
             </div>
           </li>
         ))}
@@ -352,14 +409,26 @@ export function AlumniMemories() {
             type="button"
             className="al-lightbox__nav al-lightbox__nav--prev"
             onClick={() => step(-1)}
-            aria-label="Prethodna fotografija"
+            aria-label="Prethodna uspomena"
           >
             <ChevronLeft className="size-6" />
           </button>
 
           <figure className="al-lightbox__figure">
             <div className="al-lightbox__frame" data-shape={current.shape}>
-              {current.src ? (
+              {current.video ? (
+                <video
+                  key={current.video}
+                  className="al-lightbox__video"
+                  src={current.video}
+                  poster={current.src ?? undefined}
+                  controls
+                  autoPlay
+                  loop
+                  playsInline
+                  aria-label={current.alt}
+                />
+              ) : current.src ? (
                 <Image
                   src={current.src}
                   alt={current.alt}
@@ -377,7 +446,6 @@ export function AlumniMemories() {
               )}
             </div>
             <figcaption className="al-lightbox__caption">
-              <span className="al-lightbox__caption-title">{current.title}</span>
               {current.year && (
                 <span className="al-lightbox__caption-year">{current.year}</span>
               )}
@@ -391,7 +459,7 @@ export function AlumniMemories() {
             type="button"
             className="al-lightbox__nav al-lightbox__nav--next"
             onClick={() => step(1)}
-            aria-label="Sledeća fotografija"
+            aria-label="Sledeća uspomena"
           >
             <ChevronRight className="size-6" />
           </button>

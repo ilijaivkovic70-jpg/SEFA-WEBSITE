@@ -2951,6 +2951,12 @@
 .al-strip__item[data-shape="kvadrat"] {
   width: clamp(11.5rem, 30vw, 19rem);
 }
+.al-strip__item[data-shape="siroki"] {
+  width: clamp(17rem, 46vw, 30rem);
+}
+.al-strip__item[data-shape="visoki"] {
+  width: clamp(9rem, 26vw, 14rem);
+}
 .al-strip__item:nth-child(2n) {
   margin-top: clamp(1rem, 2.5vw, 2.25rem);
 }
@@ -2974,6 +2980,12 @@
 }
 .al-strip__item[data-shape="kvadrat"] .al-strip__shot {
   aspect-ratio: 1 / 1;
+}
+.al-strip__item[data-shape="siroki"] .al-strip__shot {
+  aspect-ratio: 16 / 9;
+}
+.al-strip__item[data-shape="visoki"] .al-strip__shot {
+  aspect-ratio: 9 / 16;
 }
 .al-strip__shot .al-frame {
   transition: border-color 0.3s ease;
@@ -3015,25 +3027,38 @@
 .al-chain[data-chain="on"] .al-strip__item {
   margin-top: 0;
 }
+/* sirina je ogranicena i visinom ekrana, da najvisa slika + talas stanu */
 .al-chain[data-chain="on"] .al-strip__item[data-shape="pejzaz"] {
-  width: min(30vw, 30rem);
+  width: min(39vw, 44rem, 82svh);
+}
+.al-chain[data-chain="on"] .al-strip__item[data-shape="siroki"] {
+  width: min(48vw, 54rem, 100svh);
 }
 .al-chain[data-chain="on"] .al-strip__item[data-shape="portret"] {
-  width: min(19vw, 18rem);
+  width: min(27vw, 28rem, 42svh);
 }
 .al-chain[data-chain="on"] .al-strip__item[data-shape="kvadrat"] {
-  width: min(24vw, 23rem);
+  width: min(31vw, 32rem, 56svh);
+}
+.al-chain[data-chain="on"] .al-strip__item[data-shape="visoki"] {
+  width: min(21vw, 22rem, 31svh);
 }
 /* telefon i tablet: slike veće u odnosu na ekran, da se vide dok putuju */
 @media (max-width: 1023.98px) {
   .al-chain[data-chain="on"] .al-strip__item[data-shape="pejzaz"] {
-    width: min(74vw, 26rem);
+    width: min(78vw, 30rem);
+  }
+  .al-chain[data-chain="on"] .al-strip__item[data-shape="siroki"] {
+    width: min(86vw, 34rem);
   }
   .al-chain[data-chain="on"] .al-strip__item[data-shape="portret"] {
-    width: min(46vw, 16rem);
+    width: min(56vw, 20rem, 40svh);
   }
   .al-chain[data-chain="on"] .al-strip__item[data-shape="kvadrat"] {
-    width: min(58vw, 20rem);
+    width: min(64vw, 22rem);
+  }
+  .al-chain[data-chain="on"] .al-strip__item[data-shape="visoki"] {
+    width: min(46vw, 16rem, 30svh);
   }
 }
 .al-chain[data-chain="on"] :is(.al-strip__move, .al-strip__clip) {
@@ -3042,31 +3067,108 @@
 .al-chain[data-chain="on"] .al-strip__shot .al-frame {
   border-radius: 0;
 }
-.al-chain[data-chain="on"] .al-strip__note {
-  padding-left: 0.6rem;
+
+/* ---------- uspomena kao štampana fotografija ----------
+   krem papir sa belinom oko slike i rukom dopisanom beleškom; traka (selotejp)
+   i boja se pojavljuju kad slika stigne na sredinu (--f: 0 ivica, 1 sredina) */
+.al-strip__move {
+  position: relative;
+}
+.al-strip__clip {
+  padding: clamp(0.4rem, 0.9vw, 0.7rem) clamp(0.4rem, 0.9vw, 0.7rem) clamp(1.6rem, 3vw, 2.4rem);
+  background:
+    radial-gradient(120% 90% at 20% 0%, rgb(255 255 255 / 0.55), transparent 60%),
+    #efe8d6;
+  color: #26302c;
+}
+.al-strip__clip .al-frame {
+  border: 0;
+  background: #1a2220;
+}
+.al-strip__move::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: -0.7rem;
+  left: 50%;
+  width: clamp(3.5rem, 6vw, 5.5rem);
+  height: clamp(1.1rem, 1.7vw, 1.5rem);
+  translate: -50% 0;
+  rotate: -3deg;
+  background: rgb(222 211 170 / 0.62);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.12);
+  opacity: calc(var(--f, 1) * var(--f, 1));
+  pointer-events: none;
+}
+.al-strip__item:nth-child(2n) .al-strip__move::before {
+  rotate: 2.5deg;
+  left: 40%;
+}
+.al-strip__item:nth-child(3n) .al-strip__move::before {
+  left: 62%;
+}
+/* izbledela topla boja na ivicama, prava boja na sredini */
+.al-strip__shot {
+  position: relative;
+}
+.al-strip__shot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 120% at 50% 50%, transparent 55%, rgb(40 24 6 / 0.35)),
+    rgb(150 100 40 / 0.55);
+  mix-blend-mode: soft-light;
+  opacity: calc((1 - var(--f, 1)) * 0.9 + 0.12);
+  pointer-events: none;
 }
 
-/* beleška ispod okvira — kao dopisana u albumu */
+.al-frame__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #0b1210;
+}
+.al-frame__play {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 999px;
+  background: rgb(8 14 12 / 0.62);
+  color: #fff;
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+/* beleška ispod slike — rukopis na belini papira */
 .al-strip__note {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.55rem;
-  margin-top: 0.7rem;
-  font-family: var(--font-mono), monospace;
-  font-size: 0.72rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-  transform: rotate(-0.7deg);
+  gap: 0.15rem 0.6rem;
+  padding: 0.35rem 0.25rem 0.55rem;
+  font-family: var(--font-caveat), "Segoe Print", cursive;
+  font-weight: 700;
+  font-size: clamp(1.25rem, 1.9vw, 1.65rem);
+  line-height: 1.1;
+  color: #26302c;
+  transform: rotate(-0.8deg);
   transform-origin: left center;
 }
 .al-strip__item:nth-child(2n) .al-strip__note {
-  transform: rotate(0.6deg);
+  transform: rotate(0.7deg);
 }
 .al-strip__note-year {
-  color: var(--primary);
-  opacity: 0.8;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  color: #2c7a66;
 }
 
 /* ---------- uvećan prikaz ---------- */
@@ -3144,8 +3246,27 @@
   aspect-ratio: 1 / 1;
   width: min(100%, 34rem);
 }
+.al-lightbox__frame[data-shape="siroki"] {
+  aspect-ratio: 16 / 9;
+  width: min(100%, 56rem);
+}
+.al-lightbox__frame[data-shape="visoki"] {
+  aspect-ratio: 9 / 16;
+  width: auto;
+  height: min(72vh, 46rem);
+  max-height: none;
+  max-width: 100%;
+}
 .al-lightbox__img {
   object-fit: contain;
+}
+.al-lightbox__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
 }
 
 .al-lightbox__caption {

@@ -195,14 +195,21 @@ export const ALUMNI_STORIES: AlumniStory[] = [
      "portret"  — uspravna (3:4)
      "pejzaz"   — položena (3:2)
      "kvadrat"  — kvadratna (1:1)
+     "siroki"   — široka (16:9)
+     "visoki"   — uspravna (9:16), za snimke sa telefona
+   Fotografije su u public/alumni/uspomene/ (01–17.jpg), snimci kao v1–v6.mp4
+   sa sličicom v1–v6.jpg. Naslov ispod slike je „rukom” dopisana beleška.
    Mešanje oblika je namerno, da traka izgleda kao kontakt-list, a ne kao mreža.
    ============================================================ */
 
-export type MemoryShape = "portret" | "pejzaz" | "kvadrat";
+export type MemoryShape = "portret" | "pejzaz" | "kvadrat" | "siroki" | "visoki";
 
 export type Memory = {
-  /** npr. "/alumni/uspomene/repsus-1.jpg" — dok je `null`, prikazuje se prazan okvir */
+  /** npr. "/alumni/uspomene/01.jpg" — dok je `null`, prikazuje se prazan okvir.
+      Kod snimka je ovo sličica (poster) koja se vidi dok se snimak ne pokrene. */
   src: string | null;
+  /** putanja do snimka (mp4) — ako postoji, uspomena je video */
+  video?: string;
   alt: string;
   /** naziv projekta ili događaja */
   title: string;
@@ -213,14 +220,53 @@ export type Memory = {
   shape: MemoryShape;
 };
 
+const U = "/alumni/uspomene";
+
+/** fotografija */
+const foto = (
+  file: string,
+  shape: MemoryShape,
+  title: string,
+  alt: string
+): Memory => ({ src: `${U}/${file}.jpg`, alt, title, year: null, description: null, shape });
+
+/** snimak: `v1.mp4` + sličica `v1.jpg`, uvek uspravan (9:16) */
+const snimak = (file: string, title: string, alt: string): Memory => ({
+  src: `${U}/${file}.jpg`,
+  video: `${U}/${file}.mp4`,
+  alt,
+  title,
+  year: null,
+  description: null,
+  shape: "visoki",
+});
+
+/**
+ * Redosled je namerno izmešan (fotografije, snimci, različiti oblici), da
+ * traka ostane živa. Naslovi su beleške „rukom” ispod slike — menjaju se ovde.
+ */
 export const MEMORIES: Memory[] = [
-  // PRIVREMENO: postojeće slike sajta, samo da se vidi animacija trake. Zameniti pravim fotografijama sa događaja.
-  { src: "/tim-2.jpg", alt: "Sa konferencije REPSUS", title: "REPSUS", year: null, description: null, shape: "pejzaz" },
-  { src: "/o-nama-pozadina.jpg", alt: "Snimanje podkasta SEFA Talks", title: "SEFA Talks", year: null, description: null, shape: "portret" },
-  { src: "/komunikacije-glas.png", alt: "Sa projekta Sport Business Day", title: "Sport Business Day", year: null, description: null, shape: "kvadrat" },
-  { src: "/put-pozadina.jpg", alt: "Sa ekskurzije EKOF u pokretu", title: "EKOF u pokretu", year: null, description: null, shape: "pejzaz" },
-  { src: "/ljudski-resursi-glas.png", alt: "Sa humanitarne akcije Prava stvar", title: "Prava stvar", year: null, description: null, shape: "portret" },
-  { src: "/komunikacije-glas.png", alt: "Sa projekta Link to the Future", title: "Link to the Future", year: null, description: null, shape: "kvadrat" },
-  { src: "/projekti-pozadina.jpg", alt: "Sa projekta Greenfield", title: "Greenfield", year: null, description: null, shape: "pejzaz" },
-  { src: "/tim-2.jpg", alt: "Sa tribine Bez straha", title: "Bez straha", year: null, description: null, shape: "portret" },
+  foto("09", "siroki", "Cela ekipa", "Zajednička fotografija celog tima ispred kuće, sa podignutim rukama"),
+  foto("02", "siroki", "Roštilj u dvorištu", "Ekipa oko roštilja u dvorištu kuće, a pored je bazen"),
+  snimak("v1", "Na terasi", "Snimak druženja na natkrivenoj terasi"),
+  foto("04", "pejzaz", "Zagrljaj kraj bazena", "Dve drugarice se grle ispod nadstrešnice, a u pozadini su ostali kraj bazena"),
+  foto("03", "portret", "Tri lica, jedan kadar", "Selfi troje članova ispod zelene nadstrešnice"),
+  snimak("v3", "Bazen", "Snimak bazena na suncu"),
+  foto("08", "pejzaz", "Teren sa pogledom", "Članovi na terenu sa pogledom na brda"),
+  snimak("v4", "Dim sa roštilja", "Snimak dvorišta, roštilja i ekipe u hladu"),
+  foto("10", "visoki", "Pogled sa terase", "Član pozira za stolom sa pogledom na zelene brežuljke"),
+  foto("05", "portret", "Krug razgovora", "Ekipa sedi u krugu oko stočića i razgovara"),
+  foto("01", "pejzaz", "Dugo u noć", "Veliko društvo opušteno na kaučima uveče"),
+  snimak("v2", "Pergola", "Snimak ekipe ispod pergole sa pogledom"),
+  foto("06", "pejzaz", "Noćni zagrljaj", "Dve drugarice se grle u mraku"),
+  foto("07", "pejzaz", "Poslednji krug", "Četvoro prijatelja sedi na zidiću u dvorištu, kasno uveče"),
+  foto("11", "pejzaz", "Muzika do kasno", "Članovi u naočarima za sunce uz laptop i slušalice noću"),
+  foto("12", "pejzaz", "Tri prijateljice", "Tri drugarice zagrljene u kući"),
+  snimak("v5", "Između igara", "Snimak ekipe ispod pergole i trave"),
+  foto("14", "pejzaz", "U SEFA majicama", "Šestoro članova u crnim SEFA majicama i značkama, u parku"),
+  foto("13", "visoki", "Čistimo zajedno", "Četiri člana sa ljubičastim vrećama za smeće tokom akcije čišćenja"),
+  foto("15", "pejzaz", "Zalazak na klupi", "Ekipa na klupi u parku, u svetlosti zalaska sunca"),
+  snimak("v6", "Oko vatre", "Snimak okupljanja oko vatre u šumi uveče"),
+  foto("16", "portret", "Vatra i prijatelji", "Četiri prijatelja kraj ložišta u parku"),
+  foto("17", "pejzaz", "Pauza za piknik", "Ekipa za piknik stolom u parku"),
 ];
