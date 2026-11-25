@@ -1,0 +1,596 @@
+/* ============================================================
+   Postani član: studio (uvod + kviz + karta) i članska karta
+   ============================================================ */
+
+/* ---------- raspored studija ---------- */
+
+.pc-studio {
+  position: relative;
+  max-width: 76rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pc-studio__scena {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .pc-studio {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    column-gap: clamp(2.5rem, 5vw, 5rem);
+    padding-inline: 2rem;
+  }
+  .pc-studio__scena {
+    display: block;
+  }
+  .pc-studio__lepak {
+    position: sticky;
+    top: max(5rem, calc(50svh - 16rem));
+  }
+}
+
+/* ---------- tipografija i zajednički delovi ---------- */
+
+.pc-h2 {
+  font-size: clamp(2rem, 1.2rem + 2.6vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.pc-tekst {
+  margin-top: 1rem;
+  max-width: 36rem;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+
+/* ---------- uvod ---------- */
+
+.pc-uvod {
+  min-height: calc(100svh - 4rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-block: 7rem 4rem;
+}
+
+.pc-uvod__naslov {
+  font-size: clamp(2.9rem, 1.6rem + 5.4vw, 5.75rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  max-width: 11ch;
+}
+
+.pc-uvod__tekst {
+  margin-top: 1.75rem;
+  max-width: 34rem;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+}
+
+.pc-uvod__akcije {
+  margin-top: 2.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.pc-uvod__sezona {
+  margin-top: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: rgb(var(--ink) / 0.75);
+}
+
+/* ---------- kviz ---------- */
+
+.pc-kviz {
+  scroll-margin-top: 6rem;
+  display: flex;
+  align-items: center;
+  padding-block: 4rem 5rem;
+  border-top: 1px solid var(--border);
+}
+
+.pc-kviz__panel {
+  width: 100%;
+}
+@media (min-width: 1024px) {
+  .pc-kviz {
+    min-height: 80svh;
+    padding-block: 5rem;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pc-kviz__panel {
+    animation: pc-ulaz 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .pc-odgovori > li {
+    animation: pc-ulaz 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(120ms + var(--i) * 60ms);
+  }
+}
+@keyframes pc-ulaz {
+  from { opacity: 0; transform: translateY(14px); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+.pc-kviz__napredak {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.8rem;
+  color: rgb(var(--ink) / 0.7);
+}
+.pc-kviz__linija {
+  display: flex;
+  gap: 0.35rem;
+}
+.pc-kviz__linija > span {
+  width: 1.75rem;
+  height: 3px;
+  border-radius: 999px;
+  background: rgb(var(--ink) / 0.14);
+  transition: background-color 0.4s ease;
+}
+.pc-kviz__linija > span[data-stanje="gotovo"] {
+  background: var(--accent);
+}
+.pc-kviz__linija > span[data-stanje="sada"] {
+  background: var(--primary);
+}
+
+.pc-odgovori {
+  margin-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+.pc-odgovori[data-mnogo="da"] .pc-odgovor {
+  padding-block: 0.9rem;
+}
+
+.pc-odgovor {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1rem 1.25rem 0;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.15rem);
+  color: var(--foreground);
+  cursor: pointer;
+  isolation: isolate;
+  transition: color 0.2s ease;
+}
+.pc-odgovor::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgb(var(--mint) / 0.08);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pc-odgovor > span:first-child {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pc-odgovor:hover > span:first-child,
+.pc-odgovor:focus-visible > span:first-child {
+  transform: translateX(1rem);
+}
+.pc-odgovor:hover::before,
+.pc-odgovor:focus-visible::before {
+  transform: scaleX(1);
+}
+.pc-odgovor:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.pc-odgovor[aria-pressed="true"] {
+  color: var(--primary);
+}
+.pc-odgovor__strelica {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+  color: var(--primary);
+  opacity: 0;
+  transform: translateX(-0.5rem);
+  transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pc-odgovor:hover .pc-odgovor__strelica,
+.pc-odgovor:focus-visible .pc-odgovor__strelica {
+  opacity: 1;
+  transform: none;
+}
+
+.pc-nazad {
+  margin-top: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: rgb(var(--ink) / 0.7);
+  text-underline-offset: 4px;
+}
+.pc-nazad:hover {
+  color: var(--foreground);
+  text-decoration: underline;
+}
+
+.pc-rezultat__sektor {
+  margin-top: 0.25rem;
+  font-size: clamp(2.75rem, 1.5rem + 5vw, 5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--primary);
+}
+
+.pc-projekat {
+  margin-top: 2rem;
+  max-width: 36rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  color: var(--muted-foreground);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+.pc-projekat:hover {
+  border-color: rgb(var(--mint) / 0.5);
+  background: rgb(var(--mint) / 0.05);
+}
+.pc-projekat__slika {
+  flex-shrink: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  background: var(--card);
+}
+.pc-projekat__slika img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pc-projekat__tekst {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.pc-projekat__naslov {
+  color: var(--foreground);
+}
+.pc-projekat__naslov strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+.pc-projekat__strelica {
+  flex-shrink: 0;
+  width: 1.1rem;
+  color: var(--primary);
+}
+
+/* ============================================================
+   Donji deo stranice: koraci, pitanja, lista čekanja
+   ============================================================ */
+
+.pc-koraci {
+  counter-reset: korak;
+  margin-top: 3rem;
+  display: grid;
+  gap: 0;
+}
+.pc-korak {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr);
+  gap: 1.25rem;
+  padding-bottom: 2.5rem;
+}
+.pc-korak::before {
+  counter-increment: korak;
+  content: counter(korak);
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--mint) / 0.5);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--background);
+  position: relative;
+  z-index: 1;
+}
+.pc-korak:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(1.375rem - 0.5px);
+  top: 2.75rem;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(var(--primary), rgb(var(--mint) / 0.1));
+}
+
+.pc-pitanje {
+  border-bottom: 1px solid var(--border);
+}
+.pc-pitanje summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.35rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.pc-pitanje summary::-webkit-details-marker {
+  display: none;
+}
+.pc-pitanje summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.pc-pitanje__znak {
+  position: relative;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+.pc-pitanje__znak::before,
+.pc-pitanje__znak::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1.5px;
+  background: var(--primary);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pc-pitanje__znak::after {
+  transform: rotate(90deg);
+}
+.pc-pitanje[open] .pc-pitanje__znak::after {
+  transform: rotate(0deg);
+}
+.pc-pitanje p {
+  padding-bottom: 1.5rem;
+  max-width: 62ch;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+}
+
+/* lista čekanja */
+.pc-kraj {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  background:
+    radial-gradient(60% 70% at 50% 100%, rgb(var(--mint) / 0.14), transparent 70%),
+    var(--card);
+}
+/* ---------- izbor teksta i skrol traka na ovoj stranici ---------- */
+.pc-strana ::selection {
+  background: rgb(var(--mint) / 0.35);
+  color: var(--foreground);
+}
+
+/* ============================================================
+   Okrugli sto sa praznom stolicom
+   ============================================================ */
+
+.pc-sto-okvir {
+  width: 100%;
+  max-width: 32rem;
+  margin-inline: auto;
+}
+.pc-sto-okvir--uvod {
+  margin-top: 2rem;
+  max-width: 30rem;
+}
+.pc-sto__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.pc-sto__opis {
+  margin-top: 0;
+  min-height: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: rgb(var(--ink) / 0.78);
+  text-wrap: balance;
+}
+.pc-sto[data-faza="sedi"] + .pc-sto__opis,
+.pc-sto3d[data-faza="sedi"] + .pc-sto__opis {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.pc-sto--mini {
+  width: 4.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.pc-sto__ploca {
+  fill: #0b1615;
+  stroke: rgb(var(--ink) / 0.16);
+  stroke-width: 1.5;
+}
+.pc-sto__rub {
+  fill: none;
+  stroke: rgb(var(--ink) / 0.06);
+  stroke-width: 1;
+}
+.pc-sto__logo {
+  opacity: 0.9;
+}
+
+.pc-sto__luk {
+  fill: none;
+  stroke: rgb(var(--ink) / 0.12);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke 0.6s ease;
+}
+.pc-sto__luk[data-vodeci="da"] {
+  stroke: var(--primary);
+}
+
+.pc-sto__clan {
+  fill: rgb(var(--ink) / 0.2);
+  transition: fill 0.6s ease;
+}
+.pc-sto__clan[data-vodeci="da"] {
+  fill: rgb(var(--mint) / 0.75);
+}
+
+.pc-sto__prazno {
+  fill: none;
+  stroke: rgb(var(--ink) / 0.3);
+  stroke-width: 1.4;
+  stroke-dasharray: 3 3;
+  transition: stroke 0.6s ease;
+}
+.pc-sto__prazno[data-vodeci="da"] {
+  stroke: var(--primary);
+}
+
+.pc-sto__natpis {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  fill: rgb(var(--ink) / 0.72);
+  transition: fill 0.6s ease;
+}
+.pc-sto__natpis[data-vodeci="da"] {
+  fill: var(--primary);
+}
+
+/* stolica „ti” */
+.pc-sto__ti rect {
+  fill: var(--background);
+  stroke: var(--primary);
+  stroke-width: 2;
+  stroke-dasharray: 4 3.5;
+  transition: fill 0.5s ease;
+}
+.pc-sto__ti text {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  fill: var(--primary);
+  transition: fill 0.5s ease;
+}
+.pc-sto[data-faza="sedi"] .pc-sto__ti rect {
+  fill: var(--primary);
+  stroke-dasharray: none;
+}
+.pc-sto[data-faza="sedi"] .pc-sto__ti text {
+  fill: var(--primary-foreground);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* članovi zauzimaju mesta kad se sto pojavi */
+  .pc-sto__clan {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pc-sedne 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(200ms + var(--d));
+  }
+  /* prazna stolica „diše” dok čeka */
+  .pc-sto[data-faza="ceka"] .pc-sto__ti,
+  .pc-sto[data-faza="bira"] .pc-sto__ti {
+    animation: pc-disi 2.6s ease-in-out infinite;
+  }
+  .pc-sto__ti rect {
+    animation: pc-mrav 1.6s linear infinite;
+  }
+  .pc-sto[data-faza="sedi"] .pc-sto__ti {
+    animation: pc-sela 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+@keyframes pc-sedne {
+  from { opacity: 0.2; transform: scale(0.4); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pc-disi {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+@keyframes pc-mrav {
+  to { stroke-dashoffset: -15; }
+}
+@keyframes pc-sela {
+  0% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
+/* ============================================================
+   3D sto
+   ============================================================ */
+
+.pc-sto3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.92;
+  touch-action: pan-y;
+  overflow: clip;
+}
+.pc-sto3d__platno {
+  display: block;
+}
+.pc-sto3d__natpis {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  font-family: var(--font-heading);
+  font-size: clamp(0.95rem, 0.8rem + 0.5vw, 1.2rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: rgb(var(--ink) / 0.72);
+  text-shadow: 0 2px 14px rgb(var(--bg-rgb) / 0.9);
+  transition: color 0.6s ease;
+}
+.pc-sto3d__natpis[data-vodeci="da"] {
+  color: var(--primary);
+}
+
+.pc-kviz__oznaka {
+  margin-left: auto;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--mint) / 0.45);
+  color: var(--primary);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}

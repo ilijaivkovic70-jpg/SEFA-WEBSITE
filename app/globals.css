@@ -3292,39 +3292,20 @@
 }
 
 /* ---------- dugme ---------- */
+/* izgled dolazi od zajedničkih klasa .btn .btn-primary (vidi „Dugmad” na dnu) */
 .ak-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
   min-height: 3rem;
-  padding: 0.8rem 1.4rem;
+  padding: 0.8rem 1.6rem;
   border-radius: 999px;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  font-weight: 600;
   font-size: 1rem;
   line-height: 1.2;
-  transition: background-color 0.25s var(--al-e), transform 0.25s var(--al-e);
 }
 .ak-btn__icon {
   width: 1.1rem;
   height: 1.1rem;
-  transition: transform 0.3s var(--al-e);
-}
-.ak-btn:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
-}
-@media (hover: hover) {
-  .ak-btn:hover {
-    background: #86d6c6;
-  }
-  .ak-btn:hover .ak-btn__icon {
-    transform: translateX(4px);
-  }
-}
-.ak-btn:active {
-  transform: scale(0.98);
 }
 
 /* ---------- hero ---------- */
@@ -4329,4 +4310,156 @@ html.lenis body {
 }
 .lenis.lenis-stopped {
   overflow: hidden;
+}
+
+/* ============================================================
+   Dugmad (components/ui/button.tsx)
+   Puna mint dugmad liče na uglačan predmet: blagi prelaz odozgo
+   nadole, svetla gornja ivica, senka obojena mint tonom i odsjaj
+   koji pređe preko dugmeta na hover. Sporedna dugmad su tamna,
+   sa tankom ivicom koja na hover dobije mint ton.
+   ============================================================ */
+
+@layer components {
+  .btn {
+    --btn-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    border: 1px solid transparent;
+    transition:
+      transform 0.35s var(--btn-ease),
+      box-shadow 0.35s var(--btn-ease),
+      background-color 0.3s ease,
+      border-color 0.3s ease,
+      color 0.3s ease;
+  }
+  .btn:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px rgb(var(--mint) / 0.85);
+  }
+  .btn:active:not(:disabled) {
+    transform: translateY(1px) scale(0.985);
+    transition-duration: 0.08s;
+  }
+
+  /* ikonica uz tekst se malo pomeri na hover */
+  .btn svg {
+    transition: transform 0.35s var(--btn-ease);
+  }
+  .btn:hover:not(:disabled) > svg:last-child:not(:first-child) {
+    transform: translateX(2px);
+  }
+
+  /* ---------- glavno dugme ---------- */
+  .btn-primary {
+    color: #05100e;
+    border-color: rgb(255 255 255 / 0.18);
+    background:
+      linear-gradient(180deg, rgb(255 255 255 / 0.22) 0%, rgb(255 255 255 / 0) 48%),
+      linear-gradient(180deg, #7fd6c4 0%, #66c6b3 55%, #53b3a0 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.5),
+      inset 0 -1px 0 rgb(4 40 34 / 0.28),
+      0 1px 2px rgb(0 0 0 / 0.45),
+      0 10px 26px -12px rgb(102 198 179 / 0.7);
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.55),
+      inset 0 -1px 0 rgb(4 40 34 / 0.28),
+      0 2px 4px rgb(0 0 0 / 0.4),
+      0 18px 36px -14px rgb(102 198 179 / 0.85);
+  }
+  .btn-primary:focus-visible {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.5),
+      0 0 0 2px var(--background),
+      0 0 0 4px rgb(var(--mint) / 0.85);
+  }
+  /* odsjaj koji pređe preko dugmeta */
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: -2px auto -2px 0;
+    width: 45%;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 0%,
+      rgb(255 255 255 / 0.45) 50%,
+      transparent 100%
+    );
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .btn-primary:hover:not(:disabled)::after {
+      transform: translateX(260%) skewX(-18deg);
+      transition: transform 0.85s var(--btn-ease);
+    }
+  }
+
+  /* ---------- sporedno dugme ---------- */
+  .btn-outline {
+    color: var(--foreground);
+    border-color: rgb(var(--ink) / 0.16);
+    background:
+      linear-gradient(180deg, rgb(var(--ink) / 0.06) 0%, rgb(var(--ink) / 0.015) 100%),
+      rgb(11 22 21 / 0.6);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.07),
+      0 1px 2px rgb(0 0 0 / 0.35);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+  .btn-outline:hover:not(:disabled),
+  .btn-outline[aria-expanded="true"],
+  .btn-outline[aria-pressed="true"] {
+    transform: translateY(-1px);
+    color: #c9f1e8;
+    border-color: rgb(var(--mint) / 0.5);
+    background:
+      linear-gradient(180deg, rgb(var(--mint) / 0.14) 0%, rgb(var(--mint) / 0.04) 100%),
+      rgb(11 22 21 / 0.7);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.08),
+      0 10px 24px -14px rgb(102 198 179 / 0.6);
+  }
+
+  /* ---------- tiho dugme (nazad, meni) ---------- */
+  .btn-ghost {
+    color: rgb(var(--ink) / 0.78);
+    background: transparent;
+  }
+  .btn-ghost:hover:not(:disabled),
+  .btn-ghost[aria-expanded="true"] {
+    color: var(--foreground);
+    background: rgb(var(--ink) / 0.06);
+    border-color: rgb(var(--ink) / 0.08);
+  }
+
+  .btn-link {
+    overflow: visible;
+  }
+}
+
+/* zajednička „uglačana” površina za okrugla dugmad van komponente
+   (npr. dugme za puštanje videa) */
+.btn-sjaj {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.22) 0%, rgb(255 255 255 / 0) 48%),
+    linear-gradient(180deg, #7fd6c4 0%, #66c6b3 55%, #53b3a0 100%);
+  color: #05100e;
+  border: 1px solid rgb(255 255 255 / 0.2);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.5),
+    inset 0 -1px 0 rgb(4 40 34 / 0.28),
+    0 0 0 8px rgb(var(--mint) / 0.14),
+    0 18px 40px -12px rgb(0 0 0 / 0.6);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }

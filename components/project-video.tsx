@@ -176,9 +176,9 @@ export function ProjectVideo({
               type="button"
               onClick={() => void start()}
               aria-label={phase === "ended" ? "Pusti video ponovo" : "Pusti video"}
-              className="absolute inset-0 flex items-center justify-center bg-black/20 transition-colors hover:bg-black/30"
+              className="group absolute inset-0 flex items-center justify-center bg-black/20 transition-colors hover:bg-black/30 focus-visible:outline-none"
             >
-              <span className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg sm:size-20">
+              <span className="btn-sjaj flex size-16 items-center justify-center rounded-full group-hover:scale-105 group-focus-visible:scale-105 sm:size-20">
                 <Play className="size-7 translate-x-0.5 fill-current sm:size-8" />
               </span>
             </button>
@@ -188,7 +188,7 @@ export function ProjectVideo({
             <button
               type="button"
               onClick={unmute}
-              className="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-black/70 px-4 py-2 font-mono text-xs uppercase tracking-wide text-white backdrop-blur transition-colors hover:bg-black/85"
+              className="absolute right-3 top-3 flex items-center gap-2 rounded-full border border-white/15 bg-black/55 px-4 py-2 text-xs font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.12),0_8px_20px_-10px_rgb(0_0_0/0.7)] backdrop-blur-md transition-colors hover:border-[rgb(var(--mint)/0.5)] hover:bg-black/70"
             >
               <Volume2 className="size-4" />
               Uključi zvuk

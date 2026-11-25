@@ -88,7 +88,7 @@ export function AlumniHero() {
         </p>
 
         <div className="ak-hero__foot">
-          <Link href={ALUMNI_HERO.cta.href} className="ak-btn">
+          <Link href={ALUMNI_HERO.cta.href} className="ak-btn btn btn-primary">
             {ALUMNI_HERO.cta.label}
             <ArrowRight className="ak-btn__icon" aria-hidden="true" />
           </Link>
