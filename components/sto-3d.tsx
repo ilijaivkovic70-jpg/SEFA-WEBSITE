@@ -174,7 +174,7 @@ export function Sto3D({ sektor, faza, className }: Props) {
     const smanjeno = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const telefon = window.matchMedia("(max-width: 767px)").matches;
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, telefon ? 1.6 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, telefon ? 1.4 : 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.05;

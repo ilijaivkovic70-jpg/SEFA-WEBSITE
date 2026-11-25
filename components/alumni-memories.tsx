@@ -200,6 +200,8 @@ export function AlumniMemories() {
       rail.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0)`;
       items.forEach((_, i) => {
         const cx = railLeft + base[i] + x + widths[i] / 2;
+        // slike daleko van ekrana se ne crtaju — ništa se ne vidi, a štedi se posao
+        if (Math.abs(cx - vw / 2) > vw / 2 + widths[i] + 40) return;
         // 0 na sredini (malo levo od centra), 1 na ivicama ekrana
         const d = Math.abs(cx - vw * 0.45) / (vw * 0.55);
         const inset = 30 * smoothstep(0.3, 1, d);

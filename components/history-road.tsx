@@ -392,7 +392,7 @@ export function HistoryRoad() {
               carYawOffset: CAR_MODEL_YAW,
               pixelRatio: Math.min(
                 window.devicePixelRatio || 1,
-                compact ? 1.5 : 1.75
+                compact ? 1.25 : 1.5
               ),
             }
           );
