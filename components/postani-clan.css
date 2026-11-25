@@ -594,3 +594,15 @@
   font-size: 0.8rem;
   white-space: nowrap;
 }
+
+/* tekst ispod naslova na dnu stranice: naslovni font, ne uobičajeni tekstualni */
+.pc-kraj .pc-tekst {
+  font-family: var(--font-heading);
+  font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  color: rgb(var(--ink) / 0.82);
+  max-width: 30rem;
+  text-wrap: balance;
+}

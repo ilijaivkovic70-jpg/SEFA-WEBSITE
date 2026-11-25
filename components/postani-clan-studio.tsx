@@ -169,20 +169,12 @@ export function PostaniClanStudio() {
 
           {faza === "pitanja" && pitanje && (
             <div className="pc-kviz__panel" key={`p-${korak}`}>
-              <div className="pc-kviz__napredak">
-                <span className="font-mono">
-                  {korak + 1}/{KVIZ.length}
-                </span>
-                <span className="pc-kviz__linija" aria-hidden="true">
-                  {KVIZ.map((_, i) => (
-                    <span key={i} data-stanje={i < korak ? "gotovo" : i === korak ? "sada" : "ceka"} />
-                  ))}
-                </span>
-                {/* telefon: kratka oznaka gde ide tvoja stolica */}
-                {sektorPodaci && (
-                  <span className="pc-kviz__oznaka lg:hidden">{sektorPodaci.naziv}</span>
-                )}
-              </div>
+              {/* telefon: kratka oznaka gde ide tvoja stolica */}
+              {sektorPodaci && (
+                <div className="pc-kviz__napredak lg:hidden">
+                  <span className="pc-kviz__oznaka">{sektorPodaci.naziv}</span>
+                </div>
+              )}
               <h2 id="pc-kviz-naslov" className="pc-h2 font-heading">
                 {pitanje.pitanje}
               </h2>
