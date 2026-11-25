@@ -1049,35 +1049,6 @@
     font-size: clamp(3rem, 6.2vw, 6.4rem);
   }
 
-  /* ilustracija sektora je nacrtana čim ekran postane trenutni ili sledeći
-     (isti par selektora kao gore, samo za liniju/čvorove/fragmente) */
-  .sc[data-stage="0"] .sc__stop[data-stop="0"] .sc-illo__draw,
-  .sc[data-stage="1"] .sc__stop[data-stop="1"] .sc-illo__draw,
-  .sc[data-stage="2"] .sc__stop[data-stop="2"] .sc-illo__draw,
-  .sc[data-stage="0"] .sc__stop[data-stop="1"] .sc-illo__draw,
-  .sc[data-stage="1"] .sc__stop[data-stop="2"] .sc-illo__draw,
-  .sc[data-stage="2"] .sc__stop[data-stop="3"] .sc-illo__draw {
-    stroke-dashoffset: 0;
-  }
-  .sc[data-stage="0"] .sc__stop[data-stop="0"] .sc-illo__node,
-  .sc[data-stage="1"] .sc__stop[data-stop="1"] .sc-illo__node,
-  .sc[data-stage="2"] .sc__stop[data-stop="2"] .sc-illo__node,
-  .sc[data-stage="0"] .sc__stop[data-stop="1"] .sc-illo__node,
-  .sc[data-stage="1"] .sc__stop[data-stop="2"] .sc-illo__node,
-  .sc[data-stage="2"] .sc__stop[data-stop="3"] .sc-illo__node {
-    opacity: 1;
-    transform: scale(1);
-  }
-  .sc[data-stage="0"] .sc__stop[data-stop="0"] .sc-illo__frag,
-  .sc[data-stage="1"] .sc__stop[data-stop="1"] .sc-illo__frag,
-  .sc[data-stage="2"] .sc__stop[data-stop="2"] .sc-illo__frag,
-  .sc[data-stage="0"] .sc__stop[data-stop="1"] .sc-illo__frag,
-  .sc[data-stage="1"] .sc__stop[data-stop="2"] .sc-illo__frag,
-  .sc[data-stage="2"] .sc__stop[data-stop="3"] .sc-illo__frag {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
   /* veliki broj kao pozadinski tipografski element, iza teksta sektora */
   .sc[data-mode="scroll"] .sc__num-wrap {
     display: block;
@@ -1107,6 +1078,8 @@
   .sc[data-mode="scroll"] .sc__body {
     position: relative;
     z-index: 1;
+    grid-column: 1 / -1;
+    max-width: 60rem;
   }
   .sc[data-mode="scroll"] .sc__name {
     font-size: clamp(3rem, 6vw, 6.4rem);
@@ -1115,17 +1088,9 @@
   }
   .sc[data-mode="scroll"] .sc__desc {
     font-size: 1.05rem;
-    max-width: 34ch;
+    line-height: 1.6;
+    max-width: 62ch;
   }
-  .sc[data-mode="scroll"] .sc__illo {
-    position: relative;
-    z-index: 1;
-    justify-self: end;
-    margin: 0;
-    width: 100%;
-    max-width: clamp(20rem, 30vw, 31rem);
-  }
-
   /* indikator napretka — pomeren ispod lepljivog zaglavlja sajta (4rem) */
   .sc[data-mode="scroll"] .sc__meter {
     display: flex;
@@ -1191,10 +1156,6 @@
   }
   .sc[data-mode="scroll"] .sc__desc {
     font-size: 0.98rem;
-  }
-  .sc[data-mode="scroll"] .sc__illo {
-    justify-self: center;
-    width: min(100%, 15rem, 30svh);
   }
   .sc[data-mode="scroll"] .sc__meter {
     top: clamp(4.8rem, 11.4svh, 6rem);

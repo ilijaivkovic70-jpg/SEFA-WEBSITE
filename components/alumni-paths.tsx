@@ -85,7 +85,8 @@ export function AlumniPaths() {
           />
         </div>
 
-        <ol className="ak-cols">
+        {/* opisi su odštampani na poleđini kartica; ovde ih čita samo čitač ekrana */}
+        <ol className={`ak-cols${gl === "on" ? " sr-only" : ""}`}>
           {PATHS.map((path) => (
             <li key={path.id} className="ak-cols__item">
               <h3 className="ak-cols__name">{path.title}</h3>

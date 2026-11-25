@@ -131,7 +131,7 @@ export function SectorReminder({
 const APPEAR_AFTER_MS = 6000;
 const HOLD_MS = 10000;
 const MESSAGE =
-  "Psst... znaš li da SEFA ima tri sektora? Komunikacije, Sponzorstva i Ljudski resursi.";
+  "Psst... znaš li da SEFA ima četiri sektora? PR, Dizajn, Sponzorstva i Ljudski resursi.";
 
 /**
  * Montira se jednom, na stranici Postani član. Posle nekoliko

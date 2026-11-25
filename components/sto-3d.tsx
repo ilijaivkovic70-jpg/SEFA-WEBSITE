@@ -8,7 +8,7 @@ import { StoSefa, type StoFaza } from "@/components/sto-sefa";
 
 /**
  * 3D okrugli sto SEFA-e: drvena ploča sa logom, stolice članova
- * raspoređene u tri sektora i po jedno prazno mesto u svakom.
+ * raspoređene u četiri sektora i po jedno prazno mesto u svakom.
  * Jedna svetla stolica („ti”) stoji izvučena ispred stola; dok
  * posetilac odgovara na kviz, ona obilazi sto ka sektoru koji mu
  * najviše leži, a na kraju se primakne i sedne na prazno mesto.
@@ -34,11 +34,12 @@ const R_NATPIS = 2.6;
 
 /** Ugao centra sektora oko stola; 0 je strana prema posmatraču. */
 const UGAO: Record<SektorId, number> = {
-  komunikacije: -62,
-  sponzorstva: 62,
-  "ljudski-resursi": 180,
+  pr: -45,
+  dizajn: 45,
+  sponzorstva: 135,
+  "ljudski-resursi": -135,
 };
-const RAZMAK = 21; // stepeni između stolica
+const RAZMAK = 16; // stepeni između stolica
 const UGAO_CEKA = 0;
 
 const rad = (u: number) => (u * Math.PI) / 180;

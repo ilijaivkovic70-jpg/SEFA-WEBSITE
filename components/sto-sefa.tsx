@@ -5,7 +5,7 @@ import { SEKTORI, type SektorId } from "@/data/postani-clan";
 
 /**
  * Okrugli sto SEFA-e, pogled odozgo. Oko stola sede članovi, podeljeni u
- * tri sektora, i u svakom sektoru ima jedno prazno mesto. Jedna isprekidana
+ * četiri sektora, i u svakom sektoru ima jedno prazno mesto. Jedna isprekidana
  * stolica („ti”) čeka ispod stola; dok posetilac odgovara na kviz, ona
  * kruži oko stola ka sektoru koji mu najviše leži, a na kraju sedne
  * na prazno mesto.
@@ -34,13 +34,14 @@ const R_NATPIS = 240;
 
 /** Ugao centra svakog sektora (0° je desno, raste u smeru kazaljke). */
 const UGAO: Record<SektorId, number> = {
-  "ljudski-resursi": 270,
-  sponzorstva: 30,
-  komunikacije: 150,
+  "ljudski-resursi": 225,
+  sponzorstva: 315,
+  dizajn: 45,
+  pr: 135,
 };
 const UGAO_CEKA = 90;
 const RAZMAK = 15; // stepeni između dve stolice
-const MESTA_PO_STRANI = 3; // stolica levo i desno od praznog mesta
+const MESTA_PO_STRANI = 2; // stolica levo i desno od praznog mesta
 
 const rad = (u: number) => (u * Math.PI) / 180;
 const tacka = (u: number, r: number) => ({ x: C + r * Math.cos(rad(u)), y: C + r * Math.sin(rad(u)) });
@@ -126,7 +127,7 @@ export function StoSefa({ sektor, faza, mali = false, className }: Props) {
         {SEKTORI.map((s) => (
           <path
             key={s.id}
-            d={luk(UGAO[s.id] - 52, UGAO[s.id] + 52, R_STO + 8)}
+            d={luk(UGAO[s.id] - 40, UGAO[s.id] + 40, R_STO + 8)}
             className="pc-sto__luk"
             data-vodeci={sektor === s.id ? "da" : "ne"}
           />
@@ -143,7 +144,7 @@ export function StoSefa({ sektor, faza, mali = false, className }: Props) {
               rx={6}
               className="pc-sto__clan"
               data-vodeci={sektor === m.sektor ? "da" : "ne"}
-              style={{ "--d": `${(i % (MESTA_PO_STRANI * 2)) * 55 + Math.floor(i / 6) * 120}ms` } as React.CSSProperties}
+              style={{ "--d": `${(i % (MESTA_PO_STRANI * 2)) * 55 + Math.floor(i / (MESTA_PO_STRANI * 2)) * 120}ms` } as React.CSSProperties}
             />
           </g>
         ))}

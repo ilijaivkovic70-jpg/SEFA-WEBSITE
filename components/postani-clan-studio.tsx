@@ -22,7 +22,8 @@ import "./postani-clan.css";
 type Faza = "uvod" | "pitanja" | "rezultat";
 
 const PRAZNI_POENI: Record<SektorId, number> = {
-  komunikacije: 0,
+  pr: 0,
+  dizajn: 0,
   sponzorstva: 0,
   "ljudski-resursi": 0,
 };

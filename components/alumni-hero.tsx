@@ -92,18 +92,18 @@ export function AlumniHero() {
             {ALUMNI_HERO.cta.label}
             <ArrowRight className="ak-btn__icon" aria-hidden="true" />
           </Link>
-          <p className="ak-hero__count">
-            <strong>
-              {ALUMNI_HERO.count}
-              {ALUMNI_HERO.countSuffix}
-            </strong>{" "}
-            {ALUMNI_HERO.countLabel.toLowerCase()}
-          </p>
+          {/* broj članova je odštampan na akreditaciji; tekst ostaje samo bez WebGL-a */}
+          {gl === "off" && (
+            <p className="ak-hero__count">
+              <strong>
+                {ALUMNI_HERO.count}
+                {ALUMNI_HERO.countSuffix}
+              </strong>{" "}
+              {ALUMNI_HERO.countLabel.toLowerCase()}
+            </p>
+          )}
         </div>
 
-        <p className="ak-hint" aria-hidden="true">
-          {ALUMNI_HERO.hint}
-        </p>
       </div>
     </section>
   );

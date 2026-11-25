@@ -21,7 +21,7 @@ export const PRIJAVE = {
 
 /* ---------- sektori ---------- */
 
-export type SektorId = "komunikacije" | "sponzorstva" | "ljudski-resursi";
+export type SektorId = "pr" | "dizajn" | "sponzorstva" | "ljudski-resursi";
 
 export type Sektor = {
   id: SektorId;
@@ -31,9 +31,14 @@ export type Sektor = {
 
 export const SEKTORI: Sektor[] = [
   {
-    id: "komunikacije",
-    naziv: "Komunikacije",
-    opis: "Kreiramo sadržaj, vodimo društvene mreže i gradimo prepoznatljiv glas SEFA-e.",
+    id: "pr",
+    naziv: "PR",
+    opis: "Promovišemo SEFA-u i njene projekte, vodimo društvene mreže i gradimo prepoznatljiv glas organizacije među studentima.",
+  },
+  {
+    id: "dizajn",
+    naziv: "Dizajn",
+    opis: "Vizuelno oblikujemo sve projekte: objave, plakate, prezentacije i video materijale.",
   },
   {
     id: "sponzorstva",
@@ -69,7 +74,8 @@ export const KVIZ: Pitanje[] = [
   {
     pitanje: "Organizujemo događaj. Gde te najverovatnije nalazimo?",
     odgovori: [
-      { tekst: "Sa telefonom u ruci: snimam, objavljujem, pišem opis.", sektor: "komunikacije" },
+      { tekst: "Sa telefonom u ruci: snimam, objavljujem, pišem opis.", sektor: "pr" },
+      { tekst: "Pored plakata i postera, proveravam da li sve izgleda kako treba.", sektor: "dizajn" },
       { tekst: "Na pozivu sa partnerom, dogovaram ko donosi šta.", sektor: "sponzorstva" },
       { tekst: "Na ulazu, pazim da se svako oseća dobrodošlo.", sektor: "ljudski-resursi" },
     ],
@@ -77,7 +83,8 @@ export const KVIZ: Pitanje[] = [
   {
     pitanje: "Društvo te najčešće zove kad treba…",
     odgovori: [
-      { tekst: "smisliti opis, vizual ili ideju za objavu.", sektor: "komunikacije" },
+      { tekst: "smisliti opis ili ideju za objavu.", sektor: "pr" },
+      { tekst: "napraviti plakat, prezentaciju ili montirati video.", sektor: "dizajn" },
       { tekst: "nešto „izdejstvovati” ili naći pravu osobu.", sektor: "sponzorstva" },
       { tekst: "saslušati, posavetovati i smiriti situaciju.", sektor: "ljudski-resursi" },
     ],
@@ -85,7 +92,8 @@ export const KVIZ: Pitanje[] = [
   {
     pitanje: "Šta bi ove godine najradije savladao/la?",
     odgovori: [
-      { tekst: "Kako se pravi sadržaj koji ljudi zaista dele.", sektor: "komunikacije" },
+      { tekst: "Kako se vode društvene mreže i pravi kampanja koju ljudi zaista prate.", sektor: "pr" },
+      { tekst: "Kako se u Canvi, Illustratoru ili Premiere Pro-u pravi nešto što izgleda vrhunski.", sektor: "dizajn" },
       { tekst: "Kako se pregovara i zatvara dogovor sa kompanijom.", sektor: "sponzorstva" },
       { tekst: "Kako se vodi tim i kako se ljudi motivišu.", sektor: "ljudski-resursi" },
     ],
@@ -93,7 +101,8 @@ export const KVIZ: Pitanje[] = [
   {
     pitanje: "Koja rečenica najviše zvuči kao ti?",
     odgovori: [
-      { tekst: "„Imam ideju, hajde da je pokažemo svima.”", sektor: "komunikacije" },
+      { tekst: "„Hajde da ispričamo ovu priču svima.”", sektor: "pr" },
+      { tekst: "„Može ovo da izgleda mnogo bolje.”", sektor: "dizajn" },
       { tekst: "„Sigurno postoji neko ko bi ovo podržao.”", sektor: "sponzorstva" },
       { tekst: "„Najbolji projekti nastaju od dobre ekipe.”", sektor: "ljudski-resursi" },
     ],

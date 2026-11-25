@@ -1,0 +1,903 @@
+/* ============================================================
+   NAŠ PUT — istorija SEFA-e od 2015. do danas
+   Sadržaj je u lib/history-milestones.ts, kretanje u
+   components/history-road.tsx, izgled ovde.
+
+   Tri sloja pravila, tim redom:
+     1) osnovni raspored — mobilni, SSR, bez JS-a i uz „smanjeno
+        kretanje”: vijugava linija levo, stanice jedna ispod druge,
+        sve odmah čitljivo;
+     2) [data-anim="on"] — početna stanja i prelazi po fazama
+        (data-phase: before → in → after);
+     3) [data-mode="cinema"] (sve širine, uži ekrani imaju doradu) — sticky
+        kadar od 100vh u kome kamera putuje putanjom.
+
+   JS upisuje: --rot (nagib kadra), --travel (koliko je puta pređeno),
+   --intro / --outro (uvod i završetak), --road-stops (broj stanica).
+   Ručke za podešavanje: --road-pad (bočna margina) i visina stanice
+   u `min-height` ispod; tempo je u history-road.tsx.
+   ============================================================ */
+
+.road {
+  --road-e: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --road-pad: clamp(1.1rem, 5vw, 5.5rem);
+  /* širina trake sa vijugavom linijom na mobilnom; iz nje se izvode i
+     razmak do teksta i položaj tačke stanice */
+  --road-trail: 2.6rem;
+  --road-stops: 5;
+  --rot: 0;
+  --travel: 0;
+  --intro: 1;
+  --outro: 0;
+  position: relative;
+  isolation: isolate;
+  background: var(--background);
+}
+
+/* ---------- 1) osnovni raspored ---------- */
+
+.road__stage {
+  position: relative;
+  z-index: 1;
+  padding: clamp(4rem, 12vh, 8rem) var(--road-pad) clamp(3.5rem, 10vh, 7rem);
+}
+
+/* desktop kadar sa putem stoji samo u „cinema” režimu */
+.road__world,
+.road__car,
+.road__backdrop {
+  display: none;
+}
+
+.road__eyebrow {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+/* naslovni kicker sekcije — veći i upadljiviji, stoji iznad glavnog naslova */
+.road__eyebrow--hero {
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.4rem, 4vw, 2.4rem);
+  letter-spacing: 0.05em;
+}
+
+.road__title {
+  margin: clamp(0.9rem, 2.4vh, 1.5rem) 0 0;
+  max-width: 14ch;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 9vw, 5.4rem);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  color: var(--foreground);
+}
+
+.road__lead {
+  margin: clamp(0.9rem, 2.2vh, 1.4rem) 0 0;
+  max-width: 34ch;
+  color: var(--muted-foreground);
+}
+
+.road__hint {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin: clamp(1.6rem, 4vh, 2.6rem) 0 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(var(--ink) / 0.5);
+}
+/* tanka linija umesto dugmeta — tirkizni potez klizi naniže */
+.road__hint-line {
+  position: relative;
+  display: block;
+  width: 1px;
+  height: 2.6rem;
+  overflow: hidden;
+  background: rgb(var(--ink) / 0.16);
+}
+.road__hint-line::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 45%;
+  background: linear-gradient(180deg, transparent, var(--primary));
+  animation: road-hint 2.1s var(--road-e) infinite;
+}
+@keyframes road-hint {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(240%);
+    opacity: 0;
+  }
+}
+
+.road__stops-wrap {
+  position: relative;
+  margin-top: clamp(2.5rem, 7vh, 4rem);
+}
+
+/* vijugava linija iza liste; rasteže se preko cele visine */
+.road__trail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--road-trail);
+  pointer-events: none;
+}
+.road__trail-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.road__trail-bed,
+.road__trail-ink {
+  fill: none;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.road__trail-bed {
+  stroke: rgb(var(--ink) / 0.12);
+  stroke-width: 14;
+}
+.road__trail-ink {
+  stroke: var(--primary);
+  stroke-width: 1.6;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: calc(1 - var(--travel));
+  opacity: 0.9;
+}
+
+.road__stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.road__stop {
+  position: relative;
+  padding-left: calc(var(--road-trail) + 1.3rem);
+  padding-block: clamp(2.25rem, 7vh, 3.75rem);
+}
+/* naizmenično blago pomeranje sadržaja, da niz ne deluje šablonski */
+.road__stop[data-align="right"] {
+  padding-left: calc(var(--road-trail) + 2rem);
+}
+
+/* tačka stanice — sedi na krivini linije.
+   --bead je broj 0–100: udeo širine trake, isti onaj koji koristi putanja */
+.road__bead {
+  position: absolute;
+  left: calc(var(--bead, 50) * var(--road-trail) / 100);
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 0 5px var(--background);
+}
+
+.road__stop-eyebrow {
+  margin: 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgb(var(--ink) / 0.52);
+}
+
+.road__year {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(3.4rem, 17vw, 6rem);
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.road__stop-title {
+  margin: clamp(0.8rem, 2vh, 1.2rem) 0 0;
+  max-width: 18ch;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.35rem, 5.4vw, 1.9rem);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  color: var(--foreground);
+}
+.road__line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.road__line > span {
+  display: block;
+}
+
+.road__desc {
+  margin: clamp(0.7rem, 1.8vh, 1.1rem) 0 0;
+  /* mera reda: opis ostaje lak za čitanje (~460px) */
+  max-width: 29rem;
+  color: var(--muted-foreground);
+}
+
+.road__figure {
+  margin: clamp(1.4rem, 4vh, 2.2rem) 0 0;
+  width: min(100%, 30rem);
+}
+.road__frame {
+  position: relative;
+  /* odnos stranica je unapred zadat — nema poskakivanja rasporeda */
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--card);
+}
+.road__photo {
+  object-fit: cover;
+}
+/* neutralan okvir dok prava fotografija ne postoji */
+.road__placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(var(--ink) / 0.42);
+  background-color: var(--secondary);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(var(--ink) / 0.045) 0 1px,
+    transparent 1px 11px
+  );
+  box-shadow: inset 0 0 0 1px rgb(var(--ink) / 0.1);
+}
+.road__caption {
+  margin: 0.7rem 0 0;
+  font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(var(--ink) / 0.38);
+}
+
+.road__outro {
+  margin-top: clamp(2.5rem, 8vh, 4.5rem);
+  padding-left: calc(var(--road-trail) + 1.3rem);
+}
+
+/* na vrlo uskim ekranima traka se skuplja da opis ostane čitljiv */
+@media (max-width: 26rem) {
+  .road {
+    --road-trail: 2.1rem;
+  }
+}
+.road__outro-title {
+  margin: clamp(0.9rem, 2.4vh, 1.5rem) 0 0;
+  font-family: var(--font-bricolage), system-ui, sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 8vw, 3.6rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  color: var(--foreground);
+}
+
+.road__meter {
+  display: none;
+}
+
+.road__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- 2) animirana stanja ---------- */
+
+.road[data-anim="on"] .road__stop-eyebrow,
+.road[data-anim="on"] .road__year,
+.road[data-anim="on"] .road__desc {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition:
+    opacity 0.6s var(--road-e),
+    transform 0.8s var(--road-e);
+}
+.road[data-anim="on"] .road__line > span {
+  transform: translate3d(0, 110%, 0);
+  transition: transform 0.85s var(--road-e);
+}
+.road[data-anim="on"] .road__figure {
+  opacity: 0;
+  transition:
+    opacity 0.6s var(--road-e),
+    transform 0.9s var(--road-e);
+}
+/* fotografija se otkriva iz jednog pravca — od puta ka spolja */
+.road[data-anim="on"] .road__frame {
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 1s var(--road-e);
+}
+.road[data-anim="on"] .road__stop[data-align="right"] .road__frame {
+  clip-path: inset(0 0 0 100%);
+}
+.road[data-anim="on"] .road__bead {
+  transform: scale(0.3);
+  opacity: 0;
+  transition:
+    transform 0.6s var(--road-e),
+    opacity 0.4s var(--road-e);
+}
+
+/* redosled pojavljivanja: oznaka → godina → naslov → fotografija → tekst */
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__stop-eyebrow {
+  transition-delay: 0.05s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__year {
+  transition-delay: 0.14s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__line > span {
+  transition-delay: 0.28s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__frame {
+  transition-delay: 0.42s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__figure {
+  transition-delay: 0.42s;
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__desc {
+  transition-delay: 0.62s;
+}
+
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__stop-eyebrow,
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__year,
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__desc,
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__figure,
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__bead {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__bead {
+  transform: scale(1);
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__line > span {
+  transform: translate3d(0, 0, 0);
+}
+.road[data-anim="on"] .road__stop[data-phase="in"] .road__frame {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ---------- 3) sticky kadar sa kamerom (sve širine; telefon doteruje blok ispod) ---------- */
+
+@media all {
+  .road[data-mode="cinema"] {
+    /* uvod + stanice + završetak; tempo je u history-road.tsx */
+    min-height: calc((186 + var(--road-stops) * 118) * 1vh);
+  }
+  .road[data-mode="cinema"] .road__stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* pozadinska tekstura iza puta — utapa se preko --intro/--outro, koje JS
+     već računa za tekst uvoda i završetka, pa nema posebne animacije ovde:
+     ista kriva, isti trenutak, bez šava na ulazu i izlazu iz sekcije */
+  .road[data-mode="cinema"] .road__backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: calc(1 - var(--intro) - var(--outro));
+    pointer-events: none;
+  }
+  .road__backdrop-img {
+    object-fit: cover;
+    object-position: center;
+    /* vivid žuto-zelena tekstura ublažena ka tamnoj, prigušenoj paleti sajta */
+    filter: saturate(0.5) brightness(0.6) contrast(1.08);
+  }
+  .road__backdrop-tint {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgb(var(--bg-rgb) / 0.55) 0%,
+      rgb(var(--bg-rgb) / 0.3) 40%,
+      rgb(var(--bg-rgb) / 0.3) 60%,
+      rgb(var(--bg-rgb) / 0.65) 100%
+    );
+  }
+
+  /* svet sa putem; kadar se blago naginje u smeru krivine */
+  .road[data-mode="cinema"] .road__world {
+    display: block;
+    position: absolute;
+    /* prepust, da nagib kadra ne otkrije prazne uglove */
+    inset: -10%;
+    z-index: 0;
+    pointer-events: none;
+    transform: rotate(calc(var(--rot) * 1deg));
+    will-change: transform;
+  }
+  .road__map {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .road__bed,
+  .road__spine {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  /* deo koji tek predstoji — jedva vidljiv */
+  .road__bed {
+    stroke: rgb(var(--ink) / 0.07);
+    stroke-width: 26;
+  }
+  /* pređeni deo — jasniji */
+  .road__bed--lit {
+    stroke: rgb(var(--ink) / 0.2);
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: calc(1 - var(--travel));
+  }
+  .road__spine {
+    stroke: var(--primary);
+    stroke-width: 2.4;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: calc(1 - var(--travel));
+    opacity: 0.9;
+  }
+  /* isto zrno kao na ostatku sajta */
+  .road__grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.24;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  }
+
+  .road__pin-ring {
+    fill: none;
+    stroke: var(--primary);
+    stroke-width: 1.6;
+    opacity: 0;
+    transform: scale(0.35);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 0.5s var(--road-e),
+      transform 0.75s var(--road-e);
+  }
+  .road__pin-dot {
+    fill: var(--primary);
+    opacity: 0.22;
+    transition: opacity 0.5s var(--road-e);
+  }
+  .road__pin[data-phase="in"] .road__pin-ring {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  .road__pin[data-phase="after"] .road__pin-ring {
+    opacity: 0.28;
+    transform: scale(1);
+  }
+  .road__pin[data-phase="in"] .road__pin-dot,
+  .road__pin[data-phase="after"] .road__pin-dot {
+    opacity: 1;
+  }
+
+  /* mobilna linija i tačke ne postoje u ovom režimu */
+  .road[data-mode="cinema"] .road__trail,
+  .road[data-mode="cinema"] .road__bead {
+    display: none;
+  }
+
+  /* uvod i završetak su preklopi u kadru */
+  .road[data-mode="cinema"] .road__intro,
+  .road[data-mode="cinema"] .road__outro {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0 var(--road-pad);
+    text-align: center;
+    pointer-events: none;
+  }
+  .road[data-mode="cinema"] .road__intro {
+    opacity: var(--intro);
+    transform: translate3d(0, calc((1 - var(--intro)) * -7vh), 0);
+  }
+  .road[data-mode="cinema"] .road__outro {
+    opacity: var(--outro);
+    transform: translate3d(0, calc((1 - var(--outro)) * 7vh), 0);
+  }
+  .road[data-mode="cinema"] .road__title {
+    max-width: none;
+    font-size: clamp(3.2rem, 7vw, 6.4rem);
+  }
+  .road[data-mode="cinema"] .road__lead,
+  .road[data-mode="cinema"] .road__outro-title {
+    max-width: 44ch;
+    margin-inline: auto;
+  }
+  .road[data-mode="cinema"] .road__outro-title {
+    font-size: clamp(2.6rem, 5.6vw, 4.8rem);
+  }
+
+  /* stanice se smenjuju u istom kadru; put prolazi kroz srednju kolonu */
+  .road[data-mode="cinema"] .road__stops-wrap,
+  .road[data-mode="cinema"] .road__stops {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+  }
+  .road[data-mode="cinema"] .road__stop {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1fr)
+      clamp(7rem, 15vw, 15rem)
+      minmax(0, 1fr);
+    align-items: center;
+    padding: clamp(4rem, 11vh, 7.5rem) var(--road-pad);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s var(--road-e);
+    /* fotografija stoji kao pažljivo položen list iz arhive */
+    --road-tilt: -1.4deg;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] {
+    --road-tilt: 1.2deg;
+  }
+  .road[data-mode="cinema"] .road__stop[data-phase="in"] {
+    opacity: 1;
+  }
+
+  .road[data-mode="cinema"] .road__body {
+    position: relative;
+    max-width: 34rem;
+    /* bez svog konteksta slaganja veo ispod (z-index: -1) propao bi čak iza
+       puta, pa ne bi štitio ništa */
+    isolation: isolate;
+  }
+  /* jedva primetan veo drži tekst čitljivim i kada put prođe iza njega */
+  .road[data-mode="cinema"] .road__body::before {
+    content: "";
+    position: absolute;
+    inset: -3rem -2.5rem;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(
+      72% 104% at 50% 50%,
+      rgb(var(--bg-rgb) / 0.82),
+      rgb(var(--bg-rgb) / 0) 74%
+    );
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="left"] .road__body {
+    grid-column: 1;
+    justify-self: end;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="left"] .road__figure {
+    grid-column: 3;
+    justify-self: start;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__body {
+    grid-column: 3;
+    justify-self: start;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__figure {
+    grid-column: 1;
+    justify-self: end;
+  }
+
+  .road[data-mode="cinema"] .road__year {
+    /* godina sme da bude velika i da delimično izađe iz kadra */
+    font-size: clamp(5rem, 14vw, 14rem);
+    margin: 0.6rem 0 0;
+    line-height: 0.78;
+  }
+  .road[data-mode="cinema"] .road__stop-title {
+    max-width: 16ch;
+    font-size: clamp(1.7rem, 2.6vw, 2.6rem);
+  }
+  .road[data-mode="cinema"] .road__figure {
+    margin: 0;
+    transform: rotate(var(--road-tilt));
+  }
+  .road[data-mode="cinema"] .road__desc {
+    font-size: 1.02rem;
+  }
+
+  /* svaka stanica je novo poglavlje: odnos godine, slike i teksta se menja */
+  .road[data-mode="cinema"] .road__stop[data-shape="0"] .road__figure {
+    width: min(100%, 31rem);
+  }
+  .road[data-mode="cinema"] .road__stop[data-shape="1"] .road__figure {
+    width: min(100%, 25rem);
+    margin-top: clamp(2rem, 7vh, 4.5rem);
+  }
+  .road[data-mode="cinema"] .road__stop[data-shape="1"] .road__year {
+    font-size: clamp(4.2rem, 11vw, 11rem);
+  }
+  .road[data-mode="cinema"] .road__stop[data-shape="2"] .road__figure {
+    width: min(100%, 34rem);
+    margin-bottom: clamp(1.5rem, 5vh, 3.5rem);
+  }
+  .road[data-mode="cinema"] .road__stop[data-shape="2"] .road__body {
+    max-width: 30rem;
+  }
+
+  /* ulaz i izlaz: tekst i fotografija se razdvajaju i izlaze iz kadra */
+  .road[data-anim="on"][data-mode="cinema"] .road__body,
+  .road[data-anim="on"][data-mode="cinema"] .road__figure {
+    transition:
+      opacity 0.55s var(--road-e),
+      transform 0.95s var(--road-e);
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="before"]
+    .road__body {
+    transform: translate3d(0, 36px, 0);
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="before"]
+    .road__figure {
+    transform: translate3d(0, 48px, 0) rotate(var(--road-tilt));
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="in"]
+    .road__figure {
+    transform: translate3d(0, 0, 0) rotate(var(--road-tilt));
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="after"]
+    .road__body {
+    transform: translate3d(0, -52px, 0);
+  }
+  .road[data-anim="on"][data-mode="cinema"]
+    .road__stop[data-phase="after"]
+    .road__figure {
+    transform: translate3d(0, 58px, 0) rotate(var(--road-tilt));
+  }
+
+  /* auto koji prati kameru na putu — okreće se u pravcu vožnje, blago
+     poskakuje srazmerno pređenoj dužini (kao ovešeni oslonac na neravnom putu) */
+  .road[data-mode="cinema"] .road__car {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 52%;
+    z-index: 2;
+    width: 26px;
+    height: 44px;
+    margin: -22px 0 0 -13px;
+    opacity: calc(1 - var(--intro) - var(--outro));
+    pointer-events: none;
+    transform-origin: 50% 50%;
+    transform: translateY(calc(var(--bob, 0) * -1px))
+      rotate(calc(var(--drive-rot, 0) * 1deg));
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+  }
+  .road__car-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .road__car-body {
+    fill: var(--background);
+    stroke: var(--primary);
+    stroke-width: 2.2;
+  }
+  .road__car-windshield {
+    stroke: var(--primary);
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.65;
+  }
+  .road__car-wheel {
+    fill: var(--primary);
+  }
+
+  /* indikator napretka */
+  .road[data-mode="cinema"] .road__meter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.85rem;
+    position: absolute;
+    right: var(--road-pad);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4;
+    font-family: var(--font-jetbrains-mono), ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    opacity: calc(1 - var(--intro) - var(--outro));
+    pointer-events: none;
+  }
+  .road__meter-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .road__meter-rail i {
+    position: relative;
+    display: block;
+    width: 1px;
+    height: 1.5rem;
+    background: rgb(var(--ink) / 0.2);
+  }
+  .road__meter-rail i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--primary);
+    transform: scaleY(0);
+    transform-origin: top center;
+    transition: transform 0.6s var(--road-e);
+  }
+  .road__meter-rail i[data-on]::after {
+    transform: scaleY(1);
+  }
+}
+
+/* ---------- 3b) telefon i tablet: kamera i auto ostaju, stanica u jednoj koloni ---------- */
+@media (max-width: 1023px) {
+  .road[data-mode="cinema"] .road__stage {
+    height: 100svh;
+  }
+  .road[data-mode="cinema"] .road__stop {
+    grid-template-columns: minmax(0, 1fr);
+    /* tekst gore, fotografija dole — sredina kadra ostaje slobodna za auto */
+    align-content: space-between;
+    padding: clamp(5rem, 12svh, 6.5rem) var(--road-pad) clamp(3.5rem, 9svh, 5rem);
+  }
+  .road[data-mode="cinema"] .road__stop .road__body,
+  .road[data-mode="cinema"] .road__stop .road__figure {
+    grid-column: 1 !important;
+    grid-row: auto;
+    margin: 0 !important;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="left"] .road__body,
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__figure {
+    justify-self: start;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__body,
+  .road[data-mode="cinema"] .road__stop[data-align="left"] .road__figure {
+    justify-self: end;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__body {
+    text-align: right;
+  }
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__stop-title,
+  .road[data-mode="cinema"] .road__stop[data-align="right"] .road__desc {
+    margin-left: auto;
+  }
+  /* fotografija je uvek ispod teksta, a veličina prati visinu ekrana */
+  .road[data-mode="cinema"] .road__stop .road__figure {
+    grid-row: 2;
+    width: min(80%, 20rem, 33svh) !important;
+  }
+  .road[data-mode="cinema"] .road__body {
+    max-width: 100% !important;
+  }
+  .road[data-mode="cinema"] .road__body::before {
+    inset: -1.5rem -1.25rem;
+  }
+  .road[data-mode="cinema"] .road__year,
+  .road[data-mode="cinema"] .road__stop[data-shape="1"] .road__year {
+    font-size: clamp(3.6rem, 19vw, 7rem);
+  }
+  .road[data-mode="cinema"] .road__stop-title {
+    font-size: clamp(1.35rem, 5.6vw, 2rem);
+  }
+  .road[data-mode="cinema"] .road__desc {
+    font-size: 0.95rem;
+  }
+  .road[data-mode="cinema"] .road__caption {
+    display: none;
+  }
+  .road[data-mode="cinema"] .road__title {
+    font-size: clamp(2.6rem, 12vw, 4.6rem);
+  }
+  .road[data-mode="cinema"] .road__outro-title {
+    font-size: clamp(2.1rem, 9vw, 3.6rem);
+  }
+  /* indikator ide vodoravno na dno, da ne prelazi preko teksta */
+  .road[data-mode="cinema"] .road__meter {
+    top: auto;
+    bottom: clamp(1rem, 3svh, 1.6rem);
+    right: var(--road-pad);
+    transform: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.62rem;
+  }
+  .road__meter-rail {
+    flex-direction: row;
+  }
+  .road__meter-rail i {
+    width: 1rem;
+    height: 1px;
+  }
+  .road__meter-rail i::after {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  .road__meter-rail i[data-on]::after {
+    transform: scaleX(1);
+  }
+}
+
+/* ---------- smanjeno kretanje: obična statična vremenska linija ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .road,
+  .road * {
+    transition: none !important;
+    animation: none !important;
+  }
+  .road {
+    --travel: 1;
+  }
+  .road__world,
+  .road__car,
+  .road__meter,
+  .road__backdrop {
+    display: none !important;
+  }
+  .road__stop,
+  .road__body,
+  .road__figure,
+  .road__stop-eyebrow,
+  .road__year,
+  .road__desc,
+  .road__bead {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .road__line > span {
+    transform: none !important;
+  }
+  .road__frame {
+    clip-path: none !important;
+  }
+}

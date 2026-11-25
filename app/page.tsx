@@ -56,7 +56,7 @@ export default function Home() {
                 <TextMarker>
                   SEFA okuplja preko 70 aktivnih članova posvećenih ličnom i
                   profesionalnom razvoju kroz projekte, edukacije i saradnju sa
-                  privredom. Kroz rad u sektorima komunikacija, sponzorstava i
+                  privredom. Kroz rad u sektorima PR-a, dizajna, sponzorstava i
                   ljudskih resursa, članovi stiču praktično iskustvo
                   koje ih priprema za tržište rada.
                 </TextMarker>

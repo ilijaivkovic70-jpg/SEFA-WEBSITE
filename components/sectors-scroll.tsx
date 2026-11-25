@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Sekcija „Sektori” — naslovni „layer” se prikaže jednom, a zatim tri
+ * Sekcija „Sektori” — naslovni „layer” se prikaže jednom, a zatim četiri
  * sektora idu direktno jedan za drugim dok korisnik skroluje. Ekrani se
  * ređaju kao 3D stek kartica: sledeći ekran klizi odozdo i prekriva
  * prethodni, koji u tom trenutku blago tone u dubinu (smanjuje se,
@@ -12,7 +11,7 @@ import { useEffect, useRef, useState } from "react";
  * ulaz/izlaz animacija koje mogu da se razminu.
  *
  * Kako radi:
- *  - Redosled ekrana je fiksan niz STOPS: layer, pa sektor, sektor, sektor
+ *  - Redosled ekrana je fiksan niz STOPS: layer, pa četiri sektora
  *    — bez vraćanja na layer između sektora. Svaki ekran dobija svoje
  *    mesto u steku kao CSS promenljiva `--stop` (0, 1, 2…).
  *  - Sekcija je visoka onoliko vh koliko ima prelaza (jedan pun ekran
@@ -35,114 +34,34 @@ type Sector = {
   num: string;
   title: string;
   description: string;
-  keywords: [string, string, string];
-  Illustration: () => React.ReactElement;
 };
-
-/* ---------- ilustracije: originalni line-art, crta se pri aktivaciji ---------- */
-
-const ILLO_PROPS = {
-  viewBox: "0 0 400 400",
-  className: "sc-illo",
-  "aria-hidden": true,
-  focusable: "false",
-} as const;
-
-/** Komunikacije: kolaž plakata i fotografija sa nastupa. */
-function IllustrationKomunikacije() {
-  return (
-    <Image
-      src="/komunikacije-glas.png"
-      alt=""
-      width={1214}
-      height={1295}
-      className="sc-illo"
-    />
-  );
-}
-
-/** Sponzorstva: dve strane koje jedna neprekidna linija spaja. */
-function IllustrationSponzorstva() {
-  return (
-    <svg {...ILLO_PROPS}>
-      {/* leva strana */}
-      <path
-        className="sc-illo__draw sc-illo__ink"
-        pathLength={1}
-        d="M156 92 C 96 92 84 118 84 158 L84 242 C 84 282 96 308 156 308"
-        style={{ "--d": "60ms" } as React.CSSProperties}
-      />
-      {/* desna strana */}
-      <path
-        className="sc-illo__draw sc-illo__ink"
-        pathLength={1}
-        d="M244 308 C 304 308 316 282 316 242 L316 158 C 316 118 304 92 244 92"
-        style={{ "--d": "220ms" } as React.CSSProperties}
-      />
-      {/* jedna neprekidna linija koja ih povezuje */}
-      <path
-        className="sc-illo__draw sc-illo__accent sc-illo__link"
-        pathLength={1}
-        d="M156 308 C 212 308 186 200 200 200 C 214 200 188 92 244 92"
-        style={{ "--d": "520ms" } as React.CSSProperties}
-      />
-      <circle
-        className="sc-illo__node sc-illo__accent-fill"
-        cx={156}
-        cy={308}
-        r={5}
-        style={{ "--d": "460ms" } as React.CSSProperties}
-      />
-      <circle
-        className="sc-illo__node sc-illo__accent-fill"
-        cx={244}
-        cy={92}
-        r={5}
-        style={{ "--d": "1180ms" } as React.CSSProperties}
-      />
-    </svg>
-  );
-}
-
-/** Ljudski resursi: kolaž fotografija tima. */
-function IllustrationLjudskiResursi() {
-  return (
-    <Image
-      src="/ljudski-resursi-glas.png"
-      alt=""
-      width={1384}
-      height={1136}
-      className="sc-illo"
-    />
-  );
-}
 
 /* ---------- sadržaj ---------- */
 
 const SECTORS: Sector[] = [
   {
     num: "01",
-    title: "Komunikacije",
+    title: "PR",
     description:
-      "Kreiramo sadržaj, vodimo društvene mreže i gradimo prepoznatljiv glas SEFA-e.",
-    keywords: ["Sadržaj", "Mediji", "Javnost"],
-    Illustration: IllustrationKomunikacije,
+      "PR sektor je glas SEFA-e. Zadužen je za promociju organizacije, njenih projekata i aktivnosti, kao i za izgradnju pozitivnog imidža i prepoznatljivosti među studentima. Članovi vode društvene mreže, osmišljavaju promotivne kampanje i komuniciraju sa javnošću. Kroz kreativne ideje i savremene marketinške pristupe povećavamo vidljivost projekata, privlačimo nove članove i jačamo identitet organizacije, dok članovi razvijaju veštine marketinga, komunikacije i kreativnog razmišljanja.",
   },
   {
     num: "02",
-    title: "Sponzorstva",
+    title: "Dizajn",
     description:
-      "Gradimo partnerstva sa kompanijama, i pretvaramo dobre ideje u podršku projektima SEFA-e.",
-    keywords: ["Partnerstva", "Saradnja", "Kompanije"],
-    Illustration: IllustrationSponzorstva,
+      "Dizajn sektor je zadužen za vizuelni identitet svih projekata. Članovi osmišljavaju i kreiraju objave za društvene mreže, plakate, flajere, prezentacije i promotivne materijale u alatima poput Canve i Illustratora, a video sadržaj montiraju u CapCutu i Premiere Pro-u. Cilj je da kreativno i originalno predstavimo aktivnosti organizacije i privučemo pažnju studenata, a članovi kroz rad razvijaju kreativnost i stiču praktična znanja iz grafičkog dizajna i marketinga.",
   },
   {
     num: "03",
+    title: "Sponzorstva",
+    description:
+      "Sektor za sponzorstva i prodaju uspostavlja i održava saradnju sa kompanijama, institucijama i poslovnim partnerima, kako bi obezbedio finansijsku, materijalnu i logističku podršku projektima SEFA-e. Članovi istražuju tržište, pronalaze potencijalne sponzore, pripremaju sponzorske ponude i vode pregovore. Kroz rad na projektima kao što su CFO kongres, Greenfield i SEFA Talks gradimo dugoročna partnerstva i povezujemo akademsku i poslovnu zajednicu, a članovi stiču praktično iskustvo u pregovaranju, prodaji i poslovnoj komunikaciji.",
+  },
+  {
+    num: "04",
     title: "Ljudski resursi",
     description:
-      "Okupljamo, razvijamo i povezujemo članove kroz mentorstvo, edukacije i snažnu timsku atmosferu.",
-    keywords: ["Članovi", "Mentorstvo", "Razvoj"],
-    Illustration: IllustrationLjudskiResursi,
+      "HR sektor je posvećen ljudima, razvoju članova i stvaranju podsticajnog okruženja za rad. Bavi se regrutacijom i selekcijom novih članova, njihovim uključivanjem u organizaciju i praćenjem njihovog zadovoljstva i napretka. Kroz edukacije i team building druženja podstičemo timski duh, unapređujemo međusobnu komunikaciju i omogućavamo svakom članu da razvija svoje veštine i potencijale. Verujemo da su ljudi temelj svake uspešne organizacije i da se najbolji rezultati postižu zajedništvom i dobrom saradnjom.",
   },
 ];
 
@@ -155,6 +74,7 @@ const STOPS: Stop[] = [
   { kind: "sector", sector: SECTORS[0] },
   { kind: "sector", sector: SECTORS[1] },
   { kind: "sector", sector: SECTORS[2] },
+  { kind: "sector", sector: SECTORS[3] },
 ];
 /** Broj prelaza (jedan manje od broja ekrana). */
 const UNITS = STOPS.length - 1;
@@ -339,7 +259,7 @@ export function SectorsScroll() {
   // indikator napretka: koliko je sektora „otvoreno” prati isti broj koji
   // upisuje efekat iznad (meterNow), pa rail ne zaostaje na kraju sekcije
   const litCount = meterNow === "00" ? 0 : Number(meterNow);
-  const rail = [1, 2, 3].map((n) => n <= litCount);
+  const rail = [1, 2, 3, 4].map((n) => n <= litCount);
 
   return (
     <section
@@ -379,15 +299,12 @@ export function SectorsScroll() {
                     className="sc__title"
                   >
                     <span className="sc__line">
-                      <span>Tri sektora.</span>
+                      <span>Četiri sektora.</span>
                     </span>
                     <span className="sc__line">
                       <span>Jedna organizacija.</span>
                     </span>
                   </h2>
-                  <p className="sc__lead">
-                    Različite uloge, znanja i ljudi povezani zajedničkim ciljem.
-                  </p>
                 </div>
               </div>
             ) : (
@@ -408,16 +325,6 @@ export function SectorsScroll() {
                     </p>
                     <h3 className="sc__name">{stop.sector.title}</h3>
                     <p className="sc__desc">{stop.sector.description}</p>
-                    <ul className="sc__keys">
-                      {stop.sector.keywords.map((word, k) => (
-                        <li key={word} style={{ "--k": k } as React.CSSProperties}>
-                          {word}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="sc__illo">
-                    <stop.sector.Illustration />
                   </div>
                 </div>
               </div>
@@ -429,7 +336,7 @@ export function SectorsScroll() {
           <span className="sc__meter-count">
             <span className="sc__meter-now">{meterNow}</span>
             <span className="sc__meter-sep">/</span>
-            <span>03</span>
+            <span>04</span>
           </span>
           <span className="sc__meter-rail">
             {rail.map((on, i) => (
