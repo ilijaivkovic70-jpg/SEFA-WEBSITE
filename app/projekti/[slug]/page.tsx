@@ -9,6 +9,7 @@ import { ImageReveal } from "@/components/image-reveal";
 import { LineReveal } from "@/components/line-reveal";
 import { ProjectGallery } from "@/components/project-gallery";
 import { ProjectVideo } from "@/components/project-video";
+import { ProjectLetter } from "@/components/project-letter";
 import { PROJEKTI, getProjekatBySlug } from "@/data/projekti";
 
 export function generateStaticParams() {
@@ -88,46 +89,13 @@ export default async function ProjekatPage({
             </ImageReveal>
           )}
 
-          <div id="projekat-tekst" className="scroll-mt-24">
-          {projekat.lokacije && (
-            <div className="mt-6 flex flex-wrap gap-2">
-              {projekat.lokacije.map((lokacija) => (
-                <span
-                  key={lokacija}
-                  className="rounded-full border border-border px-3 py-1 font-mono text-xs uppercase tracking-wide text-muted-foreground"
-                >
-                  {lokacija}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <div className="mt-8 space-y-4">
-            {projekat.opis.map((pasus, i) => (
-              <p key={i} className="text-muted-foreground">
-                {pasus}
-              </p>
-            ))}
-          </div>
-          </div>
-
-          {projekat.sekcije?.map((sekcija) => (
-            <div key={sekcija.naslov} className="mt-10">
-              <h2 className="font-heading text-xl font-bold tracking-tight">
-                {sekcija.naslov}
-              </h2>
-              <ul className="mt-4 space-y-2">
-                {sekcija.stavke.map((stavka) => (
-                  <li
-                    key={stavka}
-                    className="border-l-2 border-border pl-4 text-sm text-muted-foreground"
-                  >
-                    {stavka}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <ProjectLetter
+            id="projekat-tekst"
+            paragraphs={projekat.opis}
+            logo={projekat.slika}
+            logoAlt={projekat.naziv}
+            label={`${projekat.naziv}: pismo o projektu`}
+          />
 
           <ProjectGallery
             images={projekat.galerija ?? []}

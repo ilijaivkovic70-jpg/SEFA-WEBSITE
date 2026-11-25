@@ -4463,3 +4463,11 @@ html.lenis body {
     0 18px 40px -12px rgb(0 0 0 / 0.6);
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* smotuljak papira u koverti: vidljiv samo dok se papir odvija */
+@keyframes roll-fade {
+  0% { opacity: 0; }
+  6% { opacity: 1; }
+  86% { opacity: 1; }
+  100% { opacity: 0; }
+}

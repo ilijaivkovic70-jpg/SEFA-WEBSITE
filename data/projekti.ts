@@ -29,7 +29,11 @@ export const PROJEKTI: Projekat[] = [
     kratakOpis:
       "Regionalni privredni susreti studenata: konferencija na kojoj studenti uče od istaknutih ljudi iz sveta ekonomije i biznisa.",
     opis: [
-      "REPSUS, Regionalni privredni susreti studenata, simbol je SEFA-e od samog osnivanja. Na konferenciji učestvuju eminentne ličnosti iz sveta ekonomije, a cilj je da studenti steknu nova znanja i prate aktuelne trendove u privredi.",
+      "„REPSUS – Regionalni privredni susreti studenata” jedan je od najznačajnijih projekata Studentske organizacije SEFA, koji ima za cilj povezivanje studenata iz regiona sa poslovnim svetom i pružanje prilike za praktičnu primenu znanja stečenih tokom studija. Projekat se održava jednom godišnje i okuplja studente iz Beograda, Zagreba, Banje Luke i Podgorice, podstičući regionalnu saradnju, razmenu iskustava i profesionalni razvoj mladih. Kroz kombinaciju edukativnih sadržaja i takmičarskih aktivnosti, REPSUS predstavlja značajnu sponu između akademskog obrazovanja i savremenog poslovnog okruženja.",
+      "Centralni deo projekta predstavlja regionalno takmičenje u rešavanju studije slučaja (Case Study), tokom kojeg studenti imaju priliku da se suoče sa realnim poslovnim izazovima i razviju inovativna rešenja za probleme iz prakse. Poseban značaj ima saradnja sa vodećim kompanijama koje učesnicima pružaju uvid u način funkcionisanja savremenog poslovanja. Na REPSUS-u 2026. godine, studiju slučaja zadala je kompanija L'Oréal, jedan od globalnih lidera u industriji lepote. Takmičenje je okupilo više od 50 prijavljenih timova, dok je pet najboljih dobilo priliku da svoja rešenja predstavi pred stručnim žirijem kompanije. Ovakav koncept podstiče razvoj analitičkog razmišljanja, kreativnosti, timskog rada i prezentacionih veština.",
+      "Pored takmičarskog dela, značajan segment projekta predstavlja konferencija koja okuplja stručnjake iz oblasti marketinga, preduzetništva, finansija, menadžmenta i revizije. Kroz predavanja i panel-diskusije, studenti imaju priliku da se upoznaju sa aktuelnim poslovnim trendovima i steknu dragocene uvide u profesionalna iskustva uspešnih pojedinaca. Konferencija održana 2026. godine pod nazivom „Inicijativa gradi tvoju karijeru” obuhvatila je šest predavanja posvećenih razvoju poslovnih ideja, liderstvu, inovacijama i savremenim izazovima poslovanja.",
+      "Među predavačima na konferenciji 2026. godine bili su Sava Pavlović, jedan od osnivača startapa FARMIT, koji je govorio o razvoju preduzetničke ideje i njenom pretvaranju u održiv poslovni model. Srđan Janićijević, osnivač Mokrogorske škole menadžmenta, koji je kroz predavanje „Sezam se otvorio: Pet potreba biznisa” približio ključne principe uspešnog poslovanja. Svoje iskustvo sa učesnicima podelio je i Dušan Vranić, alumnista organizacije SEFA i Senior Brand Manager kompanije HEINEKEN Srbija, naglašavajući značaj inicijative, odgovornosti i proaktivnog pristupa profesionalnom razvoju.",
+      "Program konferencije dodatno su upotpunili Biljana Bogovac, rukovodeća partnerka kompanije PwC, kroz razgovor o reviziji, konsaltingu i ulozi žena u poslovnom svetu. Miroslav Maslovarić osnivač Community Media koji je govorio o primeni veštačke inteligencije u marketingu i značaju očuvanja ljudske autentičnosti u procesu digitalne transformacije. Na kraju je usledilo predavanje Ines Oštrić pod nazivom „Business Beyond Business”, koje je kroz primer kompanije L'Oréal istaklo značaj društveno odgovornog poslovanja i povezivanja ekonomskih ciljeva sa širim društvenim vrednostima.",
     ],
     video: {
       src: "/projekti/repsus-promo.mp4",
@@ -48,9 +52,9 @@ export const PROJEKTI: Projekat[] = [
 
       "Podkast u kom gosti iz sveta biznisa i preduzetništva dele svoja iskustva i savete sa studentima.",
     opis: [
-      "Podkast studentske organizacije SEFA, pokrenut sa idejom da kroz razgovore sa preduzetnicima i ljudima iz sveta biznisa mladima približi preduzetništvo i omogući im da čuju iskustva i ispovesti ljudi koji su u tome uspeli.",
-      "U podkastu gostuju ljudi koji imaju mnogo toga da nauče: preduzetnici, direktori i stručnjaci iz kompanija, ali i profesori Ekonomskog fakulteta, koji sa studentima dele svoja iskustva i savete za početak karijere. Autori sami biraju sagovornike i teme, na osnovu interesovanja i pregleda slušalaca.",
-      "Podkast je dostupan na YouTube-u, Spotify-ju, Deezer-u i Amazon Music-u, kao i na povezanom Instagram nalogu (@sefatalks).",
+      "„Sefa Talks” – prvi studentski podkast na Univerzitetu koji daje priliku svima da čuju iskustva uspešnih preduzetnika, investitora i naših alumnista. Kroz razgovor sa našim voditeljima, gledaoci imaju priliku da sa bilo koje lokacije i u bilo kom trenutku slušaju teme koje ih zanimaju iz sveta ekonomije.",
+      "Epizode koje su obeležile prošlu godinu bile su sa profesorom matematike na našem fakultetu – Branislavom Boričićem, zatim epizoda sa Goranom Tintorom koji je stručnjak za marketing, strategiju i ponašanje potrošača. Takođe, sa Nemanjom Antićem – preduzetnik, investitor i broker. Pored njih našle su se i epizode sa našim alumnistima Emilijom Vasović, Ivanom Rajkovićem, Veljkom Vukovićem, Dušanom Vranićem i Aleksom Vukićevićem.",
+      "„Sefa Talks” omogućava studentima da prošire svoja znanja, upoznaju se sa različitim profesionalnim iskustvima i čuju korisne savete od ljudi koji su uspešni u svojim oblastima. Cilj podkasta je da ekonomske teme približi studentima na zanimljiv i pristupačan način.",
     ],
   },
   {
@@ -65,18 +69,12 @@ export const PROJEKTI: Projekat[] = [
 
       "Humanitarni projekat kroz koji članovi SEFA-e pomažu lokalnoj zajednici i razvijaju osećaj društvene odgovornosti.",
     opis: [
-      "Humanitarni projekat zabavno-edukativnog karaktera, sa ciljem podizanja svesti o humanosti i prikupljanja sredstava za one kojima je najpotrebnije.",
-    ],
-    sekcije: [
-      {
-        naslov: "Gosti i saradnici projekta",
-        stavke: [
-          "Sergej Trifunović: „Zašto je teško biti human”",
-          "Nenad Danilović (Neša Brđis): stand up veče",
-          "Vlado Georgiev: nastup u Amfiteatru 1 Ekonomskog fakulteta",
-          "Dejan Savić: „Psihologija pobednika”",
-        ],
-      },
+      "„Prava stvar” je humanitarni projekat Studentske organizacije SEFA koji ima za cilj podsticanje društvene odgovornosti, solidarnosti i humanosti među mladima. Kroz organizaciju različitih humanitarnih događaja i dobrotvornih aktivnosti, projekat okuplja studente oko zajedničkog cilja – pružanja podrške pojedincima i zajednicama kojima je pomoć najpotrebnija. Njegova osnovna ideja jeste da pokaže kako zajedništvo, empatija i lična inicijativa mogu doprineti stvaranju pozitivnih promena u društvu.",
+      "Program projekta obuhvata humanitarne sportske turnire, pub kvizove, koncerte i različite akcije prikupljanja sredstava. Kroz spoj zabave, druženja i humanitarnog angažovanja, učesnicima se pruža prilika da aktivno doprinesu ostvarivanju plemenitih ciljeva. Na ovaj način, projekat podstiče mlade da prepoznaju značaj društvene odgovornosti i uključe se u inicijative koje imaju pozitivan uticaj na širu zajednicu.",
+      "Poseban značaj u okviru projekta imaju humanitarni pub kvizovi, koji predstavljaju spoj znanja, timskog duha i humanosti. Kroz takmičenje u različitim oblastima, učesnici imaju priliku da provere svoje znanje, druže se i istovremeno doprinesu prikupljanju sredstava u humanitarne svrhe. Ovakvi događaji okupljaju studente različitih interesovanja i pokazuju kako se zajedničkim angažovanjem i pozitivnom energijom može pružiti konkretna podrška onima kojima je ona najpotrebnija.",
+      "Pored pub kvizova, značajno mesto u okviru projekta zauzimaju humanitarni sportski turniri, koncerti i druge društvene aktivnosti. Kroz sportska nadmetanja promovišu se fer-plej, timski rad i solidarnost, dok koncerti i kreativni događaji pružaju dodatne mogućnosti za okupljanje mladih oko zajedničkog humanitarnog cilja. Raznovrsnost aktivnosti omogućava uključivanje što većeg broja učesnika i doprinosi širenju svesti o značaju humanitarnog delovanja.",
+      "Važan segment projekta predstavlja i podizanje svesti o izazovima sa kojima se suočavaju pojedinci i društveno ugrožene grupe. Kroz humanitarne inicijative, saradnju sa organizacijama i uključivanje društveno odgovornih partnera, „Prava stvar” nastoji da doprinese pružanju konkretne pomoći i istovremeno ukaže na važnost dugoročne solidarnosti. Posebna pažnja posvećuje se razvijanju empatije, međusobnog razumevanja i spremnosti mladih da svojim delovanjem doprinesu dobrobiti zajednice.",
+      "„Prava stvar” predstavlja više od humanitarnog projekta – ona je prilika da studenti svojim angažovanjem, kreativnošću i posvećenošću pokažu da i male inicijative mogu dovesti do značajnih promena. Negovanjem kulture solidarnosti, zajedništva i dobročinstva, projekat inspiriše mlade da prepoznaju potrebe drugih i aktivno doprinesu stvaranju humanijeg i odgovornijeg društva. Kroz svaku realizovanu aktivnost, SEFA nastoji da pokaže da je upravo spremnost da pomognemo drugima ono što čini pravu stvar.",
     ],
   },
   {
@@ -91,27 +89,8 @@ export const PROJEKTI: Projekat[] = [
 
       "Projekat posvećen podizanju svesti o mentalnom zdravlju i podršci studentima u prevazilaženju izazova.",
     opis: [
-      "Panel diskusija posvećena temi anksioznosti i mentalnog zdravlja, sa ciljem normalizovanja stresa, izgradnje samopouzdanja, izlaska iz zone komfora i postavljanja prioriteta.",
-      "Prva diskusija održana je maja 2019. u Profesorskoj sali Ekonomskog fakulteta.",
-    ],
-    sekcije: [
-      {
-        naslov: "Teme za diskusiju",
-        stavke: [
-          "Šta je to što osećamo i kakav je to strah?",
-          "Kako se izboriti sa anksioznošću i različitim trenucima?",
-          "Da li je razgovor o anksioznosti nešto o čemu otvoreno pričamo?",
-        ],
-      },
-      {
-        naslov: "Učesnici",
-        stavke: [
-          "Aleksandra „Saša” Simonić: diplomirani novinar / PR menadžer",
-          "Teodora Milović: PR menadžer / influencer",
-          "Sandra Bijelac: psihoterapeut",
-          "Stella Karl Coci: executive & leadership coach",
-        ],
-      },
+      "„Bez straha” je projekat posvećen podizanju svesti o značaju mentalnog zdravlja, sa posebnim fokusom na izazove sa kojima se studenti svakodnevno suočavaju jer studentski život ne podrazumeva samo pohađanje predavanja i polaganje ispita.",
+      "U cilju nam je da stvorimo okruženje u kojem studenti mogu slobodno da govore o svim poteškoćama sa kojima se suočavaju i razbijemo predrasude koje i dalje postoje kada je reč o mentalnom zdravlju. Kroz gostujuća predavanja, panel diskusije i radionice sa psiholozima, želimo da približimo načine za lakše suočavanje sa svakodnevnim izazovima i pokažemo studentima da nisu sami, jer mentalno zdravlje ne treba da bude tabu tema, već tema o kojoj se otvoreno razgovara.",
     ],
   },
   {
@@ -144,14 +123,14 @@ export const PROJEKTI: Projekat[] = [
 
       "Konferencija koja povezuje svet sporta i biznisa, sa stručnjacima iz sportske industrije kao govornicima.",
     opis: [
-      "Konferencija pokrenuta 2018. godine, namenjena studentima čija su interesovanja vezana za sport. Prosečno okuplja 200 do 300 delegata.",
-      "Cilj je edukacija o funkcionisanju klubova, sportskih udruženja i preduzeća koja organizuju sportske događaje, kroz teme menadžmenta, marketinga, inovacija, tehnologije i novinarstva u sportu. Projekat posebno promoviše mogućnost izgradnje karijere žena u sportskim organizacijama.",
-      "Namenjen je studentima Ekonomskog fakulteta, kao i Pravnog fakulteta, FON-a, FPN-a, DIF-a i ETF-a.",
+      "„Sport Business Day” je namenjen studentima koji su zainteresovani da se upoznaju sa biznisom u sportu kao i kako mogu započeti karijeru u ovoj oblasti.",
+      "Tokom konferencije obrađuju se teme iz sveta sportskog biznisa, poput menadžmenta u sportu, marketinga, sponzorstava, finansiranja sportskih klubova i izgradnje uspešnih sportskih brendova.",
+      "Posebnu vrednost događaju daje učešće istaknutih ličnosti iz sveta sporta, među kojima su treneri, sportski menadžeri i rukovodioci uspešnih sportskih organizacija. Svojim znanjem i profesionalnim iskustvom, oni studentima približavaju realne izazove, mogućnosti i perspektive razvoja u ovoj oblasti.",
+      "Na poslednjoj konferenciji, prošle godine u decembru, gosti su bili Marko Pešić, jedan od poznatih evropskih menadžera, zatim bivši selektor reprezentacije Srbije Svetislav Pešić i Marko Vukomanović, direktor marketinga košarkaškog kluba Partizan.",
+      "„Sport Business Day” predstavlja značajnu priliku za studente da prošire svoja znanja, steknu praktične uvide i povežu se sa ljudima koji imaju uspešnu karijeru u ovoj industriji. Takođe, doprinosi razvoju interesovanja za sportski biznis i podstiče studente da prepoznaju nove mogućnosti za svoj profesionalni razvoj.",
     ],
   },
   {
-    // TODO(SEFA): dopuniti pravim sadržajem, tekst ispod je privremen,
-    // napisan samo da bi projekat imao svoje mesto u indeksu i svoju stranicu.
     slug: "link-to-the-future",
     naziv: "Link to the Future",
     slika: "/projekti/link-to-the-future.png",
@@ -163,7 +142,12 @@ export const PROJEKTI: Projekat[] = [
 
       "Projekat koji povezuje studente sa kompanijama i ljudima iz struke, od prvog kontakta do prve prilike.",
     opis: [
-      "Projekat okrenut karijernom razvoju studenata Ekonomskog fakulteta. Kroz susrete sa kompanijama, ljudima iz struke i alumnistima SEFA-e, studenti dobijaju uvid u to kako izgleda posao koji ih čeka i kako do njega doći.",
+      "„Link to the Future” je projekat Studentske organizacije SEFA koji ima za cilj povezivanje ekonomije, savremenih tehnologija i inovacija. Kroz različite edukativne aktivnosti, projekat pruža studentima priliku da se upoznaju sa aktuelnim trendovima u digitalnoj ekonomiji, steknu nova znanja i razviju veštine neophodne za razumevanje savremenog poslovnog okruženja.",
+      "Program projekta obuhvata predavanja, panel-diskusije, interaktivne radionice i susrete sa stručnjacima iz oblasti finansija, tehnologije i preduzetništva. Posebna pažnja posvećena je temama kao što su primena veštačke inteligencije u poslovanju, digitalna transformacija, investiranje, kriptovalute i blokčejn tehnologija. Na ovaj način, studentima se omogućava da sagledaju uticaj tehnološkog razvoja na ekonomske procese i budućnost poslovanja.",
+      "Jedan od značajnih segmenata projekta predstavlja oblast investiranja i finansijskih tržišta. U okviru edukativne radionice, studenti su imali priliku da kroz predavanja dr Miloša Božovića i Vladimira Đukanovića steknu uvid u savremene investicione strategije, upravljanje portfoliom i uticaj veštačke inteligencije na finansijski sektor. Poseban akcenat stavljen je na praktičnu primenu stečenih znanja kroz simulaciju berzanskog trgovanja na platformi Investopedia, koja je učesnicima omogućila da se upoznaju sa procesom donošenja investicionih odluka u uslovima tržišne dinamike.",
+      "Važan deo projekta čini konferencija „Jedna tema – tri perspektive”, posvećena razmeni znanja i iskustava između studenata i stručnjaka iz različitih oblasti poslovanja i tehnologije. Među gostujućim predavačima bili su Davor Sakač iz TS Ventures Fund, Luka Trikić iz kompanije Connect The Dots i Danilo Prodanović iz kompanije Microsoft. Kroz različite profesionalne perspektive, učesnicima su približili značaj inovacija, savremenih tehnoloških rešenja i preduzetničkog načina razmišljanja u dinamičnom poslovnom okruženju.",
+      "U okviru projekta organizovana je i poseta Beogradskoj berzi, tokom koje su učesnici imali priliku da se neposredno upoznaju sa funkcionisanjem domaćeg tržišta kapitala. Kroz razgovor sa direktorom Lazom Ostojićem i predavanje profesora dr Dejana Erića, studenti su stekli dodatna saznanja o berzanskom poslovanju, finansijskom sistemu i značaju tržišta kapitala za privredni razvoj. Ova poseta predstavljala je priliku za povezivanje akademskog znanja sa praktičnim aspektima funkcionisanja finansijskih institucija.",
+      "„Link to the Future” teži da stvori prostor za razmenu znanja, ideja i iskustava između studenata i uspešnih profesionalaca. Podsticanjem inovativnog razmišljanja, usvajanjem savremenih znanja i povezivanjem akademskog obrazovanja sa poslovnom praksom, projekat doprinosi pripremi mladih za izazove digitalne ekonomije i aktivno učešće u oblikovanju budućnosti poslovanja.",
     ],
   },
 ];
