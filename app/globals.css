@@ -4169,8 +4169,8 @@
 
 /* ---------- početni ekran ----------
    Sve na ekranu je aplikacija: društvene mreže su ikonice ispod naslova, a
-   prečice do kontakta (pošta, telefon, mapa) stoje u traci pri dnu — tamo gde
-   su na pravom telefonu Telefon i Pošta. Ispod trake je crtica za povratak na
+   prečice do kontakta (pošta, mapa) stoje u traci pri dnu, kao dok na pravom
+   telefonu. Ispod trake je crtica za povratak na
    početni ekran. Ikonice se pale jedna po jedna, isto kao ranije lista. */
 
 .cs__apps {
@@ -4263,9 +4263,6 @@
 }
 [data-app="posta"] .cs__tile {
   background: linear-gradient(180deg, #5ab4ff 0%, #0b62dd 100%);
-}
-[data-app="telefon"] .cs__tile {
-  background: linear-gradient(180deg, #4cd964 0%, #1fa845 100%);
 }
 [data-app="mapa"] .cs__tile {
   background: linear-gradient(165deg, #7ed3a1 0%, #37a2b8 100%);

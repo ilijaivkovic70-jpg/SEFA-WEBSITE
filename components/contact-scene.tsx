@@ -39,7 +39,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
  */
 
 /* ---------- aplikacije na ekranu ----------
-   Sve što je na ekranu telefona je aplikacija: četiri mreže i tri prečice do
+   Sve što je na ekranu telefona je aplikacija: tri mreže i dve prečice do
    kontakta. Isti nalozi kao u traci u podnožju (`components/footer.tsx`) — ako
    se neki podatak promeni, menja se `href` (i `detail`) ovde.
 
@@ -52,10 +52,10 @@ type App = {
   id: string;
   /** Ime ispod ikonice, kao na početnom ekranu telefona. */
   name: string;
-  /** Nalog, adresa ili broj — stoji u `title` i u opisu za čitač ekrana. */
+  /** Nalog ili adresa — stoji u `title` i u opisu za čitač ekrana. */
   detail: string;
   href: string;
-  /** Mreže i mapa se otvaraju u novoj kartici; mailto i tel ostaju u istoj. */
+  /** Mreže i mapa se otvaraju u novoj kartici; mailto ostaje u istoj. */
   external?: boolean;
   /** Stoji u traci pri dnu ekrana, bez imena — kao dok na pravom telefonu. */
   dock?: boolean;
@@ -132,21 +132,6 @@ const APPS: App[] = [
           strokeWidth="1.8"
           strokeLinecap="round"
           strokeLinejoin="round"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: "telefon",
-    name: "Telefon",
-    detail: "+381 63 1521141",
-    href: "tel:+381631521141",
-    dock: true,
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path
-          fill="#fff"
-          d="M6.55 3.2a1.65 1.65 0 0 1 2.28.5l1.5 2.38a1.65 1.65 0 0 1-.32 2.15l-1.2.99a.6.6 0 0 0-.15.72 10.6 10.6 0 0 0 5.08 5.08.6.6 0 0 0 .72-.15l.99-1.2a1.65 1.65 0 0 1 2.15-.32l2.38 1.5c.72.46.94 1.4.5 2.28l-.86 1.36c-.5.8-1.46 1.2-2.38.98A17 17 0 0 1 3.9 6.4c-.22-.92.18-1.88.98-2.38l1.67-.82Z"
         />
       </svg>
     ),
